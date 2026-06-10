@@ -1,34 +1,68 @@
 'use client';
 
-import { useMemo, useCallback } from 'react';
+import { useMemo, useCallback, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGameStore } from '@/store/gameStore';
 
-// ─── Constants ─────────────────────────────────────────
+// ─── Palette (Subway Surfers inspired — vibrant, warm, colorful) ──
 const LANE_COLORS = [
-  '#ff6b6b', // coral
-  '#ffa502', // amber
-  '#2ed573', // green
-  '#ff4757', // red-coral
-  '#eccc68', // gold
-  '#a4b0be', // silver
+  '#FF6B35', // vivid orange
+  '#FFD23F', // golden yellow
+  '#06D6A0', // mint green
+  '#EF476F', // hot pink
+  '#118AB2', // ocean blue
+  '#8338EC', // electric purple
 ];
 
-const LANE_GLOW = [
-  '#ff6b6b40',
-  '#ffa50240',
-  '#2ed57340',
-  '#ff475740',
-  '#eccc6840',
-  '#a4b0be40',
+const LANE_LIGHT = [
+  '#FF9F6B',
+  '#FFE680',
+  '#5EEFC0',
+  '#F47A9E',
+  '#4DB8D9',
+  '#A86FF0',
 ];
 
-// ─── Helper: lane position percent ─────────────────────
+// ─── Helper: lane X position ──────────────────────────
 function getLanePercent(laneIndex: number, pathCount: number): number {
   return ((laneIndex + 0.5) / pathCount) * 100;
 }
 
-// ─── Runner Component (enhanced) ───────────────────────
+// ─── Floating Score Popup ─────────────────────────────
+function ScorePopup({ value, x }: { value: string; x: number }) {
+  return (
+    <motion.div
+      className="absolute z-50 pointer-events-none font-black text-lg"
+      style={{ left: `${x}%`, bottom: '40%', color: '#FFD23F' }}
+      initial={{ opacity: 1, y: 0, scale: 0.5 }}
+      animate={{ opacity: 0, y: -60, scale: 1.4 }}
+      transition={{ duration: 0.8, ease: 'easeOut' }}
+    >
+      {value}
+    </motion.div>
+  );
+}
+
+// ─── Combo Badge ──────────────────────────────────────
+function ComboBadge({ combo }: { combo: number }) {
+  if (combo < 3) return null;
+  const label = combo >= 10 ? '🔥 INSANE!' : combo >= 7 ? '⚡ SUPER!' : combo >= 5 ? '✨ GREAT!' : '👍 NICE!';
+  const color = combo >= 10 ? '#EF476F' : combo >= 7 ? '#8338EC' : combo >= 5 ? '#FF6B35' : '#06D6A0';
+  return (
+    <motion.div
+      className="absolute top-14 left-1/2 z-50 pointer-events-none font-black text-base px-3 py-1 rounded-full"
+      style={{ color, x: '-50%', animation: 'comboGlow 0.8s ease-in-out infinite' }}
+      initial={{ scale: 0, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      exit={{ scale: 1.5, opacity: 0 }}
+      transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+    >
+      {label}
+    </motion.div>
+  );
+}
+
+// ─── Runner (Subway Surfers style character) ──────────
 function Runner({ pathCount, currentLane, feedback }: {
   pathCount: number;
   currentLane: number;
@@ -38,99 +72,146 @@ function Runner({ pathCount, currentLane, feedback }: {
 
   return (
     <motion.div
-      className="absolute bottom-[22%] z-20"
+      className="absolute bottom-[20%] z-20"
       animate={{
         left: `${leftPercent}%`,
-        y: feedback === 'wrong' ? [0, -8, 4, -2, 0] : 0,
+        y: feedback === 'wrong' ? [0, -12, 6, -4, 0] : 0,
       }}
       transition={{
-        left: { type: 'spring', stiffness: 300, damping: 25 },
-        y: { duration: 0.4, ease: 'easeOut' },
+        left: { type: 'spring', stiffness: 320, damping: 22 },
+        y: { duration: 0.5, ease: 'easeOut' },
       }}
       style={{ transform: 'translateX(-50%)' }}
     >
-      <div className="relative flex flex-col items-center">
-        {/* Shadow under runner */}
-        <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-8 h-2 bg-black/30 rounded-full blur-sm" />
+      <div
+        className="relative flex flex-col items-center"
+        style={{ animation: feedback !== 'wrong' ? 'runnerBounce 0.35s ease-in-out infinite' : undefined }}
+      >
+        {/* Shadow on ground */}
+        <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-10 h-3 bg-black/25 rounded-full blur-sm" />
 
-        {/* Head */}
-        <div className="w-8 h-8 rounded-full bg-amber-200 border-2 border-amber-300 relative shadow-md">
-          {/* Hair */}
-          <div className="absolute -top-1 left-1 right-1 h-3 rounded-t-full bg-orange-600" />
+        {/* ── Head ── */}
+        <div className="relative w-10 h-10 rounded-full bg-[#FFDBB5] border-2 border-[#F5C49C] shadow-lg">
+          {/* Hair — spiky */}
+          <div className="absolute -top-2 left-1 right-1 h-4">
+            <div className="absolute bottom-0 left-1 w-2 h-4 bg-[#5C3D2E] rounded-t-full rotate-[-12deg]" />
+            <div className="absolute bottom-0 left-3 w-2.5 h-5 bg-[#5C3D2E] rounded-t-full rotate-[-4deg]" />
+            <div className="absolute bottom-0 right-3 w-2.5 h-5 bg-[#5C3D2E] rounded-t-full rotate-[4deg]" />
+            <div className="absolute bottom-0 right-1 w-2 h-4 bg-[#5C3D2E] rounded-t-full rotate-[12deg]" />
+          </div>
 
-          {/* Eyes - animate on feedback */}
+          {/* Eyes */}
           <motion.div
-            className="absolute top-2 left-1.5 flex gap-2"
-            animate={{
-              scaleY: feedback === 'wrong' ? 0.3 : 1,
-            }}
-            transition={{ duration: 0.15 }}
+            className="absolute top-3 left-1.5 flex gap-2.5"
+            animate={{ scaleY: feedback === 'wrong' ? 0.15 : 1 }}
+            transition={{ duration: 0.12 }}
           >
-            <div className="w-2 h-2 rounded-full bg-gray-800 relative">
-              {/* Pupil */}
-              <div className="absolute top-0.5 left-0.5 w-1 h-1 rounded-full bg-white" />
+            <div className="w-2.5 h-2.5 rounded-full bg-white relative">
+              <div className="absolute top-0.5 right-0.5 w-1.5 h-1.5 rounded-full bg-[#2D1B0E]" />
+              <div className="absolute top-0 right-0 w-0.5 h-0.5 rounded-full bg-white" />
             </div>
-            <div className="w-2 h-2 rounded-full bg-gray-800 relative">
-              <div className="absolute top-0.5 left-0.5 w-1 h-1 rounded-full bg-white" />
+            <div className="w-2.5 h-2.5 rounded-full bg-white relative">
+              <div className="absolute top-0.5 left-0.5 w-1.5 h-1.5 rounded-full bg-[#2D1B0E]" />
+              <div className="absolute top-0 right-0 w-0.5 h-0.5 rounded-full bg-white" />
             </div>
           </motion.div>
 
           {/* Eyebrows */}
           <motion.div
-            className="absolute top-0.5 left-1 right-1 flex justify-between"
-            animate={{
-              y: feedback === 'wrong' ? 2 : 0,
-            }}
+            className="absolute top-1.5 left-1.5 right-1.5 flex justify-between"
+            animate={{ y: feedback === 'wrong' ? 3 : 0 }}
           >
-            <div className="w-2.5 h-0.5 bg-gray-800 rounded-full rotate-[-8deg]" />
-            <div className="w-2.5 h-0.5 bg-gray-800 rounded-full rotate-[8deg]" />
+            <div className="w-3 h-[3px] bg-[#5C3D2E] rounded-full rotate-[-10deg]" />
+            <div className="w-3 h-[3px] bg-[#5C3D2E] rounded-full rotate-[10deg]" />
           </motion.div>
 
           {/* Mouth */}
           <motion.div
-            className="absolute bottom-1 left-1/2 -translate-x-1/2"
+            className="absolute bottom-1.5 left-1/2 -translate-x-1/2"
             animate={{
-              borderRadius: feedback === 'correct' ? '50%' : '2px',
-              width: feedback === 'correct' ? '3px' : '6px',
-              height: feedback === 'correct' ? '3px' : '2px',
+              width: feedback === 'correct' ? '8px' : feedback === 'wrong' ? '10px' : '6px',
+              height: feedback === 'correct' ? '8px' : feedback === 'wrong' ? '5px' : '4px',
+              borderRadius: feedback === 'correct' ? '50%' : '0 0 6px 6px',
             }}
           >
-            <div className="w-2 h-1 bg-gray-800 rounded-full" />
+            <div className="w-full h-full bg-[#2D1B0E] rounded-full" />
           </motion.div>
+
+          {/* Blush cheeks */}
+          <div className="absolute bottom-2 left-0 w-2.5 h-1.5 rounded-full bg-[#FF9F9F]/50" />
+          <div className="absolute bottom-2 right-0 w-2.5 h-1.5 rounded-full bg-[#FF9F9F]/50" />
         </div>
 
-        {/* Body */}
-        <div className="w-6 h-8 rounded-md bg-orange-500 -mt-1 shadow-sm relative">
-          {/* Shirt stripe */}
-          <div className="absolute top-2 left-1 right-1 h-1 bg-orange-400 rounded-full" />
+        {/* ── Body / Hoodie ── */}
+        <div className="relative w-8 h-9 -mt-1 rounded-lg bg-[#FF6B35] shadow-md">
+          {/* Hoodie pocket */}
+          <div className="absolute bottom-1 left-1 right-1 h-2 bg-[#E55A25] rounded-sm" />
+          {/* Hoodie stripe */}
+          <div className="absolute top-2 left-0 right-0 h-1 bg-[#FFD23F] rounded-full" />
+          {/* Hood string */}
+          <div className="absolute top-0 left-2 w-[2px] h-2 bg-white/60" />
+          <div className="absolute top-0 right-2 w-[2px] h-2 bg-white/60" />
         </div>
 
-        {/* Arms - with running swing */}
-        <div className="absolute top-9 -left-3 w-2.5 h-6 rounded-full bg-orange-400 origin-top animate-[armSwing_0.4s_ease-in-out_infinite_alternate] shadow-sm" />
-        <div className="absolute top-9 -right-3 w-2.5 h-6 rounded-full bg-orange-400 origin-top animate-[armSwing_0.4s_ease-in-out_infinite_alternate_reverse] shadow-sm" />
+        {/* ── Arms ── */}
+        <div className="absolute top-[38px] -left-3.5 w-3 h-7 rounded-full bg-[#FFDBB5] origin-top shadow-sm"
+          style={{ animation: 'armSwing 0.3s ease-in-out infinite alternate' }} />
+        <div className="absolute top-[38px] -right-3.5 w-3 h-7 rounded-full bg-[#FFDBB5] origin-top shadow-sm"
+          style={{ animation: 'armSwing 0.3s ease-in-out infinite alternate-reverse' }} />
 
-        {/* Legs - with running swing */}
-        <div className="flex gap-1.5 -mt-1">
-          <div className="w-2 h-6 rounded-full bg-gray-700 origin-top animate-[legSwing_0.3s_ease-in-out_infinite_alternate]" />
-          <div className="w-2 h-6 rounded-full bg-gray-700 origin-top animate-[legSwing_0.3s_ease-in-out_infinite_alternate_reverse]" />
+        {/* ── Legs ── */}
+        <div className="flex gap-1 -mt-0.5">
+          <div className="w-2.5 h-7 rounded-full bg-[#2B4C7E] origin-top shadow-sm"
+            style={{ animation: 'legSwing 0.25s ease-in-out infinite alternate' }} />
+          <div className="w-2.5 h-7 rounded-full bg-[#2B4C7E] origin-top shadow-sm"
+            style={{ animation: 'legSwing 0.25s ease-in-out infinite alternate-reverse' }} />
         </div>
 
-        {/* Shoes */}
-        <div className="flex gap-1 -mt-1">
-          <div className="w-3 h-2 rounded-sm bg-red-500 shadow-sm" />
-          <div className="w-3 h-2 rounded-sm bg-red-500 shadow-sm" />
+        {/* ── Shoes ── */}
+        <div className="flex gap-0.5 -mt-0.5">
+          <div className="w-3.5 h-2.5 rounded-md bg-[#EF476F] shadow-sm" />
+          <div className="w-3.5 h-2.5 rounded-md bg-[#EF476F] shadow-sm" />
         </div>
 
-        {/* Correct feedback glow */}
+        {/* ── Correct feedback: star burst ── */}
         <AnimatePresence>
           {feedback === 'correct' && (
             <motion.div
-              className="absolute inset-0 rounded-full bg-green-400/30"
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1.5, opacity: [0.5, 0] }}
-              exit={{ opacity: 0 }}
+              className="absolute -inset-4 pointer-events-none"
+              initial={{ opacity: 0, scale: 0.5 }}
+              animate={{ opacity: 1, scale: 1.8 }}
+              exit={{ opacity: 0, scale: 2.2 }}
               transition={{ duration: 0.5 }}
-            />
+            >
+              {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, i) => (
+                <div
+                  key={i}
+                  className="absolute left-1/2 top-1/2 w-1 h-3 rounded-full"
+                  style={{
+                    background: ['#FFD23F', '#FF6B35', '#06D6A0', '#EF476F'][i % 4],
+                    transform: `translate(-50%,-50%) rotate(${angle}deg) translateY(-16px)`,
+                    animation: 'sparkle 0.4s ease-in-out infinite',
+                    animationDelay: `${i * 0.05}s`,
+                  }}
+                />
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* ── Wrong feedback: X mark ── */}
+        <AnimatePresence>
+          {feedback === 'wrong' && (
+            <motion.div
+              className="absolute -top-2 left-1/2 -translate-x-1/2 text-2xl font-black"
+              style={{ color: '#EF476F' }}
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1.2, opacity: 1 }}
+              exit={{ scale: 0, opacity: 0 }}
+              transition={{ type: 'spring', stiffness: 500, damping: 15 }}
+            >
+              ✗
+            </motion.div>
           )}
         </AnimatePresence>
       </div>
@@ -138,7 +219,7 @@ function Runner({ pathCount, currentLane, feedback }: {
   );
 }
 
-// ─── Door Component (single door) ──────────────────────
+// ─── Door Portal (Subway Surfers style obstacle/portal) ──
 function Door({
   laneIdx,
   isCorrect,
@@ -154,96 +235,107 @@ function Door({
   pathCount: number;
   onChoose: (lane: number) => void;
 }) {
+  const color = LANE_COLORS[laneIdx % LANE_COLORS.length];
+  const light = LANE_LIGHT[laneIdx % LANE_LIGHT.length];
+
   const isFeedbackCorrect = isCurrent && feedback === 'correct' && isCorrect;
   const isFeedbackWrong = isCurrent && feedback === 'wrong' && !isCorrect;
   const isHint = isCurrent && feedback === 'wrong' && isCorrect;
 
-  let bgColor = `linear-gradient(135deg, ${LANE_COLORS[laneIdx % LANE_COLORS.length]}cc, ${LANE_COLORS[laneIdx % LANE_COLORS.length]}88)`;
-  let borderColor = 'rgba(255,255,255,0.15)';
-  let shadowStr = `0 2px 8px ${LANE_GLOW[laneIdx % LANE_GLOW.length]}`;
+  let bgStyle: React.CSSProperties = {
+    background: `linear-gradient(180deg, ${light} 0%, ${color} 100%)`,
+    borderColor: isCurrent ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.15)',
+  };
+  let shadowStr = `0 4px 12px ${color}60, inset 0 2px 0 rgba(255,255,255,0.3)`;
 
   if (isFeedbackCorrect) {
-    bgColor = 'linear-gradient(135deg, #2ed573, #20bf6b)';
-    borderColor = '#2ed573';
-    shadowStr = '0 0 25px #2ed57380, 0 0 50px #2ed57340';
+    bgStyle = {
+      background: 'linear-gradient(180deg, #5EEFC0 0%, #06D6A0 100%)',
+      borderColor: '#06D6A0',
+    };
+    shadowStr = '0 0 20px #06D6A080, 0 0 40px #06D6A040, inset 0 2px 0 rgba(255,255,255,0.4)';
   } else if (isFeedbackWrong) {
-    bgColor = 'linear-gradient(135deg, #ff4757, #e74c3c)';
-    borderColor = '#ff4757';
-    shadowStr = '0 0 25px #ff475780, 0 0 50px #ff475740';
+    bgStyle = {
+      background: 'linear-gradient(180deg, #F47A9E 0%, #EF476F 100%)',
+      borderColor: '#EF476F',
+    };
+    shadowStr = '0 0 20px #EF476F80, 0 0 40px #EF476F40, inset 0 2px 0 rgba(255,255,255,0.3)';
   } else if (isHint) {
-    bgColor = 'linear-gradient(135deg, #ffa502, #ff9f1a)';
-    borderColor = '#ffa502';
-    shadowStr = '0 0 15px #ffa50260';
+    bgStyle = {
+      background: `linear-gradient(180deg, ${light} 0%, ${color} 100%)`,
+      borderColor: '#FFD23F',
+    };
+    shadowStr = '0 0 15px #FFD23F60, inset 0 2px 0 rgba(255,255,255,0.4)';
   }
 
   return (
     <motion.button
       onClick={() => isCurrent && onChoose(laneIdx)}
       disabled={!isCurrent || feedback !== null}
-      className="relative flex-1 rounded-xl overflow-hidden"
+      className="relative flex-1 rounded-2xl overflow-hidden"
       style={{
-        maxWidth: `${90 / pathCount}%`,
-        height: '56px',
-        background: bgColor,
-        border: `2px solid ${borderColor}`,
+        maxWidth: `${88 / pathCount}%`,
+        height: '62px',
+        ...bgStyle,
+        border: `3px solid ${bgStyle.borderColor}`,
         boxShadow: shadowStr,
       }}
-      whileHover={isCurrent ? { scale: 1.05, y: -2 } : {}}
-      whileTap={isCurrent ? { scale: 0.95 } : {}}
+      whileHover={isCurrent ? { scale: 1.08, y: -3 } : {}}
+      whileTap={isCurrent ? { scale: 0.92 } : {}}
       animate={
         isFeedbackWrong
-          ? { x: [0, -6, 6, -4, 4, 0] }
+          ? { x: [0, -8, 8, -5, 5, 0] }
           : isFeedbackCorrect
-            ? { scale: [1, 1.1, 1] }
-            : {}
+            ? { scale: [1, 1.12, 1] }
+            : isCurrent
+              ? { scale: [1, 1.03, 1] }
+              : {}
       }
       transition={{ duration: 0.4 }}
     >
-      {/* Door frame arch */}
-      <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-b from-white/20 to-transparent rounded-t-xl" />
+      {/* Top shine */}
+      <div className="absolute inset-x-0 top-0 h-3 bg-gradient-to-b from-white/35 to-transparent rounded-t-2xl" />
 
-      {/* Door panel lines */}
-      <div className="absolute inset-x-2 top-3 bottom-3 border border-white/10 rounded-lg" />
+      {/* Arch frame */}
+      <div className="absolute inset-x-1.5 top-1 bottom-1 border-2 border-white/15 rounded-xl" />
 
-      {/* Door number */}
-      <span className="relative text-white font-extrabold text-xl drop-shadow-md z-10">
+      {/* Lane number */}
+      <span className="relative text-white font-black text-2xl drop-shadow-md z-10"
+        style={{ textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>
         {laneIdx + 1}
       </span>
 
       {/* Door handle */}
-      <div className="absolute right-2.5 top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full bg-white/30 border border-white/20 shadow-sm" />
+      <div className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-white/30 border border-white/25 shadow-sm" />
 
-      {/* Feedback icon overlay */}
+      {/* Bottom stripe */}
+      <div className="absolute inset-x-1 bottom-1 h-1.5 bg-white/15 rounded-full" />
+
+      {/* Feedback overlays */}
       <AnimatePresence>
         {isFeedbackCorrect && (
           <motion.div
-            className="absolute inset-0 flex items-center justify-center bg-green-500/40"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            className="absolute inset-0 flex items-center justify-center bg-[#06D6A0]/40 rounded-2xl"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
           >
-            <span className="text-white text-2xl font-bold">✓</span>
+            <span className="text-white text-3xl font-black drop-shadow-lg">✓</span>
           </motion.div>
         )}
         {isFeedbackWrong && (
           <motion.div
-            className="absolute inset-0 flex items-center justify-center bg-red-500/40"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            className="absolute inset-0 flex items-center justify-center bg-[#EF476F]/40 rounded-2xl"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
           >
-            <span className="text-white text-2xl font-bold">✗</span>
+            <span className="text-white text-3xl font-black drop-shadow-lg">✗</span>
           </motion.div>
         )}
         {isHint && (
           <motion.div
-            className="absolute inset-0 flex items-center justify-center bg-amber-500/30"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ delay: 0.2 }}
+            className="absolute inset-0 flex items-center justify-center bg-[#FFD23F]/30 rounded-2xl"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            transition={{ delay: 0.15 }}
           >
-            <span className="text-white text-xl font-bold">→</span>
+            <span className="text-white text-2xl font-black drop-shadow-lg">⇨</span>
           </motion.div>
         )}
       </AnimatePresence>
@@ -251,7 +343,7 @@ function Door({
   );
 }
 
-// ─── Door Row Component ────────────────────────────────
+// ─── Door Row ─────────────────────────────────────────
 function DoorRow({
   doorIndex,
   pathCount,
@@ -268,21 +360,14 @@ function DoorRow({
   onChoose: (lane: number) => void;
 }) {
   const bottomPercent = 20 + doorIndex * 18;
-  const scale = 1 - doorIndex * 0.12;
-  const opacity = Math.max(0.3, 1 - doorIndex * 0.18);
+  const scale = 1 - doorIndex * 0.11;
+  const opacity = Math.max(0.25, 1 - doorIndex * 0.2);
 
   return (
     <motion.div
-      className="absolute left-0 right-0 flex justify-center gap-1.5 px-4"
-      style={{
-        bottom: `${bottomPercent}%`,
-        transformOrigin: 'center bottom',
-      }}
-      animate={{
-        scale,
-        opacity,
-        rotateX: doorIndex * 3,
-      }}
+      className="absolute left-0 right-0 flex justify-center gap-2 px-5"
+      style={{ bottom: `${bottomPercent}%`, transformOrigin: 'center bottom' }}
+      animate={{ scale, opacity, rotateX: doorIndex * 3 }}
       transition={{ type: 'spring', stiffness: 200, damping: 20 }}
     >
       {Array.from({ length: pathCount }).map((_, laneIdx) => (
@@ -300,127 +385,290 @@ function DoorRow({
   );
 }
 
-// ─── Road Visual (enhanced) ────────────────────────────
-function RoadVisual({ pathCount }: { pathCount: number }) {
+// ─── Sky & Road Background ────────────────────────────
+function SkyBackground() {
+  // Generate stable cloud positions
+  const clouds = useMemo(() => [
+    { id: 1, left: '10%', top: '6%', w: 80, h: 28, speed: 35 },
+    { id: 2, left: '55%', top: '3%', w: 100, h: 32, speed: 45 },
+    { id: 3, left: '80%', top: '10%', w: 60, h: 22, speed: 30 },
+    { id: 4, left: '30%', top: '14%', w: 70, h: 24, speed: 40 },
+  ], []);
+
   return (
     <div className="absolute inset-0 overflow-hidden">
-      {/* Sky gradient */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a1a] via-[#12122e] to-[#1a1a3e]" />
+      {/* Sky gradient — warm sunset like Subway Surfers */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#FF8C42] via-[#FFC857] to-[#FFE4A0]" />
 
-      {/* Stars */}
-      {Array.from({ length: 20 }).map((_, i) => (
-        <div
-          key={`star-${i}`}
-          className="absolute rounded-full bg-white animate-[twinkle_2s_ease-in-out_infinite]"
-          style={{
-            width: 1 + Math.random() * 2,
-            height: 1 + Math.random() * 2,
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 30}%`,
-            animationDelay: `${Math.random() * 2}s`,
-            opacity: 0.3 + Math.random() * 0.5,
-          }}
-        />
-      ))}
-
-      {/* Road surface with perspective */}
-      <div
-        className="absolute left-[5%] right-[5%] bottom-0"
+      {/* Sun */}
+      <div className="absolute top-[4%] left-1/2 -translate-x-1/2 w-24 h-24 rounded-full"
         style={{
-          height: '82%',
-          background: `linear-gradient(to bottom, #1a1a2e 0%, #252540 50%, #2a2a45 100%)`,
-          transform: 'perspective(800px) rotateX(5deg)',
-          transformOrigin: 'center bottom',
+          background: 'radial-gradient(circle, #FFF8E1 0%, #FFD54F 40%, #FF9800 80%, transparent 100%)',
+          boxShadow: '0 0 60px #FF980060, 0 0 120px #FF980030',
         }}
       >
-        {/* Lane dividers with glow */}
-        {Array.from({ length: pathCount + 1 }).map((_, i) => (
-          <div
-            key={i}
-            className="absolute top-0 bottom-0"
-            style={{
-              left: `${(i / pathCount) * 100}%`,
-              width: '2px',
-              background: 'linear-gradient(to bottom, transparent 0%, #ffa50240 30%, #ffa50280 100%)',
-              boxShadow: '0 0 4px #ffa50240',
-            }}
-          />
-        ))}
+        {/* Sun rays */}
+        <div className="absolute inset-0" style={{ animation: 'sunRotate 20s linear infinite' }}>
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="absolute left-1/2 top-1/2 w-1 h-8 bg-[#FFD54F]/40 rounded-full origin-bottom"
+              style={{ transform: `translate(-50%, -100%) rotate(${i * 45}deg) translateY(-14px)` }} />
+          ))}
+        </div>
+      </div>
 
-        {/* Lane color strips (bottom glow) */}
-        {Array.from({ length: pathCount }).map((_, i) => (
-          <div
-            key={`lane-strip-${i}`}
-            className="absolute bottom-0"
-            style={{
-              left: `${(i / pathCount) * 100 + 0.5}%`,
-              width: `${100 / pathCount - 1}%`,
-              height: '6px',
-              background: `linear-gradient(to top, ${LANE_COLORS[i % LANE_COLORS.length]}80, transparent)`,
-            }}
-          />
-        ))}
-
-        {/* Road marks (dashes) */}
-        {Array.from({ length: 15 }).map((_, i) => (
-          <div
-            key={`mark-${i}`}
-            className="absolute left-1/2 -translate-x-1/2 w-1 h-4 rounded-full"
-            style={{
-              bottom: `${i * 6 + 2}%`,
-              background: `linear-gradient(to top, #ffa50250, #ffa50220)`,
-            }}
-          />
-        ))}
-
-        {/* Side barriers with glow */}
-        <div className="absolute left-0 top-0 bottom-0 w-1.5 rounded-r"
+      {/* Clouds */}
+      {clouds.map(c => (
+        <div key={c.id}
+          className="absolute rounded-full bg-white/80"
           style={{
-            background: 'linear-gradient(to bottom, transparent, #ffa50260, #ffa50280)',
-            boxShadow: '2px 0 8px #ffa50240',
+            left: c.left, top: c.top, width: c.w, height: c.h,
+            animation: `cloudDrift ${c.speed}s linear infinite`,
+            filter: 'blur(1px)',
           }}
-        />
-        <div className="absolute right-0 top-0 bottom-0 w-1.5 rounded-l"
-          style={{
-            background: 'linear-gradient(to bottom, transparent, #ffa50260, #ffa50280)',
-            boxShadow: '-2px 0 8px #ffa50240',
-          }}
-        />
+        >
+          <div className="absolute -top-2 left-1/4 w-3/5 h-3/4 bg-white/80 rounded-full" />
+          <div className="absolute -top-1 right-1/4 w-2/5 h-2/3 bg-white/70 rounded-full" />
+        </div>
+      ))}
 
-        {/* Vanishing point glow */}
-        <div
-          className="absolute left-1/2 -translate-x-1/2 w-20 h-20 rounded-full"
-          style={{
-            top: '5%',
-            background: 'radial-gradient(circle, #ffa50230 0%, transparent 70%)',
-          }}
-        />
+      {/* Distant buildings silhouette */}
+      <div className="absolute bottom-[28%] left-0 right-0 h-[12%]">
+        <svg viewBox="0 0 400 50" className="w-full h-full" preserveAspectRatio="none">
+          <path d="M0,50 L0,35 L15,35 L15,20 L25,20 L25,30 L40,30 L40,15 L50,15 L50,25 L65,25 L65,35 L80,35 L80,10 L90,10 L90,30 L105,30 L105,20 L120,20 L120,35 L140,35 L140,25 L155,25 L155,40 L170,40 L170,15 L185,15 L185,30 L200,30 L200,22 L215,22 L215,38 L230,38 L230,12 L245,12 L245,28 L260,28 L260,35 L280,35 L280,18 L295,18 L295,32 L310,32 L310,25 L325,25 L325,40 L340,40 L340,20 L360,20 L360,35 L380,35 L380,28 L400,28 L400,50 Z"
+            fill="#7B5B3A" opacity="0.3" />
+        </svg>
       </div>
     </div>
   );
 }
 
-// ─── HUD ───────────────────────────────────────────────
-function HUD() {
+// ─── Road (3D perspective like Subway Surfers) ────────
+function RoadVisual({ pathCount }: { pathCount: number }) {
+  return (
+    <div className="absolute inset-0 overflow-hidden">
+      {/* Sky */}
+      <SkyBackground />
+
+      {/* Road with perspective */}
+      <div
+        className="absolute left-[4%] right-[4%] bottom-0"
+        style={{
+          height: '78%',
+          background: `linear-gradient(to bottom, #5C3D2E 0%, #7B5B3A 20%, #8B6B4A 50%, #6B4B2A 100%)`,
+          transform: 'perspective(600px) rotateX(4deg)',
+          transformOrigin: 'center bottom',
+          borderLeft: '3px solid #FFD23F80',
+          borderRight: '3px solid #FFD23F80',
+        }}
+      >
+        {/* Lane dividers */}
+        {Array.from({ length: pathCount + 1 }).map((_, i) => (
+          <div key={i} className="absolute top-0 bottom-0"
+            style={{
+              left: `${(i / pathCount) * 100}%`,
+              width: '2px',
+              background: 'linear-gradient(to bottom, transparent 0%, #FFD23F30 30%, #FFD23F60 100%)',
+            }}
+          />
+        ))}
+
+        {/* Lane color strips at bottom */}
+        {Array.from({ length: pathCount }).map((_, i) => (
+          <div key={`ls-${i}`} className="absolute bottom-0"
+            style={{
+              left: `${(i / pathCount) * 100 + 0.5}%`,
+              width: `${100 / pathCount - 1}%`,
+              height: '8px',
+              background: `linear-gradient(to top, ${LANE_COLORS[i % LANE_COLORS.length]}90, transparent)`,
+            }}
+          />
+        ))}
+
+        {/* Dashed center line (scrolling) */}
+        <div className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-1 overflow-hidden">
+          <div className="w-full h-[200%] flex flex-col gap-3 pt-0"
+            style={{ animation: 'dashScroll 0.6s linear infinite' }}>
+            {Array.from({ length: 30 }).map((_, i) => (
+              <div key={i} className="w-full h-3 bg-[#FFD23F]/40 rounded-full shrink-0" />
+            ))}
+          </div>
+        </div>
+
+        {/* Side rails */}
+        <div className="absolute left-0 top-0 bottom-0 w-2 rounded-r"
+          style={{
+            background: 'linear-gradient(to bottom, transparent, #FF6B3560, #FF6B3580)',
+            boxShadow: '2px 0 10px #FF6B3540',
+          }} />
+        <div className="absolute right-0 top-0 bottom-0 w-2 rounded-l"
+          style={{
+            background: 'linear-gradient(to bottom, transparent, #FF6B3560, #FF6B3580)',
+            boxShadow: '-2px 0 10px #FF6B3540',
+          }} />
+
+        {/* Vanishing point glow */}
+        <div className="absolute left-1/2 -translate-x-1/2 w-24 h-24 rounded-full"
+          style={{
+            top: '3%',
+            background: 'radial-gradient(circle, #FFD23F40 0%, transparent 70%)',
+          }} />
+
+        {/* Ground dashes (speed markers on sides) */}
+        {Array.from({ length: 10 }).map((_, i) => (
+          <div key={`lm-${i}`} className="absolute w-1.5 h-5 rounded-full bg-[#FFD23F]/25"
+            style={{ left: '4%', bottom: `${i * 8 + 3}%` }} />
+        ))}
+        {Array.from({ length: 10 }).map((_, i) => (
+          <div key={`rm-${i}`} className="absolute w-1.5 h-5 rounded-full bg-[#FFD23F]/25"
+            style={{ right: '4%', bottom: `${i * 8 + 3}%` }} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Speed Lines VFX ──────────────────────────────────
+function SpeedLines() {
+  const lines = useMemo(() =>
+    Array.from({ length: 8 }).map((_, i) => ({
+      id: i,
+      left: 5 + Math.random() * 90,
+      width: 1 + Math.random() * 2,
+      duration: 0.4 + Math.random() * 0.4,
+      delay: Math.random() * 1,
+      opacity: 0.15 + Math.random() * 0.2,
+    })),
+    []
+  );
+
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden z-10">
+      {lines.map(l => (
+        <div key={l.id} className="absolute top-0 rounded-full bg-white"
+          style={{
+            left: `${l.left}%`,
+            width: l.width,
+            height: '30%',
+            opacity: l.opacity,
+            animation: `speedLine ${l.duration}s linear ${l.delay}s infinite`,
+          }} />
+      ))}
+    </div>
+  );
+}
+
+// ─── Particle Burst VFX ──────────────────────────────
+function ParticleBurst({ type }: { type: 'correct' | 'wrong' }) {
+  const isCorrect = type === 'correct';
+  const particles = useMemo(
+    () =>
+      Array.from({ length: 20 }).map((_, i) => ({
+        id: i,
+        x: 25 + Math.random() * 50,
+        delay: Math.random() * 0.25,
+        duration: 0.5 + Math.random() * 0.5,
+        size: 4 + Math.random() * 8,
+        angle: -40 + Math.random() * 80,
+        color: isCorrect
+          ? ['#FFD23F', '#FF6B35', '#06D6A0', '#FFF'][i % 4]
+          : ['#EF476F', '#FF6B6B', '#FF9F43', '#FFF'][i % 4],
+        isStar: Math.random() > 0.5,
+      })),
+    [isCorrect]
+  );
+
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 25 }}>
+      {particles.map(p => (
+        <motion.div
+          key={p.id}
+          className="absolute"
+          style={{
+            left: `${p.x}%`,
+            bottom: '30%',
+            width: p.size,
+            height: p.size,
+          }}
+          initial={{ opacity: 1, y: 0, x: 0, scale: 1, rotate: 0 }}
+          animate={{
+            opacity: 0,
+            y: -120 - Math.random() * 80,
+            x: p.angle * 2.5,
+            scale: 0,
+            rotate: 360,
+          }}
+          transition={{ duration: p.duration, delay: p.delay, ease: 'easeOut' }}
+        >
+          {p.isStar ? (
+            <div style={{ color: p.color, fontSize: p.size, lineHeight: 1 }}>★</div>
+          ) : (
+            <div className="w-full h-full rounded-full" style={{ backgroundColor: p.color }} />
+          )}
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
+// ─── Coin effect on correct answer ────────────────────
+function CoinEffect({ laneX }: { laneX: number }) {
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 26 }}>
+      {/* Floating +1 */}
+      <motion.div
+        className="absolute font-black text-xl text-[#FFD23F]"
+        style={{
+          left: `${laneX}%`,
+          bottom: '38%',
+          textShadow: '0 2px 8px #FF6B3580',
+        }}
+        initial={{ opacity: 1, y: 0, scale: 0.5 }}
+        animate={{ opacity: 0, y: -70, scale: 1.3 }}
+        transition={{ duration: 0.7, ease: 'easeOut' }}
+      >
+        +1 🪙
+      </motion.div>
+    </div>
+  );
+}
+
+// ─── HUD ──────────────────────────────────────────────
+function HUD({ combo }: { combo: number }) {
   const score = useGameStore((s) => s.score);
   const feedback = useGameStore((s) => s.feedback);
 
   return (
-    <div className="absolute inset-0 pointer-events-none z-30">
+    <div className={`absolute inset-0 pointer-events-none z-30 ${feedback === 'wrong' ? '' : ''}`}
+      style={feedback === 'wrong' ? { animation: 'screenShake 0.4s ease-out' } : undefined}
+    >
       {/* Top bar */}
-      <div className="flex justify-end items-start p-4">
-        {/* Score */}
-        <div className="bg-black/60 backdrop-blur-sm rounded-xl px-4 py-2 border border-white/10">
+      <div className="flex justify-between items-start p-3">
+        {/* Score pill */}
+        <div className="flex items-center gap-2 bg-black/40 backdrop-blur-md rounded-2xl px-4 py-2 border border-white/15 shadow-lg">
+          <span className="text-[#FFD23F] text-sm">🪙</span>
           <motion.span
             key={score}
-            className="text-white font-bold text-xl tabular-nums"
-            initial={{ scale: 1.5, color: '#ffa502' }}
+            className="text-white font-black text-2xl tabular-nums"
+            initial={{ scale: 1.6, color: '#FFD23F' }}
             animate={{ scale: 1, color: '#ffffff' }}
             transition={{ duration: 0.3, type: 'spring', stiffness: 300 }}
+            style={{ animation: feedback === 'correct' ? 'scorePop 0.3s ease-out' : undefined }}
           >
             {score}
           </motion.span>
         </div>
+
+        {/* Combo indicator */}
+        {combo >= 3 && (
+          <motion.div
+            className="flex items-center gap-1 bg-black/40 backdrop-blur-md rounded-2xl px-3 py-2 border border-[#FFD23F]/30"
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            style={{ animation: 'comboGlow 0.6s ease-in-out infinite' }}
+          >
+            <span className="text-[#FFD23F] font-black text-lg">×{combo}</span>
+          </motion.div>
+        )}
       </div>
 
       {/* Feedback overlay */}
@@ -433,15 +681,15 @@ function HUD() {
             exit={{ opacity: 0 }}
           >
             <motion.div
-              className={`text-3xl font-black px-10 py-5 rounded-2xl backdrop-blur-sm ${
+              className={`px-8 py-4 rounded-3xl font-black text-2xl backdrop-blur-md border-2 shadow-2xl ${
                 feedback === 'correct'
-                  ? 'bg-green-500/80 text-white shadow-2xl shadow-green-500/30 border border-green-400/30'
-                  : 'bg-red-500/80 text-white shadow-2xl shadow-red-500/30 border border-red-400/30'
+                  ? 'bg-[#06D6A0]/80 text-white border-[#06D6A0] shadow-[#06D6A0]/30'
+                  : 'bg-[#EF476F]/80 text-white border-[#EF476F] shadow-[#EF476F]/30'
               }`}
-              initial={{ scale: 0.3, opacity: 0, y: 20 }}
-              animate={{ scale: [0.3, 1.15, 1], opacity: 1, y: 0 }}
-              exit={{ scale: 1.3, opacity: 0, y: -20 }}
-              transition={{ duration: 0.4, type: 'spring', stiffness: 200 }}
+              initial={{ scale: 0.2, opacity: 0, y: 20 }}
+              animate={{ scale: [0.2, 1.2, 1], opacity: 1, y: 0 }}
+              exit={{ scale: 1.4, opacity: 0, y: -20 }}
+              transition={{ duration: 0.35, type: 'spring', stiffness: 250 }}
             >
               {feedback === 'correct' ? '✓ Верно!' : '✗ Ошибка!'}
             </motion.div>
@@ -452,7 +700,7 @@ function HUD() {
   );
 }
 
-// ─── Lane Buttons ──────────────────────────────────────
+// ─── Lane Buttons (bottom controls) ──────────────────
 function LaneButtons() {
   const pathCount = useGameStore((s) => s.settings.pathCount);
   const chooseLane = useGameStore((s) => s.chooseLane);
@@ -470,84 +718,41 @@ function LaneButtons() {
   return (
     <div className="absolute bottom-0 left-0 right-0 z-40 p-3 pb-5">
       <div
-        className="grid gap-2.5 max-w-lg mx-auto"
+        className="grid gap-3 max-w-lg mx-auto"
         style={{ gridTemplateColumns: `repeat(${pathCount}, 1fr)` }}
       >
-        {Array.from({ length: pathCount }).map((_, i) => (
-          <motion.button
-            key={i}
-            onClick={() => handleLane(i)}
-            disabled={!isRunning || feedback !== null}
-            className="h-14 rounded-xl font-bold text-xl text-white relative overflow-hidden disabled:opacity-40"
-            style={{
-              background: `linear-gradient(135deg, ${LANE_COLORS[i % LANE_COLORS.length]}, ${LANE_COLORS[i % LANE_COLORS.length]}cc)`,
-              boxShadow: `0 4px 15px ${LANE_GLOW[i % LANE_GLOW.length]}, inset 0 1px 0 rgba(255,255,255,0.2)`,
-            }}
-            whileHover={{ scale: 1.05, y: -2 }}
-            whileTap={{ scale: 0.92 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-          >
-            {/* Glossy overlay */}
-            <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent rounded-xl" />
-            <span className="relative drop-shadow-md">{i + 1}</span>
-          </motion.button>
-        ))}
+        {Array.from({ length: pathCount }).map((_, i) => {
+          const color = LANE_COLORS[i % LANE_COLORS.length];
+          const light = LANE_LIGHT[i % LANE_LIGHT.length];
+          return (
+            <motion.button
+              key={i}
+              onClick={() => handleLane(i)}
+              disabled={!isRunning || feedback !== null}
+              className="h-16 rounded-2xl font-black text-2xl text-white relative overflow-hidden disabled:opacity-40"
+              style={{
+                background: `linear-gradient(180deg, ${light} 0%, ${color} 100%)`,
+                boxShadow: `0 4px 15px ${color}50, inset 0 2px 0 rgba(255,255,255,0.35), inset 0 -2px 0 rgba(0,0,0,0.15)`,
+                textShadow: '0 2px 4px rgba(0,0,0,0.3)',
+              }}
+              whileHover={{ scale: 1.06, y: -2 }}
+              whileTap={{ scale: 0.9 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 18 }}
+            >
+              {/* Top gloss */}
+              <div className="absolute inset-x-0 top-0 h-2/5 bg-gradient-to-b from-white/25 to-transparent rounded-t-2xl" />
+              {/* Bottom shadow */}
+              <div className="absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-black/15 to-transparent rounded-b-2xl" />
+              <span className="relative">{i + 1}</span>
+            </motion.button>
+          );
+        })}
       </div>
     </div>
   );
 }
 
-// ─── VFX Particles (enhanced) ──────────────────────────
-function VFXParticles({ type }: { type: 'correct' | 'wrong' }) {
-  const isCorrect = type === 'correct';
-  const particles = useMemo(
-    () =>
-      Array.from({ length: 16 }).map((_, i) => ({
-        id: i,
-        x: 30 + Math.random() * 40,
-        delay: Math.random() * 0.3,
-        duration: 0.6 + Math.random() * 0.6,
-        size: 3 + Math.random() * 8,
-        angle: -30 + Math.random() * 60,
-        color: isCorrect
-          ? ['#2ed573', '#7bed9f', '#a3e635'][i % 3]
-          : ['#ff4757', '#ff6b81', '#ff9f43'][i % 3],
-      })),
-    [isCorrect]
-  );
-
-  return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 25 }}>
-      {particles.map((p) => (
-        <motion.div
-          key={p.id}
-          className="absolute rounded-full"
-          style={{
-            left: `${p.x}%`,
-            bottom: '35%',
-            width: p.size,
-            height: p.size,
-            backgroundColor: p.color,
-          }}
-          initial={{ opacity: 1, y: 0, x: 0, scale: 1 }}
-          animate={{
-            opacity: 0,
-            y: -150 - Math.random() * 100,
-            x: p.angle * 2,
-            scale: 0,
-          }}
-          transition={{
-            duration: p.duration,
-            delay: p.delay,
-            ease: 'easeOut',
-          }}
-        />
-      ))}
-    </div>
-  );
-}
-
-// ─── Main Component ────────────────────────────────────
+// ─── Main Scene Component ─────────────────────────────
 export default function DoorRunnerScene() {
   const settings = useGameStore((s) => s.settings);
   const sequence = useGameStore((s) => s.sequence);
@@ -555,8 +760,23 @@ export default function DoorRunnerScene() {
   const feedback = useGameStore((s) => s.feedback);
   const isRunning = useGameStore((s) => s.isRunning);
   const chooseLane = useGameStore((s) => s.chooseLane);
+  const score = useGameStore((s) => s.score);
   const pathCount = settings.pathCount;
   const correctLane = sequence[currentStep] ?? 0;
+
+  // Combo tracking
+  const [combo, setCombo] = useState(0);
+  const [lastCorrectLane, setLastCorrectLane] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (feedback === 'correct') {
+      setCombo(c => c + 1);
+      setLastCorrectLane(correctLane);
+    } else if (feedback === 'wrong') {
+      setCombo(0);
+      setLastCorrectLane(null);
+    }
+  }, [feedback, correctLane]);
 
   // Show 4 door rows
   const doorRows = useMemo(() => {
@@ -585,6 +805,9 @@ export default function DoorRunnerScene() {
       {/* Road background */}
       <RoadVisual pathCount={pathCount} />
 
+      {/* Speed lines */}
+      {isRunning && <SpeedLines />}
+
       {/* Door rows */}
       {doorRows.map((row) => (
         <DoorRow
@@ -609,12 +832,27 @@ export default function DoorRunnerScene() {
 
       {/* VFX */}
       <AnimatePresence>
-        {feedback === 'correct' && <VFXParticles type="correct" key="vfx-correct" />}
-        {feedback === 'wrong' && <VFXParticles type="wrong" key="vfx-wrong" />}
+        {feedback === 'correct' && <ParticleBurst type="correct" key="vfx-correct" />}
+        {feedback === 'wrong' && <ParticleBurst type="wrong" key="vfx-wrong" />}
+      </AnimatePresence>
+
+      {/* Coin effect on correct */}
+      <AnimatePresence>
+        {feedback === 'correct' && lastCorrectLane !== null && (
+          <CoinEffect
+            key={`coin-${score}`}
+            laneX={getLanePercent(lastCorrectLane, pathCount)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Combo badge */}
+      <AnimatePresence>
+        <ComboBadge combo={combo} key={`combo-${combo}`} />
       </AnimatePresence>
 
       {/* HUD */}
-      <HUD />
+      <HUD combo={combo} />
 
       {/* Lane buttons */}
       <LaneButtons />

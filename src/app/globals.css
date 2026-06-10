@@ -1,13 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0a0a1a;
+  --background: #1a1a2e;
   --foreground: #ffffff;
-  --neon-cyan: #00f0ff;
-  --neon-magenta: #ff00ff;
-  --neon-green: #00ff88;
-  --neon-red: #ff0044;
-  --neon-amber: #ffaa00;
 }
 
 * {
@@ -31,16 +26,9 @@ body {
   overscroll-behavior: none;
 }
 
-::-webkit-scrollbar {
-  width: 4px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: rgba(0, 240, 255, 0.3);
-  border-radius: 2px;
-}
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
 
 button {
   -webkit-appearance: none;
@@ -50,106 +38,99 @@ button {
   cursor: pointer;
 }
 
-/* ─── Runner animations ─── */
+/* ─── Runner limb swing ─── */
 @keyframes armSwing {
-  0% { transform: rotate(-25deg); }
-  100% { transform: rotate(25deg); }
+  0% { transform: rotate(-30deg); }
+  100% { transform: rotate(30deg); }
 }
 @keyframes legSwing {
-  0% { transform: rotate(-18deg); }
-  100% { transform: rotate(18deg); }
+  0% { transform: rotate(-20deg); }
+  100% { transform: rotate(20deg); }
 }
 
-/* ─── Synthwave grid scroll ─── */
-@keyframes gridScroll {
-  0% { transform: perspective(400px) rotateX(60deg) translateY(0); }
-  100% { transform: perspective(400px) rotateX(60deg) translateY(60px); }
+/* ─── Runner bounce while running ─── */
+@keyframes runnerBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
 }
 
-/* ─── Neon pulse ─── */
-@keyframes neonPulse {
-  0%, 100% { opacity: 0.8; filter: brightness(1); }
-  50% { opacity: 1; filter: brightness(1.3); }
+/* ─── Road dash scroll ─── */
+@keyframes dashScroll {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(24px); }
 }
 
-/* ─── Glow breathe ─── */
-@keyframes glowBreathe {
-  0%, 100% { box-shadow: 0 0 8px var(--glow-color, #00f0ff), 0 0 20px var(--glow-color, #00f0ff40); }
-  50% { box-shadow: 0 0 16px var(--glow-color, #00f0ff), 0 0 40px var(--glow-color, #00f0ff60), 0 0 60px var(--glow-color, #00f0ff20); }
-}
-
-/* ─── Speed line ─── */
-@keyframes speedLine {
-  0% { transform: translateY(-100%); opacity: 0; }
-  10% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { transform: translateY(100vh); opacity: 0; }
-}
-
-/* ─── Float up & fade ─── */
-@keyframes floatUp {
-  0% { opacity: 1; transform: translateY(0) scale(1); }
-  100% { opacity: 0; transform: translateY(-60px) scale(1.2); }
-}
-
-/* ─── Screen shake ─── */
-@keyframes screenShake {
-  0%, 100% { transform: translateX(0); }
-  10% { transform: translateX(-4px) rotate(-0.5deg); }
-  20% { transform: translateX(4px) rotate(0.5deg); }
-  30% { transform: translateX(-3px); }
-  40% { transform: translateX(3px); }
-  50% { transform: translateX(-2px); }
-  60% { transform: translateX(2px); }
-  70% { transform: translateX(-1px); }
-  80% { transform: translateX(1px); }
+/* ─── Coin sparkle ─── */
+@keyframes sparkle {
+  0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.9; }
+  50% { transform: scale(1.2) rotate(15deg); opacity: 1; }
 }
 
 /* ─── Score pop ─── */
 @keyframes scorePop {
   0% { transform: scale(1); }
-  50% { transform: scale(1.3); }
+  40% { transform: scale(1.35); }
   100% { transform: scale(1); }
 }
 
-/* ─── Horizon glow pulse ─── */
-@keyframes horizonPulse {
-  0%, 100% { opacity: 0.6; transform: scaleX(1); }
-  50% { opacity: 1; transform: scaleX(1.1); }
+/* ─── Float up & fade ─── */
+@keyframes floatUp {
+  0% { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-80px) scale(1.5); }
 }
 
-/* ─── Star twinkle ─── */
-@keyframes twinkle {
-  0%, 100% { opacity: 0.2; }
-  50% { opacity: 0.9; }
+/* ─── Screen shake on wrong ─── */
+@keyframes screenShake {
+  0%, 100% { transform: translateX(0); }
+  10% { transform: translateX(-5px) rotate(-0.5deg); }
+  20% { transform: translateX(5px) rotate(0.5deg); }
+  30% { transform: translateX(-4px); }
+  40% { transform: translateX(4px); }
+  50% { transform: translateX(-2px); }
+  60% { transform: translateX(2px); }
 }
 
-/* ─── Portal idle ─── */
-@keyframes portalIdle {
-  0%, 100% { transform: scaleY(1); filter: brightness(1); }
-  50% { transform: scaleY(1.03); filter: brightness(1.15); }
+/* ─── Cloud drift ─── */
+@keyframes cloudDrift {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-120%); }
 }
 
-/* ─── Trail fade ─── */
-@keyframes trailFade {
-  0% { opacity: 0.6; transform: scale(1); }
-  100% { opacity: 0; transform: scale(0.3); }
+/* ─── Portal glow pulse ─── */
+@keyframes portalPulse {
+  0%, 100% { filter: brightness(1); transform: scaleY(1); }
+  50% { filter: brightness(1.2); transform: scaleY(1.04); }
 }
 
-/* ─── Runner bob ─── */
-@keyframes runnerBob {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-3px); }
+/* ─── Speed lines ─── */
+@keyframes speedLine {
+  0% { opacity: 0; transform: translateY(-100%) scaleY(0.5); }
+  15% { opacity: 0.7; }
+  85% { opacity: 0.7; }
+  100% { opacity: 0; transform: translateY(100vh) scaleY(1.5); }
 }
 
-/* ─── Combo fire ─── */
-@keyframes comboFire {
-  0%, 100% { transform: scaleY(1) scaleX(1); opacity: 0.9; }
-  50% { transform: scaleY(1.3) scaleX(0.8); opacity: 1; }
+/* ─── Star spin ─── */
+@keyframes starSpin {
+  0% { transform: rotate(0deg) scale(0); opacity: 0; }
+  50% { transform: rotate(180deg) scale(1.2); opacity: 1; }
+  100% { transform: rotate(360deg) scale(0); opacity: 0; }
 }
 
-/* ─── Scanline effect (subtle) ─── */
-@keyframes scanline {
-  0% { transform: translateY(-100%); }
-  100% { transform: translateY(100vh); }
+/* ─── Confetti ─── */
+@keyframes confettiFall {
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(200px) rotate(720deg); opacity: 0; }
+}
+
+/* ─── Combo glow ─── */
+@keyframes comboGlow {
+  0%, 100% { text-shadow: 0 0 8px currentColor; }
+  50% { text-shadow: 0 0 20px currentColor, 0 0 40px currentColor; }
+}
+
+/* ─── Sun rotate (background decoration) ─── */
+@keyframes sunRotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
