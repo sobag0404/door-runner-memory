@@ -9,3 +9,7 @@ __pycache__/
 .next/
 dist/
 build/
+dev.log
+agent-ctx/
+worklog.md
+tsconfig.tsbuildinfo
