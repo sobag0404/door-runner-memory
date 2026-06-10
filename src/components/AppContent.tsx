@@ -1,8 +1,6 @@
-'use client';
-
-import { useGameStore, GameScreen as GameScreenType } from '@/store/gameStore';
-import HomeScreen from '@/components/HomeScreen';
-import GameScreen from '@/components/GameScreen';
+import { useGameStore, type GameScreen as GameScreenType } from '../store/gameStore';
+import HomeScreen from './HomeScreen';
+import GameScreen from './GameScreen';
 
 function ScreenRouter({ screen }: { screen: GameScreenType }) {
   switch (screen) {

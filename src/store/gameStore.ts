@@ -1,6 +1,6 @@
 import { create } from 'zustand';
-import { localStore } from '@/lib/localStore';
-import { getCurrentSeasonId, createSeasonSequence } from '@/lib/season';
+import { localStore } from '../lib/localStore';
+import { getCurrentSeasonId, createSeasonSequence } from '../lib/season';
 
 // ─── Types ─────────────────────────────────────────────
 export type GameScreen = 'home' | 'game';

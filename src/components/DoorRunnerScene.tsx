@@ -1,8 +1,6 @@
-'use client';
-
 import { useMemo, useCallback, useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useGameStore, getSpeedMs } from '@/store/gameStore';
+import { useGameStore, getSpeedMs } from '../store/gameStore';
 
 // ─── Palette (Subway Surfers inspired — vibrant, warm, colorful) ──
 const LANE_COLORS = [
@@ -49,7 +47,6 @@ function ComboBadge({ combo }: { combo: number }) {
 
 // ─── Timer Bar (countdown for each step) ──────────────
 function TimerBar({ timeLeft }: { timeLeft: number }) {
-  // Color transitions: green → yellow → red
   const barColor = timeLeft > 0.5
     ? '#06D6A0'
     : timeLeft > 0.25
@@ -64,7 +61,7 @@ function TimerBar({ timeLeft }: { timeLeft: number }) {
 
   return (
     <div className="absolute top-0 left-0 right-0 z-40 h-1.5 bg-black/30">
-      <motion.div
+      <div
         className="h-full rounded-full"
         style={{
           width: `${timeLeft * 100}%`,
@@ -283,8 +280,8 @@ function Door({
         border: `3px solid ${bgStyle.borderColor}`,
         boxShadow: shadowStr,
       }}
-      whileHover={isCurrent ? { scale: 1.08, y: -3 } : {}}
-      whileTap={isCurrent ? { scale: 0.92 } : {}}
+      whileHover={isCurrent ? { scale: 1.08, y: -3 } : undefined}
+      whileTap={isCurrent ? { scale: 0.92 } : undefined}
       animate={
         isFeedbackWrong
           ? { x: [0, -8, 8, -5, 5, 0] }
@@ -292,7 +289,7 @@ function Door({
             ? { scale: [1, 1.12, 1] }
             : isCurrent
               ? { scale: [1, 1.03, 1] }
-              : {}
+              : undefined
       }
       transition={{ duration: 0.4 }}
     >
@@ -623,11 +620,15 @@ export default function DoorRunnerScene() {
   const pathCount = settings.pathCount;
   const correctLane = sequence[currentStep] ?? 0;
 
-  // ─── Timer logic ───
+  // ─── Timer logic (fixed: stable ref for handleTimeout) ───
   const [timeLeft, setTimeLeft] = useState(1);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const stepStartRef = useRef<number>(0);
   const speedMs = getSpeedMs(settings.speed);
+
+  // Use ref for handleTimeout to avoid re-creating interval on every render
+  const handleTimeoutRef = useRef(handleTimeout);
+  handleTimeoutRef.current = handleTimeout;
 
   // Start/reset timer when step changes
   useEffect(() => {
@@ -638,7 +639,7 @@ export default function DoorRunnerScene() {
 
     if (timerRef.current) clearInterval(timerRef.current);
 
-    const interval = 50; // update every 50ms
+    const interval = 50;
     timerRef.current = setInterval(() => {
       const elapsed = Date.now() - stepStartRef.current;
       const remaining = Math.max(0, 1 - elapsed / speedMs);
@@ -647,7 +648,7 @@ export default function DoorRunnerScene() {
       if (remaining <= 0) {
         if (timerRef.current) clearInterval(timerRef.current);
         timerRef.current = null;
-        handleTimeout();
+        handleTimeoutRef.current();
       }
     }, interval);
 
@@ -657,7 +658,7 @@ export default function DoorRunnerScene() {
         timerRef.current = null;
       }
     };
-  }, [currentStep, isRunning, feedback, speedMs, handleTimeout]);
+  }, [currentStep, isRunning, feedback, speedMs]);
 
   // Clear timer when feedback is active
   useEffect(() => {

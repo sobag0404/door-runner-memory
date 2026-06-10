@@ -1,8 +1,6 @@
-'use client';
-
-import { useGameStore } from '@/store/gameStore';
+import { useGameStore } from '../store/gameStore';
 import { ArrowLeft } from 'lucide-react';
-import DoorRunnerScene from '@/components/DoorRunnerScene';
+import DoorRunnerScene from './DoorRunnerScene';
 
 export default function GameScreen() {
   const resetGame = useGameStore((s) => s.resetGame);

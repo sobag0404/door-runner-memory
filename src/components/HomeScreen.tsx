@@ -1,8 +1,6 @@
-'use client';
-
 import { motion, type Variants } from 'framer-motion';
 import { Play, Zap, Gauge, Trophy, Calendar } from 'lucide-react';
-import { useGameStore, SpeedLevel } from '@/store/gameStore';
+import { useGameStore, type SpeedLevel } from '../store/gameStore';
 
 // ─── Constants ──────────────────────────────────────────
 const PATH_OPTIONS = [3, 4, 5, 6] as const;
