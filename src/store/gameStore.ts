@@ -3,7 +3,7 @@ import { localStore } from '@/lib/localStore';
 import { getCurrentSeasonId, createSeasonSequence } from '@/lib/season';
 
 // ─── Types ─────────────────────────────────────────────
-export type GameScreen = 'home' | 'game' | 'gameOver';
+export type GameScreen = 'home' | 'game';
 
 export type SpeedLevel = 'slow' | 'normal' | 'fast';
 
@@ -12,22 +12,17 @@ export interface GameSettings {
   speed: SpeedLevel;
 }
 
-export interface BestScoreKey {
-  seasonId: string;
-  pathCount: number;
-}
-
 // ─── Defaults ──────────────────────────────────────────
 const DEFAULT_SETTINGS: GameSettings = {
   pathCount: 3,
   speed: 'normal',
 };
 
-function getSpeedMs(speed: SpeedLevel): number {
+export function getSpeedMs(speed: SpeedLevel): number {
   switch (speed) {
-    case 'slow': return 1800;
-    case 'normal': return 1200;
-    case 'fast': return 800;
+    case 'slow': return 2500;
+    case 'normal': return 1800;
+    case 'fast': return 1200;
   }
 }
 
@@ -50,12 +45,17 @@ interface GameStore {
   isRunning: boolean;
   feedback: 'correct' | 'wrong' | null;
 
+  // Timer
+  timeLeft: number; // 0..1 fraction remaining
+  setTimeLeft: (t: number) => void;
+
   // Best scores
   bestScores: Record<string, number>;
 
   // Actions
   startGame: () => void;
   chooseLane: (laneIndex: number) => void;
+  handleTimeout: () => void;
   resetGame: () => void;
 
   // Derived
@@ -111,6 +111,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
   isRunning: false,
   feedback: null,
 
+  // Timer
+  timeLeft: 1,
+  setTimeLeft: (t) => set({ timeLeft: t }),
+
   // Best scores
   bestScores: loadBestScores(),
 
@@ -126,6 +130,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       score: 0,
       isRunning: true,
       feedback: null,
+      timeLeft: 1,
       screen: 'game',
     });
   },
@@ -139,28 +144,53 @@ export const useGameStore = create<GameStore>((set, get) => ({
       // Correct
       const newScore = state.score + 1;
       const newStep = state.currentStep + 1;
+
+      // Auto-save best score
+      const key = bestScoreKey(state.seasonId, state.settings.pathCount);
+      saveBestScore(key, newScore);
+
       set({
         score: newScore,
         currentStep: newStep,
         feedback: 'correct',
+        timeLeft: 1,
+        bestScores: loadBestScores(),
       });
-      // Clear feedback after brief delay
       setTimeout(() => {
         set({ feedback: null });
-      }, 400);
+      }, 350);
     } else {
-      // Wrong — infinite lives, just reset sequence
+      // Wrong — reset sequence
       const seasonId = getCurrentSeasonId();
       const sequence = createSeasonSequence(seasonId, state.settings.pathCount);
       set({
         currentStep: 0,
         sequence,
         feedback: 'wrong',
+        timeLeft: 1,
       });
       setTimeout(() => {
         set({ feedback: null });
       }, 600);
     }
+  },
+
+  handleTimeout: () => {
+    const state = get();
+    if (!state.isRunning || state.feedback !== null) return;
+
+    // Timeout counts as wrong
+    const seasonId = getCurrentSeasonId();
+    const sequence = createSeasonSequence(seasonId, state.settings.pathCount);
+    set({
+      currentStep: 0,
+      sequence,
+      feedback: 'wrong',
+      timeLeft: 1,
+    });
+    setTimeout(() => {
+      set({ feedback: null });
+    }, 600);
   },
 
   resetGame: () => {
@@ -177,6 +207,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       score: 0,
       feedback: null,
       sequence: [],
+      timeLeft: 1,
       bestScores: loadBestScores(),
     });
   },
