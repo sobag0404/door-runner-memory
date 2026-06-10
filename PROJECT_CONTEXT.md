@@ -5,7 +5,7 @@
 - **Стек:** Next.js 16 + TypeScript + Tailwind CSS 4 + Zustand + Framer Motion
 - **Запуск:** `bun run dev` (порт 3000)
 - **Репозиторий:** https://github.com/sobag0404/door-runner-memory
-- **Деплой:** Vercel CLI
+- **Деплой:** Статический экспорт (`output: 'export'`) → любой хостинг статики
 
 ## Игровая логика
 - **Экраны:** Home → Game (GameOverScreen удалён, жизни бесконечные)
@@ -51,6 +51,17 @@ src/
 4. GameOverScreen удалён — мёртвый код
 5. Скорость влияет на таймер (ms на шаг), не на анимацию
 6. Dynamic import с ssr:false — нужен для localStorage/Zustand
+7. `output: 'export'` в next.config — для деплоя на любой статический хостинг
+
+## Деплой
+Проект полностью статический (нет API routes). Для деплоя:
+1. `npx next build` — генерирует `out/` папку
+2. Загрузить `out/` на любой хостинг:
+   - **Vercel** — `vercel --prod` (нужен Vercel токен)
+   - **Netlify** — `netlify deploy --dir=out` (нужен Netlify токен)
+   - **Cloudflare Pages** — загрузить через dashboard или Wrangler
+   - **Surge** — `surge out` (нужен логин)
+   - **GitHub Pages** — нужен Pro аккаунт или workflow scope токен
 
 ## MVP статус: ✅ ГОТОВ
 - [x] Home экран (lanes, speed, best score)
@@ -61,8 +72,8 @@ src/
 - [x] Best score автосохранение
 - [x] Сезонная система
 - [x] Визуал Subway Surfers
-- [x] Build без ошибок
-- [x] Деплой на Vercel
+- [x] Build без ошибок (static export)
+- [x] GitHub: https://github.com/sobag0404/door-runner-memory
 
 ## Что можно добавить потом
 - Магазин скинов
