@@ -402,38 +402,13 @@ function RoadVisual({ pathCount }: { pathCount: number }) {
 
 // ─── HUD ───────────────────────────────────────────────
 function HUD() {
-  const lives = useGameStore((s) => s.lives);
   const score = useGameStore((s) => s.score);
   const feedback = useGameStore((s) => s.feedback);
 
   return (
     <div className="absolute inset-0 pointer-events-none z-30">
       {/* Top bar */}
-      <div className="flex justify-between items-start p-4">
-        {/* Lives */}
-        <div className="flex gap-1.5">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <motion.div
-              key={i}
-              className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${
-                i < lives
-                  ? 'bg-red-500 shadow-lg shadow-red-500/50 text-white'
-                  : 'bg-gray-700/50 text-gray-500'
-              }`}
-              animate={
-                i === lives && feedback === 'wrong'
-                  ? { scale: [1, 1.5, 0], opacity: [1, 1, 0] }
-                  : i < lives
-                    ? { scale: [1, 1.15, 1] }
-                    : {}
-              }
-              transition={{ duration: 0.4 }}
-            >
-              ♥
-            </motion.div>
-          ))}
-        </div>
-
+      <div className="flex justify-end items-start p-4">
         {/* Score */}
         <div className="bg-black/60 backdrop-blur-sm rounded-xl px-4 py-2 border border-white/10">
           <motion.span

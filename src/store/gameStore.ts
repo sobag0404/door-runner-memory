@@ -23,8 +23,6 @@ const DEFAULT_SETTINGS: GameSettings = {
   speed: 'normal',
 };
 
-const MAX_LIVES = 3;
-
 function getSpeedMs(speed: SpeedLevel): number {
   switch (speed) {
     case 'slow': return 1800;
@@ -48,7 +46,6 @@ interface GameStore {
   seasonId: string;
   sequence: number[];
   currentStep: number;
-  lives: number;
   score: number;
   isRunning: boolean;
   feedback: 'correct' | 'wrong' | null;
@@ -110,7 +107,6 @@ export const useGameStore = create<GameStore>((set, get) => ({
   seasonId: getCurrentSeasonId(),
   sequence: [],
   currentStep: 0,
-  lives: MAX_LIVES,
   score: 0,
   isRunning: false,
   feedback: null,
@@ -127,7 +123,6 @@ export const useGameStore = create<GameStore>((set, get) => ({
       seasonId,
       sequence,
       currentStep: 0,
-      lives: MAX_LIVES,
       score: 0,
       isRunning: true,
       feedback: null,
@@ -154,45 +149,35 @@ export const useGameStore = create<GameStore>((set, get) => ({
         set({ feedback: null });
       }, 400);
     } else {
-      // Wrong
-      const newLives = state.lives - 1;
-      if (newLives <= 0) {
-        // Game over
-        const key = bestScoreKey(state.seasonId, state.settings.pathCount);
-        saveBestScore(key, state.score);
-        set({
-          lives: 0,
-          isRunning: false,
-          feedback: 'wrong',
-          screen: 'gameOver',
-          bestScores: loadBestScores(),
-        });
-      } else {
-        // Reset on wrong — new sequence from step 0
-        const seasonId = getCurrentSeasonId();
-        const sequence = createSeasonSequence(seasonId, state.settings.pathCount);
-        set({
-          lives: newLives,
-          currentStep: 0,
-          sequence,
-          feedback: 'wrong',
-        });
-        setTimeout(() => {
-          set({ feedback: null });
-        }, 600);
-      }
+      // Wrong — infinite lives, just reset sequence
+      const seasonId = getCurrentSeasonId();
+      const sequence = createSeasonSequence(seasonId, state.settings.pathCount);
+      set({
+        currentStep: 0,
+        sequence,
+        feedback: 'wrong',
+      });
+      setTimeout(() => {
+        set({ feedback: null });
+      }, 600);
     }
   },
 
   resetGame: () => {
+    // Save best score before leaving
+    const state = get();
+    if (state.score > 0) {
+      const key = bestScoreKey(state.seasonId, state.settings.pathCount);
+      saveBestScore(key, state.score);
+    }
     set({
       screen: 'home',
       isRunning: false,
       currentStep: 0,
-      lives: MAX_LIVES,
       score: 0,
       feedback: null,
       sequence: [],
+      bestScores: loadBestScores(),
     });
   },
 
