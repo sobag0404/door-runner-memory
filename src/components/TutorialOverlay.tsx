@@ -168,6 +168,9 @@ export default function TutorialOverlay({ onClose }: { onClose: () => void }) {
         animate={{ scale: 1, y: 0 }}
         exit={{ scale: 0.8, y: 40 }}
         transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Tutorial"
       >
         {/* Step indicator */}
         <div className="flex items-center justify-center gap-1.5 mb-5">

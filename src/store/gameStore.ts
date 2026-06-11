@@ -4,10 +4,11 @@ import { getCurrentSeasonId, createSeasonSequence } from '../lib/season';
 import { getDailyId } from '../lib/daily';
 import { ACHIEVEMENTS } from '../lib/achievements';
 import type { PlayerStats } from '../lib/achievements';
-import { playCorrect, playWrong, playTimeout, playCombo, playStart, playMilestone } from '../lib/sounds';
+import { playCorrect, playWrong, playTimeout, playCombo, playStart, playMilestone, setSoundPack, type SoundPack, detectSoundPack, saveSoundPack } from '../lib/sounds';
 import { hapticFeedback } from '../lib/constants';
-import { type Lang, detectLang, saveLang } from '../lib/i18n';
+import { type Lang, detectLang, saveLang, t } from '../lib/i18n';
 import { type ThemeId, detectTheme, saveTheme } from '../lib/themes';
+import { announce } from '../lib/a11y';
 
 // ─── Types ─────────────────────────────────────────────
 export type GameScreen = 'home' | 'game' | 'leaderboard';
@@ -22,6 +23,7 @@ export interface GameSettings {
   soundEnabled: boolean;
   lang: Lang;
   theme: ThemeId;
+  soundPack: SoundPack;
 }
 
 // ─── Defaults ──────────────────────────────────────────
@@ -31,6 +33,7 @@ const DEFAULT_SETTINGS: GameSettings = {
   soundEnabled: true,
   lang: detectLang(),
   theme: detectTheme(),
+  soundPack: detectSoundPack(),
 };
 
 /** Base speed in ms for each speed level */
@@ -93,6 +96,7 @@ interface GameStore {
   setSoundEnabled: (v: boolean) => void;
   setLang: (l: Lang) => void;
   setTheme: (t: ThemeId) => void;
+  setSoundPack: (p: SoundPack) => void;
 
   // Game mode
   gameMode: GameMode;
@@ -162,7 +166,12 @@ function saveBestScoreMut(scores: Record<string, number>, key: string, score: nu
 }
 
 function loadSettings(): GameSettings {
-  return localStore.get<GameSettings>('settings', DEFAULT_SETTINGS);
+  const saved = localStore.get<GameSettings>('settings', DEFAULT_SETTINGS);
+  // Ensure new fields have defaults
+  if (!saved.soundPack) saved.soundPack = 'classic';
+  // Sync runtime sound pack
+  setSoundPack(saved.soundPack);
+  return saved;
 }
 
 const DEFAULT_STATS: PlayerStats = {
@@ -232,6 +241,13 @@ export const useGameStore = create<GameStore>((set, get) => {
   setTheme: (t) => {
     const settings = { ...get().settings, theme: t };
     saveTheme(t);
+    localStore.set('settings', settings);
+    set({ settings });
+  },
+  setSoundPack: (p) => {
+    const settings = { ...get().settings, soundPack: p };
+    saveSoundPack(p);
+    setSoundPack(p); // update runtime pack
     localStore.set('settings', settings);
     set({ settings });
   },
@@ -331,6 +347,7 @@ export const useGameStore = create<GameStore>((set, get) => {
     const sequence = createSeasonSequence(seasonId, settings.pathCount);
     clearFeedbackTimers();
     if (settings.soundEnabled) playStart();
+    announce(t('a11y.newGame', settings.lang));
     set({
       seasonId,
       sequence,
@@ -372,6 +389,12 @@ export const useGameStore = create<GameStore>((set, get) => {
       }
       hapticFeedback('light');
 
+      // A11y: announce correct answer + score
+      announce(t('a11y.correct', state.settings.lang, { score: String(newScore) }));
+      if (newCombo >= 3 && (newCombo === 3 || newCombo === 5 || newCombo === 7 || newCombo === 10 || newCombo % 10 === 0)) {
+        announce(t('a11y.combo', state.settings.lang, { combo: String(newCombo) }));
+      }
+
       set({
         score: newScore,
         currentStep: newStep,
@@ -391,6 +414,9 @@ export const useGameStore = create<GameStore>((set, get) => {
       const sequence = createSeasonSequence(seasonId, state.settings.pathCount);
       if (soundOn) playWrong();
       hapticFeedback('heavy');
+
+      // A11y: announce wrong answer
+      announce(t('a11y.wrong', state.settings.lang));
 
       set({
         currentStep: 0,

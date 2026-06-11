@@ -90,6 +90,29 @@ const RU: Translations = {
   'combo.great': '✨ ОТЛИЧНО!',
   'combo.super': '⚡ СУПЕР!',
   'combo.insane': '🔥 БЕЗУМИЕ!',
+
+  // Error Boundary
+  'error.title': 'Что-то сломалось!',
+  'error.message': 'Произошла неожиданная ошибка. Попробуй ещё раз или перезагрузи страницу.',
+  'error.retry': 'Повторить',
+  'error.reload': 'Перезагрузить',
+  'error.details': 'Детали ошибки',
+
+  // Sound packs
+  'sound.classic': 'Классика',
+  'sound.8bit': '8-бит',
+  'sound.soft': 'Мягкий',
+  'sound.pack': 'Звуки',
+
+  // Game feedback
+  'game.correct': '✓ Верно!',
+  'game.wrong': '✗ Ошибка!',
+
+  // A11y
+  'a11y.newGame': 'Новая игра началась!',
+  'a11y.correct': 'Правильно! Счёт: {score}',
+  'a11y.wrong': 'Неправильно! Счёт сброшен.',
+  'a11y.combo': 'Комбо {combo}!',
 };
 
 const EN: Translations = {
@@ -175,6 +198,29 @@ const EN: Translations = {
   'combo.great': '✨ GREAT!',
   'combo.super': '⚡ SUPER!',
   'combo.insane': '🔥 INSANE!',
+
+  // Error Boundary
+  'error.title': 'Something broke!',
+  'error.message': 'An unexpected error occurred. Try again or reload the page.',
+  'error.retry': 'Retry',
+  'error.reload': 'Reload',
+  'error.details': 'Error details',
+
+  // Sound packs
+  'sound.classic': 'Classic',
+  'sound.8bit': '8-bit',
+  'sound.soft': 'Soft',
+  'sound.pack': 'Sounds',
+
+  // Game feedback
+  'game.correct': '✓ Correct!',
+  'game.wrong': '✗ Wrong!',
+
+  // A11y
+  'a11y.newGame': 'New game started!',
+  'a11y.correct': 'Correct! Score: {score}',
+  'a11y.wrong': 'Wrong! Score reset.',
+  'a11y.combo': 'Combo {combo}!',
 };
 
 const TRANSLATIONS: Record<Lang, Translations> = { ru: RU, en: EN };

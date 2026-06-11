@@ -2,12 +2,14 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Trophy, Medal } from 'lucide-react';
 import { useGameStore, type LeaderboardEntry } from '../store/gameStore';
+import { t, type Lang } from '../lib/i18n';
 
 const MODE_LABELS = { regular: 'Regular', daily: 'Daily' } as const;
 
 export default function LeaderboardScreen() {
   const setScreen = useGameStore((s) => s.setScreen);
   const leaderboard = useGameStore((s) => s.leaderboard);
+  const lang = useGameStore((s) => s.settings.lang);
   const [filter, setFilter] = useState<'all' | 'regular' | 'daily'>('all');
 
   const filtered = filter === 'all'
@@ -30,7 +32,7 @@ export default function LeaderboardScreen() {
         </button>
         <h1 className="text-2xl font-black text-white flex items-center gap-2">
           <Trophy className="h-6 w-6 text-[#FFD23F]" />
-          Leaderboard
+          {t('lb.title', lang)}
         </h1>
       </div>
 
@@ -46,7 +48,7 @@ export default function LeaderboardScreen() {
                 : 'bg-white/10 text-white/60 hover:bg-white/20'
             }`}
           >
-            {f === 'all' ? 'All' : MODE_LABELS[f]}
+            {f === 'all' ? t('lb.all', lang) : MODE_LABELS[f]}
           </button>
         ))}
       </div>
@@ -56,13 +58,13 @@ export default function LeaderboardScreen() {
         {filtered.length === 0 ? (
           <div className="text-center py-16 text-white/40">
             <Trophy className="h-12 w-12 mx-auto mb-3 opacity-30" />
-            <p className="text-lg font-bold">No scores yet</p>
-            <p className="text-sm">Play a game to get on the board!</p>
+            <p className="text-lg font-bold">{t('lb.noScores', lang)}</p>
+            <p className="text-sm">{t('lb.playToBoard', lang)}</p>
           </div>
         ) : (
           <AnimatePresence>
             {filtered.map((entry, i) => (
-              <LeaderboardRow key={`${entry.date}-${i}`} entry={entry} rank={i + 1} />
+              <LeaderboardRow key={`${entry.date}-${i}`} entry={entry} rank={i + 1} lang={lang} />
             ))}
           </AnimatePresence>
         )}
@@ -71,7 +73,7 @@ export default function LeaderboardScreen() {
   );
 }
 
-function LeaderboardRow({ entry, rank }: { entry: LeaderboardEntry; rank: number }) {
+function LeaderboardRow({ entry, rank, lang }: { entry: LeaderboardEntry; rank: number; lang: Lang }) {
   const medalColor = rank === 1 ? '#FFD23F' : rank === 2 ? '#C0C0C0' : rank === 3 ? '#CD7F32' : '';
   const isTop3 = rank <= 3;
 
@@ -97,7 +99,7 @@ function LeaderboardRow({ entry, rank }: { entry: LeaderboardEntry; rank: number
       <div className="flex-1 min-w-0">
         <div className="text-white font-bold text-sm truncate">{entry.name}</div>
         <div className="text-white/40 text-xs">
-          {entry.pathCount} lanes · {entry.speed} · {MODE_LABELS[entry.mode]}
+          {entry.pathCount} {t('lb.lanes', lang)} · {entry.speed} · {MODE_LABELS[entry.mode]}
         </div>
       </div>
 

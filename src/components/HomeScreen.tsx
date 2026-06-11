@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, type Variants, AnimatePresence } from 'framer-motion';
-import { Play, Zap, Gauge, Trophy, Calendar, Award, Target, Clock, Download, Volume2, VolumeX, HelpCircle, Palette, Globe } from 'lucide-react';
+import { Play, Zap, Gauge, Trophy, Calendar, Award, Target, Clock, Download, Volume2, VolumeX, HelpCircle, Palette, Globe, Music } from 'lucide-react';
 import { useGameStore, type SpeedLevel } from '../store/gameStore';
 import { ACHIEVEMENTS } from '../lib/achievements';
 import { getDailyId, secondsUntilNextDaily, formatCountdown, getDailyDayName } from '../lib/daily';
@@ -8,8 +8,9 @@ import { usePWAInstall } from '../lib/usePWAInstall';
 import { initAudioOnInteraction } from '../lib/sounds';
 import { LANE_COLORS } from '../lib/constants';
 import { localStore } from '../lib/localStore';
-import { t, type Lang, type ThemeId } from '../lib/i18n';
-import { THEMES } from '../lib/themes';
+import { t, type Lang } from '../lib/i18n';
+import { THEMES, type ThemeId } from '../lib/themes';
+import { type SoundPack } from '../lib/sounds';
 import AchievementsPanel from './AchievementsPanel';
 import TutorialOverlay from './TutorialOverlay';
 import BackgroundParticles from './BackgroundParticles';
@@ -32,6 +33,12 @@ const THEME_OPTIONS: { value: ThemeId; labelKey: string; emoji: string }[] = [
 const LANG_OPTIONS: { value: Lang; label: string }[] = [
   { value: 'ru', label: 'RU' },
   { value: 'en', label: 'EN' },
+];
+
+const SOUND_PACK_OPTIONS: { value: SoundPack; labelKey: string; emoji: string }[] = [
+  { value: 'classic', labelKey: 'sound.classic', emoji: '🔔' },
+  { value: '8bit', labelKey: 'sound.8bit', emoji: '👾' },
+  { value: 'soft', labelKey: 'sound.soft', emoji: '🎵' },
 ];
 
 // ─── Animation Variants ────────────────────────────────
@@ -109,7 +116,7 @@ function DailyCountdown() {
 
 // ─── Component ──────────────────────────────────────────
 export default function HomeScreen() {
-  const { settings, setPathCount, setSpeed, setSoundEnabled, setLang, setTheme, startGame, bestScores, seasonId,
+  const { settings, setPathCount, setSpeed, setSoundEnabled, setLang, setTheme, setSoundPack, startGame, bestScores, seasonId,
     gameMode, setGameMode, setScreen, unlockedAchievements, stats } =
     useGameStore();
 
@@ -323,6 +330,37 @@ export default function HomeScreen() {
                         } : undefined}
                       >
                         {label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Sound pack selector */}
+              <div>
+                <label className={`mb-1.5 flex items-center gap-1.5 text-sm font-bold ${textOnBg}`}>
+                  <Music className="h-4 w-4" />
+                  {t('sound.pack', lang)}
+                </label>
+                <div className="grid grid-cols-3 gap-2">
+                  {SOUND_PACK_OPTIONS.map(({ value, labelKey, emoji }) => {
+                    const isActive = settings.soundPack === value;
+                    return (
+                      <button
+                        key={value}
+                        onClick={() => setSoundPack(value)}
+                        className={`flex items-center justify-center gap-1 h-10 rounded-2xl text-sm font-bold transition-all active:scale-90 ${
+                          isActive
+                            ? 'text-white shadow-lg scale-105'
+                            : `${bgButtonActive} ${textOnBgSub} hover:bg-white/30`
+                        }`}
+                        style={isActive ? {
+                          background: theme.accent2,
+                          boxShadow: `0 4px 12px ${theme.accent2}60`,
+                        } : undefined}
+                      >
+                        <span>{emoji}</span>
+                        <span className="text-xs">{t(labelKey, lang)}</span>
                       </button>
                     );
                   })}

@@ -1,27 +1,31 @@
 import { useMemo, useCallback, useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGameStore, getProgressiveSpeedMs } from '../store/gameStore';
-import { LANE_COLORS, LANE_LIGHT, getLanePercent, hapticFeedback } from '../lib/constants';
+import { LANE_COLORS, LANE_LIGHT, getLanePercent } from '../lib/constants';
 import { ACHIEVEMENTS } from '../lib/achievements';
+import { t } from '../lib/i18n';
+import { prefersReducedMotion } from '../lib/a11y';
 
 // ─── Re-export for sub-components ──
 export { LANE_COLORS, LANE_LIGHT, getLanePercent };
 
 // ─── Combo Badge ──────────────────────────────────────
-function ComboBadge({ combo }: { combo: number }) {
+function ComboBadge({ combo, lang }: { combo: number; lang: string }) {
   if (combo < 3) return null;
-  const label = combo >= 10 ? '🔥 INSANE!' : combo >= 7 ? '⚡ SUPER!' : combo >= 5 ? '✨ GREAT!' : '👍 NICE!';
+  const labelKey = combo >= 10 ? 'combo.insane' : combo >= 7 ? 'combo.super' : combo >= 5 ? 'combo.great' : 'combo.nice';
   const color = combo >= 10 ? '#EF476F' : combo >= 7 ? '#8338EC' : combo >= 5 ? '#FF6B35' : '#06D6A0';
+  const reducedMotion = prefersReducedMotion();
   return (
     <motion.div
       className="absolute top-16 left-1/2 z-50 pointer-events-none font-black text-base px-3 py-1 rounded-full"
-      style={{ color, x: '-50%', animation: 'comboGlow 0.8s ease-in-out infinite' }}
+      style={{ color, x: '-50%', animation: reducedMotion ? 'none' : 'comboGlow 0.8s ease-in-out infinite' }}
       initial={{ scale: 0, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       exit={{ scale: 1.5, opacity: 0 }}
       transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+      aria-live="polite"
     >
-      {label}
+      {t(labelKey, lang as 'ru' | 'en')}
     </motion.div>
   );
 }
@@ -282,18 +286,22 @@ function Door({
         border: `3px solid ${bgStyle.borderColor}`,
         boxShadow: shadowStr,
       }}
-      whileHover={isCurrent ? { scale: 1.08, y: -3 } : undefined}
+      whileHover={!prefersReducedMotion() && isCurrent ? { scale: 1.08, y: -3 } : undefined}
       whileTap={isCurrent ? { scale: 0.92 } : undefined}
       animate={
-        isFeedbackWrong
-          ? { x: [0, -8, 8, -5, 5, 0] }
-          : isFeedbackCorrect
-            ? { scale: [1, 1.12, 1] }
-            : isCurrent
-              ? { scale: [1, 1.03, 1] }
-              : undefined
+        prefersReducedMotion()
+          ? undefined
+          : isFeedbackWrong
+            ? { x: [0, -8, 8, -5, 5, 0] }
+            : isFeedbackCorrect
+              ? { scale: [1, 1.12, 1] }
+              : isCurrent
+                ? { scale: [1, 1.03, 1] }
+                : undefined
       }
       transition={{ duration: 0.4 }}
+      aria-label={`Door ${laneIdx + 1}${isCurrent ? ' (choose this lane)' : ''}`}
+      aria-pressed={isCurrent}
     >
       <div className="absolute inset-x-0 top-0 h-3 bg-gradient-to-b from-white/35 to-transparent rounded-t-2xl" />
       <div className="absolute inset-x-1.5 top-1 bottom-1 border-2 border-white/15 rounded-xl" />
@@ -507,7 +515,7 @@ function CoinEffect({ laneX }: { laneX: number }) {
 }
 
 // ─── HUD ──────────────────────────────────────────────
-function HUD({ combo }: { combo: number }) {
+function HUD({ combo, lang }: { combo: number; lang: string }) {
   const score = useGameStore((s) => s.score);
   const feedback = useGameStore((s) => s.feedback);
 
@@ -554,7 +562,7 @@ function HUD({ combo }: { combo: number }) {
               exit={{ scale: 1.4, opacity: 0, y: -20 }}
               transition={{ duration: 0.35, type: 'spring', stiffness: 250 }}
             >
-              {feedback === 'correct' ? '✓ Верно!' : '✗ Ошибка!'}
+              {feedback === 'correct' ? t('game.correct', lang as 'ru' | 'en') : t('game.wrong', lang as 'ru' | 'en')}
             </motion.div>
           </motion.div>
         )}
@@ -654,6 +662,7 @@ export default function DoorRunnerScene() {
   const handleTimeout = useGameStore((s) => s.handleTimeout);
   const score = useGameStore((s) => s.score);
   const pathCount = settings.pathCount;
+  const lang = settings.lang;
   const correctLane = sequence[currentStep] ?? 0;
 
   // ─── Timer logic (requestAnimationFrame for smooth updates) ───
@@ -828,7 +837,7 @@ export default function DoorRunnerScene() {
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
-      animate={feedback === 'wrong' ? { x: [0, -8, 8, -6, 6, -3, 3, 0] } : { x: 0 }}
+      animate={feedback === 'wrong' && !prefersReducedMotion() ? { x: [0, -8, 8, -6, 6, -3, 3, 0] } : { x: 0 }}
       transition={{ duration: 0.4, ease: 'easeOut' }}
     >
       <RoadVisual pathCount={pathCount} />
@@ -860,10 +869,10 @@ export default function DoorRunnerScene() {
       </AnimatePresence>
 
       <AnimatePresence>
-        <ComboBadge combo={combo} key={`combo-${combo}`} />
+        <ComboBadge combo={combo} lang={lang} key={`combo-${combo}`} />
       </AnimatePresence>
 
-      <HUD combo={combo} />
+      <HUD combo={combo} lang={lang} />
 
       {/* Achievement toast */}
       <AnimatePresence>
@@ -882,6 +891,7 @@ export default function DoorRunnerScene() {
 function SwipeHint({ pathCount }: { pathCount: number }) {
   const [visible, setVisible] = useState(true);
   const isRunning = useGameStore((s) => s.isRunning);
+  const lang = useGameStore((s) => s.settings.lang);
   const [isTouchDevice] = useState(
     () => typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0)
   );
@@ -902,7 +912,7 @@ function SwipeHint({ pathCount }: { pathCount: number }) {
       >
         👈 👉
       </motion.span>
-      <span className="text-white/60 text-xs font-medium">Свайп или тап</span>
+      <span className="text-white/60 text-xs font-medium">{t('hint.swipe', lang)}</span>
     </>
   );
 
@@ -910,11 +920,11 @@ function SwipeHint({ pathCount }: { pathCount: number }) {
     <>
       <kbd className="inline-flex items-center justify-center w-6 h-6 rounded bg-white/15 border border-white/20 text-white/80 text-xs font-bold">←</kbd>
       <kbd className="inline-flex items-center justify-center w-6 h-6 rounded bg-white/15 border border-white/20 text-white/80 text-xs font-bold">→</kbd>
-      <span className="text-white/40 text-xs">или</span>
+      <span className="text-white/40 text-xs">/</span>
       <kbd className="inline-flex items-center justify-center w-6 h-6 rounded bg-white/15 border border-white/20 text-white/80 text-xs font-bold">A</kbd>
       <kbd className="inline-flex items-center justify-center w-6 h-6 rounded bg-white/15 border border-white/20 text-white/80 text-xs font-bold">D</kbd>
       <span className="text-white/40 text-xs">•</span>
-      <kbd className="inline-flex items-center justify-center px-1.5 h-6 rounded bg-white/15 border border-white/20 text-white/80 text-[10px] font-bold">Space</kbd>
+      <kbd className="inline-flex items-center justify-center px-1.5 h-6 rounded bg-white/15 border border-white/20 text-white/80 text-[10px] font-bold">{t('hint.space', lang)}</kbd>
     </>
   );
 
