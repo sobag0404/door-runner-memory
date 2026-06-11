@@ -6,6 +6,7 @@ import { ACHIEVEMENTS } from '../lib/achievements';
 import { getDailyId, secondsUntilNextDaily, formatCountdown, getDailyDayName } from '../lib/daily';
 import { usePWAInstall } from '../lib/usePWAInstall';
 import { initAudioOnInteraction } from '../lib/sounds';
+import { LANE_COLORS } from '../lib/constants';
 import AchievementsPanel from './AchievementsPanel';
 
 // ─── Constants ──────────────────────────────────────────
@@ -16,8 +17,6 @@ const SPEED_OPTIONS: { value: SpeedLevel; label: string; icon: typeof Zap }[] = 
   { value: 'normal', label: 'Normal', icon: Zap },
   { value: 'fast', label: 'Fast', icon: Zap },
 ];
-
-const LANE_COLORS = ['#FF6B35', '#FFD23F', '#06D6A0', '#EF476F', '#118AB2', '#8338EC'];
 
 // ─── Animation Variants ────────────────────────────────
 const containerVariants: Variants = {
@@ -126,7 +125,7 @@ export default function HomeScreen() {
     // Update stats and check achievements
     const store = useGameStore.getState();
     if (store.score > 0) {
-      store.addStatsFromGame(store.score, 0, gameMode);
+      store.addStatsFromGame(store.score, store.combo, gameMode);
     }
     startGame();
   };

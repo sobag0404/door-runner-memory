@@ -69,6 +69,7 @@ export default function GameScreen() {
   const addStatsFromGame = useGameStore((s) => s.addStatsFromGame);
   const checkAchievements = useGameStore((s) => s.checkAchievements);
   const gameMode = useGameStore((s) => s.gameMode);
+  const combo = useGameStore((s) => s.combo);
 
   const [showNameModal, setShowNameModal] = useState(false);
   const hasSubmittedRef = useRef(false);
@@ -81,7 +82,7 @@ export default function GameScreen() {
   const handleBack = () => {
     if (score > 0 && !hasSubmittedRef.current) {
       // Save stats and check achievements
-      addStatsFromGame(score, 0, gameMode);
+      addStatsFromGame(score, combo, gameMode);
       checkAchievements();
       // Show name modal for leaderboard
       setShowNameModal(true);

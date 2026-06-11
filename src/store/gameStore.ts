@@ -5,6 +5,7 @@ import { getDailyId } from '../lib/daily';
 import { ACHIEVEMENTS } from '../lib/achievements';
 import type { PlayerStats } from '../lib/achievements';
 import { playCorrect, playWrong, playTimeout, playCombo, playStart, playMilestone } from '../lib/sounds';
+import { hapticFeedback } from '../lib/constants';
 
 // ─── Types ─────────────────────────────────────────────
 export type GameScreen = 'home' | 'game' | 'leaderboard';
@@ -26,12 +27,26 @@ const DEFAULT_SETTINGS: GameSettings = {
   soundEnabled: true,
 };
 
+/** Base speed in ms for each speed level */
 export function getSpeedMs(speed: SpeedLevel): number {
   switch (speed) {
     case 'slow': return 2500;
     case 'normal': return 1800;
     case 'fast': return 1200;
   }
+}
+
+/**
+ * Calculate progressive speed for a given step.
+ * Speed increases by ~3% every 5 correct answers, with a floor of 40% of base speed.
+ * This makes the game gradually harder as you play longer.
+ */
+export function getProgressiveSpeedMs(baseSpeed: SpeedLevel, currentStep: number): number {
+  const baseMs = getSpeedMs(baseSpeed);
+  // Every 5 steps, reduce by 3%, minimum 40% of base
+  const reduction = Math.pow(0.97, Math.floor(currentStep / 5));
+  const minMs = baseMs * 0.4;
+  return Math.max(minMs, Math.round(baseMs * reduction));
 }
 
 // ─── Leaderboard entry ───
@@ -42,6 +57,21 @@ export interface LeaderboardEntry {
   pathCount: number;
   speed: SpeedLevel;
   date: string; // ISO
+}
+
+// ─── Feedback timeout IDs for cleanup ───
+let _correctTimeoutId: ReturnType<typeof setTimeout> | null = null;
+let _wrongTimeoutId: ReturnType<typeof setTimeout> | null = null;
+
+function clearFeedbackTimers() {
+  if (_correctTimeoutId !== null) {
+    clearTimeout(_correctTimeoutId);
+    _correctTimeoutId = null;
+  }
+  if (_wrongTimeoutId !== null) {
+    clearTimeout(_wrongTimeoutId);
+    _wrongTimeoutId = null;
+  }
 }
 
 // ─── Store Interface ───────────────────────────────────
@@ -65,6 +95,7 @@ interface GameStore {
   sequence: number[];
   currentStep: number;
   score: number;
+  combo: number; // ← now in store state!
   isRunning: boolean;
   feedback: 'correct' | 'wrong' | null;
 
@@ -81,7 +112,9 @@ interface GameStore {
 
   // Unlocked achievements
   unlockedAchievements: string[];
+  newlyUnlockedIds: string[]; // IDs just unlocked (for toast)
   checkAchievements: () => string[]; // returns newly unlocked IDs
+  clearNewlyUnlocked: () => void;
 
   // Leaderboard
   leaderboard: LeaderboardEntry[];
@@ -107,12 +140,17 @@ function loadBestScores(): Record<string, number> {
   return localStore.get<Record<string, number>>('bestScores', {});
 }
 
-function saveBestScore(key: string, score: number): void {
-  const scores = loadBestScores();
+/**
+ * Save a best score. Returns updated scores object
+ * (avoids redundant localStorage reads).
+ */
+function saveBestScoreMut(scores: Record<string, number>, key: string, score: number): Record<string, number> {
   if (!scores[key] || score > scores[key]) {
-    scores[key] = score;
-    localStore.set('bestScores', scores);
+    const updated = { ...scores, [key]: score };
+    localStore.set('bestScores', updated);
+    return updated;
   }
+  return scores;
 }
 
 function loadSettings(): GameSettings {
@@ -149,9 +187,6 @@ function loadLeaderboard(): LeaderboardEntry[] {
   return localStore.get<LeaderboardEntry[]>('leaderboard', []);
 }
 
-// ─── Combo tracking (internal) ─────────────────────────
-let _combo = 0;
-
 // ─── Store ─────────────────────────────────────────────
 export const useGameStore = create<GameStore>((set, get) => ({
   // Screen
@@ -185,6 +220,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
   sequence: [],
   currentStep: 0,
   score: 0,
+  combo: 0,
   isRunning: false,
   feedback: null,
 
@@ -221,8 +257,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
   // Achievements
   unlockedAchievements: loadUnlockedAchievements(),
+  newlyUnlockedIds: [],
   checkAchievements: () => {
-    // Import dynamically to avoid circular deps at module level
     const achList = ACHIEVEMENTS;
     const stats = get().stats;
     const unlocked = get().unlockedAchievements;
@@ -237,11 +273,12 @@ export const useGameStore = create<GameStore>((set, get) => ({
     if (newlyUnlocked.length > 0) {
       const updated = [...unlocked, ...newlyUnlocked];
       localStore.set('unlockedAchievements', updated);
-      set({ unlockedAchievements: updated });
+      set({ unlockedAchievements: updated, newlyUnlockedIds: newlyUnlocked });
     }
 
     return newlyUnlocked;
   },
+  clearNewlyUnlocked: () => set({ newlyUnlockedIds: [] }),
 
   // Leaderboard
   leaderboard: loadLeaderboard(),
@@ -267,13 +304,14 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const { settings, gameMode } = get();
     const seasonId = gameMode === 'daily' ? getDailyId() : getCurrentSeasonId();
     const sequence = createSeasonSequence(seasonId, settings.pathCount);
-    _combo = 0;
+    clearFeedbackTimers();
     if (settings.soundEnabled) playStart();
     set({
       seasonId,
       sequence,
       currentStep: 0,
       score: 0,
+      combo: 0,
       isRunning: true,
       feedback: null,
       timeLeft: 1,
@@ -291,45 +329,55 @@ export const useGameStore = create<GameStore>((set, get) => ({
     if (laneIndex === correct) {
       const newScore = state.score + 1;
       const newStep = state.currentStep + 1;
-      _combo++;
+      const newCombo = state.combo + 1;
 
       const key = bestScoreKey(state.seasonId, state.settings.pathCount);
-      saveBestScore(key, newScore);
+      const updatedBestScores = saveBestScoreMut(state.bestScores, key, newScore);
 
       if (soundOn) {
         playCorrect();
-        // Play combo sound at milestones (3, 5, 7, 10...)
-        if (_combo >= 3 && (_combo === 3 || _combo === 5 || _combo === 7 || _combo === 10 || _combo % 10 === 0)) {
-          playCombo(_combo);
+        // Combo sound at milestones
+        if (newCombo >= 3 && (newCombo === 3 || newCombo === 5 || newCombo === 7 || newCombo === 10 || newCombo % 10 === 0)) {
+          playCombo(newCombo);
         }
-        // Score milestones every 10 points
+        // Score milestone every 10
         if (newScore % 10 === 0) {
           playMilestone();
         }
       }
+      hapticFeedback('light');
 
       set({
         score: newScore,
         currentStep: newStep,
+        combo: newCombo,
         feedback: 'correct',
         timeLeft: 1,
-        bestScores: loadBestScores(),
+        bestScores: updatedBestScores,
       });
-      setTimeout(() => {
+
+      clearFeedbackTimers();
+      _correctTimeoutId = setTimeout(() => {
+        _correctTimeoutId = null;
         set({ feedback: null });
       }, 350);
     } else {
-      _combo = 0;
       const seasonId = state.gameMode === 'daily' ? getDailyId() : getCurrentSeasonId();
       const sequence = createSeasonSequence(seasonId, state.settings.pathCount);
       if (soundOn) playWrong();
+      hapticFeedback('heavy');
+
       set({
         currentStep: 0,
         sequence,
+        combo: 0,
         feedback: 'wrong',
         timeLeft: 1,
       });
-      setTimeout(() => {
+
+      clearFeedbackTimers();
+      _wrongTimeoutId = setTimeout(() => {
+        _wrongTimeoutId = null;
         set({ feedback: null });
       }, 600);
     }
@@ -339,49 +387,61 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const state = get();
     if (!state.isRunning || state.feedback !== null) return;
 
-    _combo = 0;
     const seasonId = state.gameMode === 'daily' ? getDailyId() : getCurrentSeasonId();
     const sequence = createSeasonSequence(seasonId, state.settings.pathCount);
     if (state.settings.soundEnabled) playTimeout();
+    hapticFeedback('medium');
+
     set({
       currentStep: 0,
       sequence,
+      combo: 0,
       feedback: 'wrong',
       timeLeft: 1,
     });
-    setTimeout(() => {
+
+    clearFeedbackTimers();
+    _wrongTimeoutId = setTimeout(() => {
+      _wrongTimeoutId = null;
       set({ feedback: null });
     }, 600);
   },
 
   resetGame: () => {
     const state = get();
+    clearFeedbackTimers();
     if (state.score > 0) {
       const key = bestScoreKey(state.seasonId, state.settings.pathCount);
-      saveBestScore(key, state.score);
+      const updatedBestScores = saveBestScoreMut(state.bestScores, key, state.score);
+      set({
+        screen: 'home',
+        isRunning: false,
+        currentStep: 0,
+        score: 0,
+        combo: 0,
+        feedback: null,
+        sequence: [],
+        timeLeft: 1,
+        bestScores: updatedBestScores,
+      });
+    } else {
+      set({
+        screen: 'home',
+        isRunning: false,
+        currentStep: 0,
+        score: 0,
+        combo: 0,
+        feedback: null,
+        sequence: [],
+        timeLeft: 1,
+      });
     }
-    _combo = 0;
-    set({
-      screen: 'home',
-      isRunning: false,
-      currentStep: 0,
-      score: 0,
-      feedback: null,
-      sequence: [],
-      timeLeft: 1,
-      bestScores: loadBestScores(),
-    });
   },
 
   // Derived
-  getSpeedMs: () => getSpeedMs(get().settings.speed),
+  getSpeedMs: () => getProgressiveSpeedMs(get().settings.speed, get().currentStep),
   correctLane: () => {
     const s = get();
     return s.sequence[s.currentStep] ?? 0;
   },
 }));
-
-// ─── Expose combo getter for scene ─────────────────────
-export function getCurrentCombo(): number {
-  return _combo;
-}

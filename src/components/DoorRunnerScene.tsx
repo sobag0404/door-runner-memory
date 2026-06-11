@@ -1,30 +1,11 @@
 import { useMemo, useCallback, useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useGameStore, getSpeedMs, getCurrentCombo } from '../store/gameStore';
+import { useGameStore, getProgressiveSpeedMs } from '../store/gameStore';
+import { LANE_COLORS, LANE_LIGHT, getLanePercent, hapticFeedback } from '../lib/constants';
+import { ACHIEVEMENTS } from '../lib/achievements';
 
-// ─── Palette (Subway Surfers inspired — vibrant, warm, colorful) ──
-const LANE_COLORS = [
-  '#FF6B35', // vivid orange
-  '#FFD23F', // golden yellow
-  '#06D6A0', // mint green
-  '#EF476F', // hot pink
-  '#118AB2', // ocean blue
-  '#8338EC', // electric purple
-];
-
-const LANE_LIGHT = [
-  '#FF9F6B',
-  '#FFE680',
-  '#5EEFC0',
-  '#F47A9E',
-  '#4DB8D9',
-  '#A86FF0',
-];
-
-// ─── Helper: lane X position ──────────────────────────
-function getLanePercent(laneIndex: number, pathCount: number): number {
-  return ((laneIndex + 0.5) / pathCount) * 100;
-}
+// ─── Re-export for sub-components ──
+export { LANE_COLORS, LANE_LIGHT, getLanePercent };
 
 // ─── Combo Badge ──────────────────────────────────────
 function ComboBadge({ combo }: { combo: number }) {
@@ -71,6 +52,27 @@ function TimerBar({ timeLeft }: { timeLeft: number }) {
         }}
       />
     </div>
+  );
+}
+
+// ─── Speed Indicator (shows current speed level) ──────
+function SpeedIndicator({ currentMs, baseMs }: { currentMs: number; baseMs: number }) {
+  const ratio = baseMs / currentMs; // >1 means faster
+  if (ratio < 1.05) return null; // no speed boost yet
+
+  const label = ratio >= 2 ? '⚡⚡' : ratio >= 1.5 ? '⚡' : '💨';
+  return (
+    <motion.div
+      className="absolute top-14 right-3 z-40 pointer-events-none"
+      initial={{ scale: 0, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ type: 'spring', stiffness: 300 }}
+    >
+      <div className="bg-black/40 backdrop-blur-md rounded-xl px-2 py-1 border border-[#FFD23F]/30">
+        <span className="text-xs font-bold text-[#FFD23F]">{label}</span>
+        <span className="text-[10px] text-white/50 ml-1">{Math.round(ratio * 100)}%</span>
+      </div>
+    </motion.div>
   );
 }
 
@@ -561,6 +563,39 @@ function HUD({ combo }: { combo: number }) {
   );
 }
 
+// ─── Achievement Toast ────────────────────────────────
+function AchievementToast() {
+  const newlyUnlockedIds = useGameStore((s) => s.newlyUnlockedIds);
+  const clearNewlyUnlocked = useGameStore((s) => s.clearNewlyUnlocked);
+
+  if (newlyUnlockedIds.length === 0) return null;
+
+  const achievement = ACHIEVEMENTS.find(a => a.id === newlyUnlockedIds[0]);
+  if (!achievement) return null;
+
+  return (
+    <motion.div
+      className="absolute top-3 left-1/2 z-[60] pointer-events-none"
+      style={{ x: '-50%' }}
+      initial={{ y: -60, opacity: 0, scale: 0.8 }}
+      animate={{ y: 0, opacity: 1, scale: 1 }}
+      exit={{ y: -40, opacity: 0, scale: 0.8 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+      onAnimationComplete={() => {
+        setTimeout(clearNewlyUnlocked, 2500);
+      }}
+    >
+      <div className="flex items-center gap-2 bg-black/70 backdrop-blur-md rounded-2xl px-4 py-2.5 border border-[#FFD23F]/40 shadow-xl">
+        <span className="text-2xl">{achievement.icon}</span>
+        <div>
+          <div className="text-[#FFD23F] text-xs font-black uppercase tracking-wide">Achievement!</div>
+          <div className="text-white text-sm font-bold">{achievement.title}</div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 // ─── Lane Buttons ─────────────────────────────────────
 function LaneButtons() {
   const pathCount = useGameStore((s) => s.settings.pathCount);
@@ -614,19 +649,21 @@ export default function DoorRunnerScene() {
   const currentStep = useGameStore((s) => s.currentStep);
   const feedback = useGameStore((s) => s.feedback);
   const isRunning = useGameStore((s) => s.isRunning);
+  const combo = useGameStore((s) => s.combo);
   const chooseLane = useGameStore((s) => s.chooseLane);
   const handleTimeout = useGameStore((s) => s.handleTimeout);
   const score = useGameStore((s) => s.score);
   const pathCount = settings.pathCount;
   const correctLane = sequence[currentStep] ?? 0;
 
-  // ─── Timer logic (fixed: stable ref for handleTimeout) ───
+  // ─── Timer logic (requestAnimationFrame for smooth updates) ───
   const [timeLeft, setTimeLeft] = useState(1);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const rafRef = useRef<number>(0);
   const stepStartRef = useRef<number>(0);
-  const speedMs = getSpeedMs(settings.speed);
+  const currentSpeedMs = getProgressiveSpeedMs(settings.speed, currentStep);
+  const baseSpeedMs = getProgressiveSpeedMs(settings.speed, 0);
 
-  // Use ref for handleTimeout to avoid re-creating interval on every render
+  // Use ref for handleTimeout to avoid re-creating loop on every render
   const handleTimeoutRef = useRef(handleTimeout);
   handleTimeoutRef.current = handleTimeout;
 
@@ -634,54 +671,67 @@ export default function DoorRunnerScene() {
   useEffect(() => {
     if (!isRunning || feedback !== null) return;
 
-    stepStartRef.current = Date.now();
+    stepStartRef.current = performance.now();
     setTimeLeft(1);
 
-    if (timerRef.current) clearInterval(timerRef.current);
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
 
-    const interval = 50;
-    timerRef.current = setInterval(() => {
-      const elapsed = Date.now() - stepStartRef.current;
-      const remaining = Math.max(0, 1 - elapsed / speedMs);
+    const tick = (now: number) => {
+      const elapsed = now - stepStartRef.current;
+      const remaining = Math.max(0, 1 - elapsed / currentSpeedMs);
       setTimeLeft(remaining);
 
       if (remaining <= 0) {
-        if (timerRef.current) clearInterval(timerRef.current);
-        timerRef.current = null;
+        rafRef.current = 0;
         handleTimeoutRef.current();
+        return;
       }
-    }, interval);
+      rafRef.current = requestAnimationFrame(tick);
+    };
+
+    rafRef.current = requestAnimationFrame(tick);
 
     return () => {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = 0;
       }
     };
-  }, [currentStep, isRunning, feedback, speedMs]);
+  }, [currentStep, isRunning, feedback, currentSpeedMs]);
 
   // Clear timer when feedback is active
   useEffect(() => {
-    if (feedback !== null && timerRef.current) {
-      clearInterval(timerRef.current);
-      timerRef.current = null;
+    if (feedback !== null && rafRef.current) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = 0;
     }
   }, [feedback]);
 
-  // ─── Combo tracking (from store) ───
-  const [combo, setCombo] = useState(0);
+  // ─── Track last correct lane for coin effect ───
   const [lastCorrectLane, setLastCorrectLane] = useState<number | null>(null);
-
   useEffect(() => {
     if (feedback === 'correct') {
-      const newCombo = getCurrentCombo();
-      setCombo(newCombo);
       setLastCorrectLane(correctLane);
-    } else if (feedback === 'wrong') {
-      setCombo(0);
-      setLastCorrectLane(null);
     }
   }, [feedback, correctLane]);
+
+  // ─── Keyboard support (1-6 keys) ───
+  useEffect(() => {
+    if (!isRunning) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const num = parseInt(e.key, 10);
+      if (num >= 1 && num <= pathCount) {
+        const state = useGameStore.getState();
+        if (state.isRunning && state.feedback === null) {
+          chooseLane(num - 1);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isRunning, pathCount, chooseLane]);
 
   // ─── Swipe gesture support ───
   const swipeStateRef = useRef({
@@ -691,7 +741,6 @@ export default function DoorRunnerScene() {
     isSwiping: false,
   });
 
-  // Initialize activeLane when step changes
   useEffect(() => {
     if (isRunning && feedback === null) {
       swipeStateRef.current.activeLane = correctLane;
@@ -707,7 +756,6 @@ export default function DoorRunnerScene() {
     [isRunning, feedback, chooseLane]
   );
 
-  // Touch handlers for swipe
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     if (!isRunning || feedback !== null) return;
     const touch = e.touches[0];
@@ -722,11 +770,10 @@ export default function DoorRunnerScene() {
     const dx = touch.clientX - swipeStateRef.current.touchStartX;
     const dy = touch.clientY - swipeStateRef.current.touchStartY;
 
-    // Only detect horizontal swipes (must be more horizontal than vertical)
     if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 30 && !swipeStateRef.current.isSwiping) {
       swipeStateRef.current.isSwiping = true;
       const currentLane = swipeStateRef.current.activeLane;
-      const direction = dx > 0 ? 1 : -1; // right = +1, left = -1
+      const direction = dx > 0 ? 1 : -1;
       const newLane = Math.max(0, Math.min(pathCount - 1, currentLane + direction));
 
       if (newLane !== currentLane) {
@@ -763,6 +810,9 @@ export default function DoorRunnerScene() {
       {/* Timer bar */}
       {isRunning && <TimerBar timeLeft={timeLeft} />}
 
+      {/* Speed indicator */}
+      {isRunning && <SpeedIndicator currentMs={currentSpeedMs} baseMs={baseSpeedMs} />}
+
       {doorRows.map((row) => (
         <DoorRow key={`row-${currentStep}-${row.doorIndex}`}
           doorIndex={row.doorIndex} pathCount={pathCount} correctLane={row.correctLane}
@@ -788,7 +838,12 @@ export default function DoorRunnerScene() {
 
       <HUD combo={combo} />
 
-      {/* Swipe hint (shows briefly at game start) */}
+      {/* Achievement toast */}
+      <AnimatePresence>
+        <AchievementToast />
+      </AnimatePresence>
+
+      {/* Swipe hint */}
       <SwipeHint pathCount={pathCount} />
 
       <LaneButtons />
