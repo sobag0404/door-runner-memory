@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { useGameStore, type GameScreen as GameScreenType } from '../store/gameStore';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, type Variants } from 'framer-motion';
 import HomeScreen from './HomeScreen';
 import GameScreen from './GameScreen';
 import LeaderboardScreen from './LeaderboardScreen';
@@ -9,30 +9,25 @@ import ErrorBoundary from './ErrorBoundary';
 
 // ─── Transition variants per screen direction ──────────
 // Home → Game: slide from right;  Game → Home: slide from left
-// Home ↔ Leaderboard: slide from right / left
-const getVariants = (current: GameScreenType, prev: GameScreenType | null) => {
+const forwardVariants: Variants = {
+  initial: { x: '100%', opacity: 0 },
+  animate: { x: 0, opacity: 1, transition: { type: 'spring', stiffness: 300, damping: 30 } },
+  exit: { x: '-30%', opacity: 0, transition: { duration: 0.2 } },
+};
+
+const backwardVariants: Variants = {
+  initial: { x: '-100%', opacity: 0 },
+  animate: { x: 0, opacity: 1, transition: { type: 'spring', stiffness: 300, damping: 30 } },
+  exit: { x: '30%', opacity: 0, transition: { duration: 0.2 } },
+};
+
+function getVariants(current: GameScreenType, prev: GameScreenType | null): Variants {
   const goingForward =
     (prev === 'home' && current === 'game') ||
     (prev === 'home' && current === 'leaderboard') ||
     (prev === 'game' && current === 'leaderboard');
-
-  return {
-    initial: {
-      x: goingForward ? '100%' : '-100%',
-      opacity: 0,
-    },
-    animate: {
-      x: 0,
-      opacity: 1,
-      transition: { type: 'spring', stiffness: 300, damping: 30 },
-    },
-    exit: {
-      x: goingForward ? '-30%' : '30%',
-      opacity: 0,
-      transition: { duration: 0.2, ease: 'easeInOut' },
-    },
-  };
-};
+  return goingForward ? forwardVariants : backwardVariants;
+}
 
 // ─── Animated Screen Wrapper ───────────────────────────
 function AnimatedScreen({ screen, screenKey, prevScreen }: { screen: GameScreenType; screenKey: string; prevScreen: GameScreenType | null }) {
@@ -42,9 +37,10 @@ function AnimatedScreen({ screen, screenKey, prevScreen }: { screen: GameScreenT
     <motion.div
       key={screenKey}
       className="absolute inset-0"
-      initial={variants.initial}
-      animate={variants.animate}
-      exit={variants.exit}
+      variants={variants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
     >
       {screen === 'home' && <HomeScreen />}
       {screen === 'game' && <GameScreen />}
