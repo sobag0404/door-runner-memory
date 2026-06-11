@@ -1,17 +1,56 @@
 import { useState, useEffect, useRef } from 'react';
 import { useGameStore } from '../store/gameStore';
-import { ArrowLeft, Trophy } from 'lucide-react';
+import { ArrowLeft, Trophy, Share2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import DoorRunnerScene from './DoorRunnerScene';
 
+// ─── Web Share helper ───
+async function shareScore(score: number, combo: number, mode: string): Promise<void> {
+  const text = `🚪 Door Runner Memory\n${mode === 'daily' ? '📅 Daily' : '🎮 Regular'} mode\n🏆 Score: ${score}${combo >= 3 ? `\n🔥 Best combo: ${combo}` : ''}\n\nCan you beat me? 👇`;
+
+  const shareData: ShareData = {
+    title: 'Door Runner Memory',
+    text,
+    url: window.location.href,
+  };
+
+  if (navigator.share) {
+    try {
+      await navigator.share(shareData);
+    } catch {
+      // User cancelled or not supported — fall back to clipboard
+    }
+  }
+
+  // Fallback: copy to clipboard
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch {
+    // Silently fail
+  }
+}
+
 // ─── Name Input Modal ───
-function NameModal({ onSubmit, onSkip }: { onSubmit: (name: string) => void; onSkip: () => void }) {
+function NameModal({ onSubmit, onSkip, score, combo, gameMode }: {
+  onSubmit: (name: string) => void;
+  onSkip: () => void;
+  score: number;
+  combo: number;
+  gameMode: string;
+}) {
   const [name, setName] = useState('');
+  const [copied, setCopied] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
+
+  const handleShare = async () => {
+    await shareScore(score, combo, gameMode);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   return (
     <motion.div
@@ -32,7 +71,34 @@ function NameModal({ onSubmit, onSkip }: { onSubmit: (name: string) => void; onS
           <Trophy className="h-5 w-5 text-[#FFD23F]" />
           Save Your Score!
         </h3>
-        <p className="text-white/50 text-sm mb-4">Enter your name for the leaderboard</p>
+
+        {/* Score display */}
+        <div className="flex items-center justify-center gap-4 my-4 py-3 rounded-2xl bg-black/20">
+          <div className="text-center">
+            <div className="text-3xl font-black text-[#FFD23F]">{score}</div>
+            <div className="text-white/40 text-xs font-medium">Score</div>
+          </div>
+          {combo >= 3 && (
+            <>
+              <div className="w-px h-8 bg-white/10" />
+              <div className="text-center">
+                <div className="text-3xl font-black text-[#FF6B35]">{combo}</div>
+                <div className="text-white/40 text-xs font-medium">Combo</div>
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* Share button */}
+        <button
+          onClick={handleShare}
+          className="w-full h-11 rounded-2xl bg-[#06D6A0]/20 border border-[#06D6A0]/30 text-[#06D6A0] font-bold text-sm hover:bg-[#06D6A0]/30 active:scale-[0.98] transition-all flex items-center justify-center gap-2 mb-4"
+        >
+          <Share2 className="h-4 w-4" />
+          {copied ? '✓ Copied!' : 'Share result'}
+        </button>
+
+        <p className="text-white/50 text-sm mb-3">Enter your name for the leaderboard</p>
         <input
           ref={inputRef}
           type="text"
@@ -73,17 +139,15 @@ export default function GameScreen() {
 
   const [showNameModal, setShowNameModal] = useState(false);
   const hasSubmittedRef = useRef(false);
-
-  // Track combo from scene via a simple effect
-  // We read it from the scene indirectly — store updates already track score
-  // For combo tracking, we'll use a simple approach: read it from DoorRunnerScene's local state
-  // Actually, we need combo in the store for achievements. Let me handle this differently.
+  const [lastScore, setLastScore] = useState({ score: 0, combo: 0, gameMode: 'regular' as string });
 
   const handleBack = () => {
     if (score > 0 && !hasSubmittedRef.current) {
       // Save stats and check achievements
       addStatsFromGame(score, combo, gameMode);
       checkAchievements();
+      // Capture score/combo before showing modal
+      setLastScore({ score, combo, gameMode });
       // Show name modal for leaderboard
       setShowNameModal(true);
       hasSubmittedRef.current = true;
@@ -127,7 +191,13 @@ export default function GameScreen() {
       {/* Name Modal */}
       <AnimatePresence>
         {showNameModal && (
-          <NameModal onSubmit={handleSubmitName} onSkip={handleSkipName} />
+          <NameModal
+            onSubmit={handleSubmitName}
+            onSkip={handleSkipName}
+            score={lastScore.score}
+            combo={lastScore.combo}
+            gameMode={lastScore.gameMode}
+          />
         )}
       </AnimatePresence>
     </div>

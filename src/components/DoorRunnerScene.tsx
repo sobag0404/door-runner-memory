@@ -823,11 +823,13 @@ export default function DoorRunnerScene() {
   }, [currentStep, sequence]);
 
   return (
-    <div
+    <motion.div
       className="relative w-full h-full select-none"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
+      animate={feedback === 'wrong' ? { x: [0, -8, 8, -6, 6, -3, 3, 0] } : { x: 0 }}
+      transition={{ duration: 0.4, ease: 'easeOut' }}
     >
       <RoadVisual pathCount={pathCount} />
       {isRunning && <SpeedLines />}
@@ -872,7 +874,7 @@ export default function DoorRunnerScene() {
       <SwipeHint pathCount={pathCount} />
 
       <LaneButtons />
-    </div>
+    </motion.div>
   );
 }
 

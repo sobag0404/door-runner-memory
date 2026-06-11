@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
 import { motion, type Variants, AnimatePresence } from 'framer-motion';
-import { Play, Zap, Gauge, Trophy, Calendar, Award, Target, Clock, Download, Volume2, VolumeX } from 'lucide-react';
+import { Play, Zap, Gauge, Trophy, Calendar, Award, Target, Clock, Download, Volume2, VolumeX, HelpCircle } from 'lucide-react';
 import { useGameStore, type SpeedLevel } from '../store/gameStore';
 import { ACHIEVEMENTS } from '../lib/achievements';
 import { getDailyId, secondsUntilNextDaily, formatCountdown, getDailyDayName } from '../lib/daily';
 import { usePWAInstall } from '../lib/usePWAInstall';
 import { initAudioOnInteraction } from '../lib/sounds';
 import { LANE_COLORS } from '../lib/constants';
+import { localStore } from '../lib/localStore';
 import AchievementsPanel from './AchievementsPanel';
+import TutorialOverlay from './TutorialOverlay';
 
 // ─── Constants ──────────────────────────────────────────
 const PATH_OPTIONS = [3, 4, 5, 6] as const;
@@ -101,6 +103,7 @@ export default function HomeScreen() {
     useGameStore();
 
   const [showAchievements, setShowAchievements] = useState(false);
+  const [showTutorial, setShowTutorial] = useState(() => !localStore.get<boolean>('tutorialSeen', false));
   const { isInstallable, install } = usePWAInstall();
 
   // Initialize audio on first user interaction
@@ -210,6 +213,14 @@ export default function HomeScreen() {
             ? <Volume2 className="h-4 w-4 text-[#5C3D2E]" />
             : <VolumeX className="h-4 w-4 text-[#5C3D2E]/40" />
           }
+        </button>
+
+        <button
+          onClick={() => setShowTutorial(true)}
+          className="flex items-center justify-center rounded-2xl bg-white/50 px-2.5 py-2 shadow-sm backdrop-blur-sm border border-white/30 active:scale-95 transition-all"
+          aria-label="How to play"
+        >
+          <HelpCircle className="h-4 w-4 text-[#5C3D2E]" />
         </button>
       </motion.div>
 
@@ -373,6 +384,11 @@ export default function HomeScreen() {
       {/* ── Achievements Panel ──────────────────────────── */}
       <AnimatePresence>
         {showAchievements && <AchievementsPanel onClose={() => setShowAchievements(false)} />}
+      </AnimatePresence>
+
+      {/* ── Tutorial Overlay ──────────────────────────── */}
+      <AnimatePresence>
+        {showTutorial && <TutorialOverlay onClose={() => setShowTutorial(false)} />}
       </AnimatePresence>
     </motion.div>
   );
