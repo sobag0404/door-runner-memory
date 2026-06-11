@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { motion, type Variants, AnimatePresence } from 'framer-motion';
-import { Play, Zap, Gauge, Trophy, Calendar, Award, Target, Clock } from 'lucide-react';
+import { Play, Zap, Gauge, Trophy, Calendar, Award, Target, Clock, Download, Volume2, VolumeX } from 'lucide-react';
 import { useGameStore, type SpeedLevel } from '../store/gameStore';
 import { ACHIEVEMENTS } from '../lib/achievements';
 import { getDailyId, secondsUntilNextDaily, formatCountdown, getDailyDayName } from '../lib/daily';
+import { usePWAInstall } from '../lib/usePWAInstall';
+import { initAudioOnInteraction } from '../lib/sounds';
 import AchievementsPanel from './AchievementsPanel';
 
 // ─── Constants ──────────────────────────────────────────
@@ -95,11 +97,17 @@ function DailyCountdown() {
 
 // ─── Component ──────────────────────────────────────────
 export default function HomeScreen() {
-  const { settings, setPathCount, setSpeed, startGame, bestScores, seasonId,
+  const { settings, setPathCount, setSpeed, setSoundEnabled, startGame, bestScores, seasonId,
     gameMode, setGameMode, setScreen, unlockedAchievements, stats } =
     useGameStore();
 
   const [showAchievements, setShowAchievements] = useState(false);
+  const { isInstallable, install } = usePWAInstall();
+
+  // Initialize audio on first user interaction
+  useEffect(() => {
+    initAudioOnInteraction();
+  }, []);
 
   const bestScoreKey = `${seasonId}_p${settings.pathCount}`;
   const currentBest = bestScores[bestScoreKey] ?? 0;
@@ -180,6 +188,30 @@ export default function HomeScreen() {
           <Calendar className="h-4 w-4 text-[#FF6B35]" />
           <span className="text-xs font-medium text-[#7B4A2A]/70 truncate">{seasonDisplay}</span>
         </div>
+
+        {isInstallable && (
+          <motion.button
+            onClick={install}
+            className="flex items-center gap-1.5 rounded-2xl bg-[#06D6A0]/80 px-3 py-2 shadow-sm backdrop-blur-sm border border-[#06D6A0]/40 active:scale-95 transition-all"
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            whileTap={{ scale: 0.9 }}
+          >
+            <Download className="h-4 w-4 text-white" />
+            <span className="text-xs font-bold text-white">Install</span>
+          </motion.button>
+        )}
+
+        <button
+          onClick={() => setSoundEnabled(!settings.soundEnabled)}
+          className="flex items-center justify-center rounded-2xl bg-white/50 px-2.5 py-2 shadow-sm backdrop-blur-sm border border-white/30 active:scale-95 transition-all"
+          aria-label={settings.soundEnabled ? 'Mute sounds' : 'Enable sounds'}
+        >
+          {settings.soundEnabled
+            ? <Volume2 className="h-4 w-4 text-[#5C3D2E]" />
+            : <VolumeX className="h-4 w-4 text-[#5C3D2E]/40" />
+          }
+        </button>
       </motion.div>
 
       {/* ── Game Mode Selector ───────────────────────── */}

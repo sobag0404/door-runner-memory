@@ -1,15 +1,2 @@
 skills/
-upload/
-download/
-db/
 node_modules/
-.venv/
-__pycache__/
-*.log
-.next/
-dist/
-build/
-dev.log
-agent-ctx/
-worklog.md
-tsconfig.tsbuildinfo

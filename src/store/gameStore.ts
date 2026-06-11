@@ -4,6 +4,7 @@ import { getCurrentSeasonId, createSeasonSequence } from '../lib/season';
 import { getDailyId } from '../lib/daily';
 import { ACHIEVEMENTS } from '../lib/achievements';
 import type { PlayerStats } from '../lib/achievements';
+import { playCorrect, playWrong, playTimeout, playCombo, playStart, playMilestone } from '../lib/sounds';
 
 // ─── Types ─────────────────────────────────────────────
 export type GameScreen = 'home' | 'game' | 'leaderboard';
@@ -15,12 +16,14 @@ export type GameMode = 'regular' | 'daily';
 export interface GameSettings {
   pathCount: number; // 3, 4, 5, 6
   speed: SpeedLevel;
+  soundEnabled: boolean;
 }
 
 // ─── Defaults ──────────────────────────────────────────
 const DEFAULT_SETTINGS: GameSettings = {
   pathCount: 3,
   speed: 'normal',
+  soundEnabled: true,
 };
 
 export function getSpeedMs(speed: SpeedLevel): number {
@@ -51,6 +54,7 @@ interface GameStore {
   settings: GameSettings;
   setPathCount: (n: number) => void;
   setSpeed: (s: SpeedLevel) => void;
+  setSoundEnabled: (v: boolean) => void;
 
   // Game mode
   gameMode: GameMode;
@@ -145,6 +149,9 @@ function loadLeaderboard(): LeaderboardEntry[] {
   return localStore.get<LeaderboardEntry[]>('leaderboard', []);
 }
 
+// ─── Combo tracking (internal) ─────────────────────────
+let _combo = 0;
+
 // ─── Store ─────────────────────────────────────────────
 export const useGameStore = create<GameStore>((set, get) => ({
   // Screen
@@ -160,6 +167,11 @@ export const useGameStore = create<GameStore>((set, get) => ({
   },
   setSpeed: (s) => {
     const settings = { ...get().settings, speed: s };
+    localStore.set('settings', settings);
+    set({ settings });
+  },
+  setSoundEnabled: (v) => {
+    const settings = { ...get().settings, soundEnabled: v };
     localStore.set('settings', settings);
     set({ settings });
   },
@@ -255,6 +267,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const { settings, gameMode } = get();
     const seasonId = gameMode === 'daily' ? getDailyId() : getCurrentSeasonId();
     const sequence = createSeasonSequence(seasonId, settings.pathCount);
+    _combo = 0;
+    if (settings.soundEnabled) playStart();
     set({
       seasonId,
       sequence,
@@ -272,12 +286,27 @@ export const useGameStore = create<GameStore>((set, get) => ({
     if (!state.isRunning || state.feedback !== null) return;
 
     const correct = state.sequence[state.currentStep];
+    const soundOn = state.settings.soundEnabled;
+
     if (laneIndex === correct) {
       const newScore = state.score + 1;
       const newStep = state.currentStep + 1;
+      _combo++;
 
       const key = bestScoreKey(state.seasonId, state.settings.pathCount);
       saveBestScore(key, newScore);
+
+      if (soundOn) {
+        playCorrect();
+        // Play combo sound at milestones (3, 5, 7, 10...)
+        if (_combo >= 3 && (_combo === 3 || _combo === 5 || _combo === 7 || _combo === 10 || _combo % 10 === 0)) {
+          playCombo(_combo);
+        }
+        // Score milestones every 10 points
+        if (newScore % 10 === 0) {
+          playMilestone();
+        }
+      }
 
       set({
         score: newScore,
@@ -290,8 +319,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
         set({ feedback: null });
       }, 350);
     } else {
+      _combo = 0;
       const seasonId = state.gameMode === 'daily' ? getDailyId() : getCurrentSeasonId();
       const sequence = createSeasonSequence(seasonId, state.settings.pathCount);
+      if (soundOn) playWrong();
       set({
         currentStep: 0,
         sequence,
@@ -308,8 +339,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const state = get();
     if (!state.isRunning || state.feedback !== null) return;
 
+    _combo = 0;
     const seasonId = state.gameMode === 'daily' ? getDailyId() : getCurrentSeasonId();
     const sequence = createSeasonSequence(seasonId, state.settings.pathCount);
+    if (state.settings.soundEnabled) playTimeout();
     set({
       currentStep: 0,
       sequence,
@@ -327,6 +360,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       const key = bestScoreKey(state.seasonId, state.settings.pathCount);
       saveBestScore(key, state.score);
     }
+    _combo = 0;
     set({
       screen: 'home',
       isRunning: false,
@@ -346,3 +380,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
     return s.sequence[s.currentStep] ?? 0;
   },
 }));
+
+// ─── Expose combo getter for scene ─────────────────────
+export function getCurrentCombo(): number {
+  return _combo;
+}

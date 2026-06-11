@@ -1,6 +1,6 @@
 import { useMemo, useCallback, useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useGameStore, getSpeedMs } from '../store/gameStore';
+import { useGameStore, getSpeedMs, getCurrentCombo } from '../store/gameStore';
 
 // ─── Palette (Subway Surfers inspired — vibrant, warm, colorful) ──
 const LANE_COLORS = [
@@ -668,19 +668,77 @@ export default function DoorRunnerScene() {
     }
   }, [feedback]);
 
-  // ─── Combo tracking ───
+  // ─── Combo tracking (from store) ───
   const [combo, setCombo] = useState(0);
   const [lastCorrectLane, setLastCorrectLane] = useState<number | null>(null);
 
   useEffect(() => {
     if (feedback === 'correct') {
-      setCombo(c => c + 1);
+      const newCombo = getCurrentCombo();
+      setCombo(newCombo);
       setLastCorrectLane(correctLane);
     } else if (feedback === 'wrong') {
       setCombo(0);
       setLastCorrectLane(null);
     }
   }, [feedback, correctLane]);
+
+  // ─── Swipe gesture support ───
+  const swipeStateRef = useRef({
+    activeLane: 0,
+    touchStartX: 0,
+    touchStartY: 0,
+    isSwiping: false,
+  });
+
+  // Initialize activeLane when step changes
+  useEffect(() => {
+    if (isRunning && feedback === null) {
+      swipeStateRef.current.activeLane = correctLane;
+    }
+  }, [currentStep, isRunning, feedback, correctLane]);
+
+  const handleChoose = useCallback(
+    (lane: number) => {
+      if (!isRunning || feedback !== null) return;
+      swipeStateRef.current.activeLane = lane;
+      chooseLane(lane);
+    },
+    [isRunning, feedback, chooseLane]
+  );
+
+  // Touch handlers for swipe
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    if (!isRunning || feedback !== null) return;
+    const touch = e.touches[0];
+    swipeStateRef.current.touchStartX = touch.clientX;
+    swipeStateRef.current.touchStartY = touch.clientY;
+    swipeStateRef.current.isSwiping = false;
+  }, [isRunning, feedback]);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (!isRunning || feedback !== null) return;
+    const touch = e.touches[0];
+    const dx = touch.clientX - swipeStateRef.current.touchStartX;
+    const dy = touch.clientY - swipeStateRef.current.touchStartY;
+
+    // Only detect horizontal swipes (must be more horizontal than vertical)
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 30 && !swipeStateRef.current.isSwiping) {
+      swipeStateRef.current.isSwiping = true;
+      const currentLane = swipeStateRef.current.activeLane;
+      const direction = dx > 0 ? 1 : -1; // right = +1, left = -1
+      const newLane = Math.max(0, Math.min(pathCount - 1, currentLane + direction));
+
+      if (newLane !== currentLane) {
+        swipeStateRef.current.activeLane = newLane;
+        chooseLane(newLane);
+      }
+    }
+  }, [isRunning, feedback, pathCount, chooseLane]);
+
+  const handleTouchEnd = useCallback(() => {
+    swipeStateRef.current.isSwiping = false;
+  }, []);
 
   // ─── Door rows ───
   const doorRows = useMemo(() => {
@@ -692,16 +750,13 @@ export default function DoorRunnerScene() {
     return rows;
   }, [currentStep, sequence]);
 
-  const handleChoose = useCallback(
-    (lane: number) => {
-      if (!isRunning || feedback !== null) return;
-      chooseLane(lane);
-    },
-    [isRunning, feedback, chooseLane]
-  );
-
   return (
-    <div className="relative w-full h-full select-none">
+    <div
+      className="relative w-full h-full select-none"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
       <RoadVisual pathCount={pathCount} />
       {isRunning && <SpeedLines />}
 
@@ -732,7 +787,45 @@ export default function DoorRunnerScene() {
       </AnimatePresence>
 
       <HUD combo={combo} />
+
+      {/* Swipe hint (shows briefly at game start) */}
+      <SwipeHint pathCount={pathCount} />
+
       <LaneButtons />
     </div>
+  );
+}
+
+// ─── Swipe Hint Overlay ────────────────────────────────
+function SwipeHint({ pathCount }: { pathCount: number }) {
+  const [visible, setVisible] = useState(true);
+  const isRunning = useGameStore((s) => s.isRunning);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setVisible(false), 3000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (!isRunning || !visible || pathCount < 2) return null;
+
+  return (
+    <motion.div
+      className="absolute bottom-28 left-0 right-0 z-30 flex items-center justify-center pointer-events-none"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ delay: 0.5, duration: 0.5 }}
+    >
+      <div className="flex items-center gap-2 rounded-2xl bg-black/40 backdrop-blur-sm px-4 py-2 border border-white/15">
+        <motion.span
+          className="text-white/80 text-sm font-bold"
+          animate={{ x: [-4, 4, -4] }}
+          transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+        >
+          👈 👉
+        </motion.span>
+        <span className="text-white/60 text-xs font-medium">Swipe or tap to choose</span>
+      </div>
+    </motion.div>
   );
 }
