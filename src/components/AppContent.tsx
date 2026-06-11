@@ -1,6 +1,7 @@
 import { useGameStore, type GameScreen as GameScreenType } from '../store/gameStore';
 import HomeScreen from './HomeScreen';
 import GameScreen from './GameScreen';
+import LeaderboardScreen from './LeaderboardScreen';
 
 function ScreenRouter({ screen }: { screen: GameScreenType }) {
   switch (screen) {
@@ -8,6 +9,8 @@ function ScreenRouter({ screen }: { screen: GameScreenType }) {
       return <HomeScreen />;
     case 'game':
       return <GameScreen />;
+    case 'leaderboard':
+      return <LeaderboardScreen />;
     default:
       return <HomeScreen />;
   }
