@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, type Variants, AnimatePresence } from 'framer-motion';
-import { Play, Zap, Gauge, Trophy, Calendar, Award, Target, Clock, Download, Volume2, VolumeX, HelpCircle, Palette, Globe, Music } from 'lucide-react';
+import { Play, Zap, Gauge, Trophy, Calendar, Award, Target, Clock, Download, Volume2, VolumeX, HelpCircle, Palette, Globe, Music, SlidersHorizontal, Timer } from 'lucide-react';
 import { useGameStore, type SpeedLevel } from '../store/gameStore';
 import { ACHIEVEMENTS } from '../lib/achievements';
 import { getDailyId, secondsUntilNextDaily, formatCountdown, getDailyDayName } from '../lib/daily';
@@ -22,6 +22,7 @@ const SPEED_OPTIONS: { value: SpeedLevel; labelKey: string; icon: typeof Zap }[]
   { value: 'slow', labelKey: 'home.slow', icon: Gauge },
   { value: 'normal', labelKey: 'home.normal', icon: Zap },
   { value: 'fast', labelKey: 'home.fast', icon: Zap },
+  { value: 'custom', labelKey: 'home.custom', icon: SlidersHorizontal },
 ];
 
 const THEME_OPTIONS: { value: ThemeId; labelKey: string; emoji: string }[] = [
@@ -116,7 +117,7 @@ function DailyCountdown() {
 
 // ─── Component ──────────────────────────────────────────
 export default function HomeScreen() {
-  const { settings, setPathCount, setSpeed, setSoundEnabled, setLang, setTheme, setSoundPack, startGame, bestScores, seasonId,
+  const { settings, setPathCount, setSpeed, setSoundEnabled, setLang, setTheme, setSoundPack, setCustomTimerSec, startGame, bestScores, seasonId,
     gameMode, setGameMode, setScreen, unlockedAchievements, stats } =
     useGameStore();
 
@@ -468,12 +469,12 @@ export default function HomeScreen() {
       </motion.section>
 
       {/* ── Speed Selector ────────────────────────────── */}
-      <motion.section variants={itemVariants} className="mb-5 w-full max-w-xs relative z-10">
+      <motion.section variants={itemVariants} className="mb-2 w-full max-w-xs relative z-10">
         <label className={`mb-1.5 flex items-center gap-1.5 text-sm font-bold ${textOnBg}`}>
           <Zap className="h-4 w-4" />
           {t('home.speed', lang)}
         </label>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-4 gap-2">
           {SPEED_OPTIONS.map(({ value, labelKey, icon: Icon }) => {
             const isActive = settings.speed === value;
             return (
@@ -496,12 +497,57 @@ export default function HomeScreen() {
                 aria-label={t(labelKey, lang)}
               >
                 <Icon className="h-4 w-4" />
-                {t(labelKey, lang)}
+                <span className="text-xs">{t(labelKey, lang)}</span>
               </button>
             );
           })}
         </div>
       </motion.section>
+
+      {/* ── Custom Timer Slider ────────────────────────────── */}
+      <AnimatePresence>
+        {settings.speed === 'custom' && (
+          <motion.section
+            variants={itemVariants}
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2 }}
+            className="mb-5 w-full max-w-xs relative z-10 overflow-hidden"
+          >
+            <div className={`rounded-2xl ${bgButton} backdrop-blur-sm p-4 space-y-3`}>
+              <div className="flex items-center justify-between">
+                <label className={`flex items-center gap-1.5 text-sm font-bold ${textOnBg}`}>
+                  <Timer className="h-4 w-4" />
+                  {t('home.timer', lang)}
+                </label>
+                <span className="text-sm font-black text-[#EF476F]">{settings.customTimerSec}{t('home.sec', lang)}</span>
+              </div>
+              <input
+                type="range"
+                min={3}
+                max={30}
+                step={1}
+                value={settings.customTimerSec}
+                onChange={(e) => setCustomTimerSec(Number(e.target.value))}
+                className="w-full h-2 rounded-full appearance-none cursor-pointer"
+                style={{
+                  background: `linear-gradient(to right, #06D6A0 0%, #FFD23F 50%, #EF476F 100%)`,
+                  accentColor: '#EF476F',
+                }}
+                aria-label={t('home.timer', lang)}
+              />
+              <div className={`flex justify-between text-xs ${textOnBgSub}`}>
+                <span>3{t('home.sec', lang)}</span>
+                <span>30{t('home.sec', lang)}</span>
+              </div>
+            </div>
+          </motion.section>
+        )}
+      </AnimatePresence>
+
+      {/* ── Speed description ────────────────────────────── */}
+      {settings.speed !== 'custom' && <div className="mb-5" />}
 
       {/* ── Best Score ──────────────────────────────── */}
       <motion.section

@@ -669,8 +669,8 @@ export default function DoorRunnerScene() {
   const [timeLeft, setTimeLeft] = useState(1);
   const rafRef = useRef<number>(0);
   const stepStartRef = useRef<number>(0);
-  const currentSpeedMs = getProgressiveSpeedMs(settings.speed, currentStep);
-  const baseSpeedMs = getProgressiveSpeedMs(settings.speed, 0);
+  const currentSpeedMs = getProgressiveSpeedMs(settings.speed, currentStep, settings.customTimerSec);
+  const baseSpeedMs = getProgressiveSpeedMs(settings.speed, 0, settings.customTimerSec);
 
   // Use ref for handleTimeout to avoid re-creating loop on every render
   const handleTimeoutRef = useRef(handleTimeout);

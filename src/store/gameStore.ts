@@ -13,7 +13,7 @@ import { announce } from '../lib/a11y';
 // ─── Types ─────────────────────────────────────────────
 export type GameScreen = 'home' | 'game' | 'leaderboard';
 
-export type SpeedLevel = 'slow' | 'normal' | 'fast';
+export type SpeedLevel = 'slow' | 'normal' | 'fast' | 'custom';
 
 export type GameMode = 'regular' | 'daily';
 
@@ -24,6 +24,7 @@ export interface GameSettings {
   lang: Lang;
   theme: ThemeId;
   soundPack: SoundPack;
+  customTimerSec: number; // 3..30 seconds (only used when speed='custom')
 }
 
 // ─── Defaults ──────────────────────────────────────────
@@ -34,14 +35,16 @@ const DEFAULT_SETTINGS: GameSettings = {
   lang: detectLang(),
   theme: detectTheme(),
   soundPack: detectSoundPack(),
+  customTimerSec: 10,
 };
 
 /** Base speed in ms for each speed level */
-export function getSpeedMs(speed: SpeedLevel): number {
+export function getSpeedMs(speed: SpeedLevel, customTimerSec?: number): number {
   switch (speed) {
-    case 'slow': return 15000;
-    case 'normal': return 15000;
-    case 'fast': return 15000;
+    case 'slow': return 20000;
+    case 'normal': return 12000;
+    case 'fast': return 7000;
+    case 'custom': return (customTimerSec ?? 10) * 1000;
   }
 }
 
@@ -50,8 +53,8 @@ export function getSpeedMs(speed: SpeedLevel): number {
  * Speed increases by ~3% every 5 correct answers, with a floor of 40% of base speed.
  * This makes the game gradually harder as you play longer.
  */
-export function getProgressiveSpeedMs(baseSpeed: SpeedLevel, currentStep: number): number {
-  const baseMs = getSpeedMs(baseSpeed);
+export function getProgressiveSpeedMs(baseSpeed: SpeedLevel, currentStep: number, customTimerSec?: number): number {
+  const baseMs = getSpeedMs(baseSpeed, customTimerSec);
   // Every 5 steps, reduce by 3%, minimum 40% of base
   const reduction = Math.pow(0.97, Math.floor(currentStep / 5));
   const minMs = baseMs * 0.4;
@@ -97,6 +100,7 @@ interface GameStore {
   setLang: (l: Lang) => void;
   setTheme: (t: ThemeId) => void;
   setSoundPack: (p: SoundPack) => void;
+  setCustomTimerSec: (s: number) => void;
 
   // Game mode
   gameMode: GameMode;
@@ -169,6 +173,7 @@ function loadSettings(): GameSettings {
   const saved = localStore.get<GameSettings>('settings', DEFAULT_SETTINGS);
   // Ensure new fields have defaults
   if (!saved.soundPack) saved.soundPack = 'classic';
+  if (!saved.customTimerSec) saved.customTimerSec = DEFAULT_SETTINGS.customTimerSec;
   // Sync runtime sound pack
   setSoundPack(saved.soundPack);
   return saved;
@@ -248,6 +253,11 @@ export const useGameStore = create<GameStore>((set, get) => {
     const settings = { ...get().settings, soundPack: p };
     saveSoundPack(p);
     setSoundPack(p); // update runtime pack
+    localStore.set('settings', settings);
+    set({ settings });
+  },
+  setCustomTimerSec: (s) => {
+    const settings = { ...get().settings, customTimerSec: s };
     localStore.set('settings', settings);
     set({ settings });
   },
@@ -490,7 +500,7 @@ export const useGameStore = create<GameStore>((set, get) => {
   },
 
   // Derived
-  getSpeedMs: () => getProgressiveSpeedMs(get().settings.speed, get().currentStep),
+  getSpeedMs: () => getProgressiveSpeedMs(get().settings.speed, get().currentStep, get().settings.customTimerSec),
   correctLane: () => {
     const s = get();
     return s.sequence[s.currentStep] ?? 0;

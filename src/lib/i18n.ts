@@ -17,6 +17,7 @@ const RU: Translations = {
   'home.slow': 'Медленно',
   'home.normal': 'Обычно',
   'home.fast': 'Быстро',
+  'home.custom': 'Своё',
   'home.regular': 'Обычный',
   'home.dailyMode': 'Дейли',
   'home.seasonBest': 'Лучший за сезон',
@@ -25,6 +26,9 @@ const RU: Translations = {
   'home.howToPlay': 'Как играть',
   'home.mute': 'Выкл. звук',
   'home.unmute': 'Вкл. звук',
+  'home.timer': 'Таймер',
+  'home.sec': 'с',
+  'home.customDesc': 'Настрой таймер и количество дорожек',
 
   // Daily
   'daily.challenge': 'Челлендж',
@@ -125,6 +129,7 @@ const EN: Translations = {
   'home.slow': 'Slow',
   'home.normal': 'Normal',
   'home.fast': 'Fast',
+  'home.custom': 'Custom',
   'home.regular': 'Regular',
   'home.dailyMode': 'Daily',
   'home.seasonBest': 'Season Best',
@@ -133,6 +138,9 @@ const EN: Translations = {
   'home.howToPlay': 'How to play',
   'home.mute': 'Mute sounds',
   'home.unmute': 'Enable sounds',
+  'home.timer': 'Timer',
+  'home.sec': 's',
+  'home.customDesc': 'Customize timer and lane count',
 
   // Daily
   'daily.challenge': 'Challenge',
