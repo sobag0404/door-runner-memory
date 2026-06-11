@@ -64,3 +64,35 @@ Stage Summary:
 - Sound effects: 7 distinct synthesized sounds via Web Audio API, with toggle
 - Swipe gestures: horizontal swipe to choose lanes, with hint overlay
 - All features verified working in browser
+
+---
+Task ID: 3
+Agent: Main
+Task: Audit codebase, implement optimizations and new features, push to GitHub
+
+Work Log:
+- Full code audit identified 9 issues (4 gameplay, 5 optimization)
+- Created src/lib/constants.ts — shared LANE_COLORS, LANE_LIGHT, getLanePercent, hapticFeedback
+- Removed duplicated LANE_COLORS from HomeScreen.tsx
+- Moved combo from module variable (_combo) to proper store state (gameStore.combo)
+- Added clearFeedbackTimers() — clearTimeout on reset/unmount, no more stale state
+- Replaced saveBestScore with saveBestScoreMut — no redundant localStorage reads on every tap
+- Replaced setInterval(50ms) with requestAnimationFrame for smooth timer bar
+- Implemented progressive speed: getProgressiveSpeedMs() — +3% every 5 steps, floor 40%
+- Added SpeedIndicator component — shows ⚡/💨 when speed increases
+- Added keyboard support — keys 1-6 for lane selection in DoorRunnerScene
+- Added haptic feedback — navigator.vibrate() on correct (light) and wrong (heavy)
+- Added AchievementToast component — popup on achievement unlock during gameplay
+- Added newlyUnlockedIds + clearNewlyUnlocked to store for toast state
+- Fixed GameScreen to pass combo to addStatsFromGame
+- Fixed usePWAInstall lint error (setState in effect → lazy initializer)
+- Updated PROJECT_CONTEXT.md with Sprint 4 features
+- Browser verified: all features working (home screen, game scene, sounds, speed indicator)
+- Pushed to GitHub: commit 97f4d7c
+
+Stage Summary:
+- Progressive speed: game gets harder as you play (+3% / 5 steps)
+- Keyboard support (1-6 keys) + haptic feedback (vibration)
+- Achievement toast notifications during gameplay
+- Code optimizations: combo in store, timer cleanup, deduped constants, rAF timer
+- All verified and pushed to GitHub
