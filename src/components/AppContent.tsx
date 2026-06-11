@@ -2,6 +2,7 @@ import { useGameStore, type GameScreen as GameScreenType } from '../store/gameSt
 import HomeScreen from './HomeScreen';
 import GameScreen from './GameScreen';
 import LeaderboardScreen from './LeaderboardScreen';
+import OfflineIndicator from './OfflineIndicator';
 
 function ScreenRouter({ screen }: { screen: GameScreenType }) {
   switch (screen) {
@@ -18,10 +19,12 @@ function ScreenRouter({ screen }: { screen: GameScreenType }) {
 
 export default function AppContent() {
   const screen = useGameStore((s) => s.screen);
+  const lang = useGameStore((s) => s.settings.lang);
 
   return (
     <main className="w-full h-dvh overflow-hidden">
       <ScreenRouter screen={screen} />
+      <OfflineIndicator lang={lang} />
     </main>
   );
 }

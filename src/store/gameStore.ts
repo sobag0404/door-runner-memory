@@ -6,6 +6,8 @@ import { ACHIEVEMENTS } from '../lib/achievements';
 import type { PlayerStats } from '../lib/achievements';
 import { playCorrect, playWrong, playTimeout, playCombo, playStart, playMilestone } from '../lib/sounds';
 import { hapticFeedback } from '../lib/constants';
+import { type Lang, detectLang, saveLang } from '../lib/i18n';
+import { type ThemeId, detectTheme, saveTheme } from '../lib/themes';
 
 // ─── Types ─────────────────────────────────────────────
 export type GameScreen = 'home' | 'game' | 'leaderboard';
@@ -18,6 +20,8 @@ export interface GameSettings {
   pathCount: number; // 3, 4, 5, 6
   speed: SpeedLevel;
   soundEnabled: boolean;
+  lang: Lang;
+  theme: ThemeId;
 }
 
 // ─── Defaults ──────────────────────────────────────────
@@ -25,6 +29,8 @@ const DEFAULT_SETTINGS: GameSettings = {
   pathCount: 3,
   speed: 'normal',
   soundEnabled: true,
+  lang: detectLang(),
+  theme: detectTheme(),
 };
 
 /** Base speed in ms for each speed level */
@@ -85,6 +91,8 @@ interface GameStore {
   setPathCount: (n: number) => void;
   setSpeed: (s: SpeedLevel) => void;
   setSoundEnabled: (v: boolean) => void;
+  setLang: (l: Lang) => void;
+  setTheme: (t: ThemeId) => void;
 
   // Game mode
   gameMode: GameMode;
@@ -212,6 +220,18 @@ export const useGameStore = create<GameStore>((set, get) => {
   },
   setSoundEnabled: (v) => {
     const settings = { ...get().settings, soundEnabled: v };
+    localStore.set('settings', settings);
+    set({ settings });
+  },
+  setLang: (l) => {
+    const settings = { ...get().settings, lang: l };
+    saveLang(l);
+    localStore.set('settings', settings);
+    set({ settings });
+  },
+  setTheme: (t) => {
+    const settings = { ...get().settings, theme: t };
+    saveTheme(t);
     localStore.set('settings', settings);
     set({ settings });
   },
