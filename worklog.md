@@ -96,3 +96,26 @@ Stage Summary:
 - Achievement toast notifications during gameplay
 - Code optimizations: combo in store, timer cleanup, deduped constants, rAF timer
 - All verified and pushed to GitHub
+
+---
+Task ID: 4
+Agent: Main
+Task: Implement upgrade items 9-12 (Error Boundary, Achievement Progress, Sound Packs, A11y)
+
+Work Log:
+- #9 Error Boundary: Created ErrorBoundary.tsx (React class component) with friendly fallback UI, retry/reload buttons, i18n support, dev-only error stack display, wrapped AppContent
+- #10 Achievement progress bars: Added progress() function to each Achievement returning {current, target}, updated AchievementsPanel to show color-coded progress bars for locked achievements with animated fill
+- #11 Sound packs: Added SoundPack type ('classic'|'8bit'|'soft') with 3 distinct synthesis patterns per sound, added soundPack to GameSettings, setSoundPack to store, selector in settings panel, persisted in localStorage
+- #12 A11y: Created a11y.ts utility (announce(), prefersReducedMotion(), trapFocus()), added aria-live region in AppContent, screen reader announcements for game events (correct/wrong/combo/start), focus trap in NameModal, prefers-reduced-motion support (disables screen shake, combo glow, door animations), keyboard focus-visible indicators in CSS, role="dialog" + aria-modal on all modals, aria-labels on door buttons and interactive elements
+- Full i18n: LeaderboardScreen, GameScreen NameModal (Save Score/Share/Skip), combo labels, swipe hints, game feedback text, error boundary
+- Fixed hardcoded Russian text in HUD component (Верно!/Ошибка!) → now uses i18n keys
+- Browser verified: all features working (settings panel, sound pack selector, language switch, game scene, keyboard controls)
+- Build: 408KB JS + 44KB CSS (126KB gzipped)
+- Pushed to GitHub: commit 6d5979e
+
+Stage Summary:
+- Error Boundary catches rendering errors with retry/reload
+- Achievement progress bars show real-time progress toward each unlock
+- 3 sound packs with distinct synthesis (Classic sine, 8-bit square, Soft triangle)
+- Full accessibility: screen reader support, reduced motion, focus management, ARIA attributes
+- All verified and pushed to GitHub
