@@ -119,3 +119,35 @@ Stage Summary:
 - 3 sound packs with distinct synthesis (Classic sine, 8-bit square, Soft triangle)
 - Full accessibility: screen reader support, reduced motion, focus management, ARIA attributes
 - All verified and pushed to GitHub
+
+---
+Task ID: 5
+Agent: Main
+Task: Implement Custom Difficulty (timer + lanes) and Screen Transition Animations
+
+Work Log:
+- Fixed speed levels bug: all 3 speeds returned 15000ms → now Slow=20s, Normal=12s, Fast=7s
+- Added 'custom' SpeedLevel type with configurable timer (3-30 seconds)
+- Added customTimerSec field to GameSettings with default 10s
+- Added setCustomTimerSec action to store
+- Updated loadSettings to default customTimerSec if missing
+- Updated getSpeedMs to accept customTimerSec param and use it for 'custom' speed
+- Updated getProgressiveSpeedMs to pass customTimerSec through
+- Updated getSpeedMs derived function to pass customTimerSec
+- Updated DoorRunnerScene to pass settings.customTimerSec to getProgressiveSpeedMs
+- Added "Custom" speed button with SlidersHorizontal icon in HomeScreen
+- Added timer slider (range input) that appears when Custom speed is selected
+- Slider shows current value (e.g., "10с"), has gradient background (green→yellow→red)
+- AnimatePresence handles smooth show/hide of custom timer panel
+- Added screen transition animations: AnimatePresence + motion.div wrapper in AppContent
+- Direction-aware transitions: Home→Game slides from right, Game→Home slides from left
+- Used useRef to track previous screen for correct direction detection
+- Added i18n keys: home.custom, home.timer, home.sec, home.customDesc (RU + EN)
+- Browser verified: all features working (4 speed buttons, slider, transitions, lane selector)
+- Pushed to GitHub: commit becc96d
+
+Stage Summary:
+- Custom difficulty: configurable timer 3-30s with "Custom" speed option
+- Fixed speed levels to actually differ (Slow/Normal/Fast)
+- Smooth slide transitions between all screens (home/game/leaderboard)
+- All verified and pushed to GitHub
