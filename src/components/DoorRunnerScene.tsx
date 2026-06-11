@@ -715,17 +715,42 @@ export default function DoorRunnerScene() {
     }
   }, [feedback, correctLane]);
 
-  // ─── Keyboard support (1-6 keys) ───
+  // ─── Keyboard support (1-6, arrows, A/D, Space/Enter) ───
+  const activeLaneRef = useRef(0);
+
   useEffect(() => {
     if (!isRunning) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
+      const state = useGameStore.getState();
+      if (!state.isRunning || state.feedback !== null) return;
+
+      // Number keys 1-6: direct lane selection
       const num = parseInt(e.key, 10);
       if (num >= 1 && num <= pathCount) {
-        const state = useGameStore.getState();
-        if (state.isRunning && state.feedback === null) {
-          chooseLane(num - 1);
+        activeLaneRef.current = num - 1;
+        chooseLane(num - 1);
+        return;
+      }
+
+      // Arrow keys & A/D: relative lane movement
+      let direction = 0;
+      if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') direction = -1;
+      if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') direction = 1;
+
+      if (direction !== 0) {
+        e.preventDefault(); // prevent page scroll on arrow keys
+        const newLane = Math.max(0, Math.min(pathCount - 1, activeLaneRef.current + direction));
+        if (newLane !== activeLaneRef.current) {
+          activeLaneRef.current = newLane;
+          chooseLane(newLane);
         }
+      }
+
+      // Enter / Space: confirm current lane
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        chooseLane(activeLaneRef.current);
       }
     };
 
@@ -855,6 +880,9 @@ export default function DoorRunnerScene() {
 function SwipeHint({ pathCount }: { pathCount: number }) {
   const [visible, setVisible] = useState(true);
   const isRunning = useGameStore((s) => s.isRunning);
+  const [isTouchDevice] = useState(
+    () => typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0)
+  );
 
   useEffect(() => {
     const timer = setTimeout(() => setVisible(false), 3000);
@@ -862,6 +890,31 @@ function SwipeHint({ pathCount }: { pathCount: number }) {
   }, []);
 
   if (!isRunning || !visible || pathCount < 2) return null;
+
+  const touchHint = (
+    <>
+      <motion.span
+        className="text-white/80 text-sm font-bold"
+        animate={{ x: [-4, 4, -4] }}
+        transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+      >
+        👈 👉
+      </motion.span>
+      <span className="text-white/60 text-xs font-medium">Свайп или тап</span>
+    </>
+  );
+
+  const keyboardHint = (
+    <>
+      <kbd className="inline-flex items-center justify-center w-6 h-6 rounded bg-white/15 border border-white/20 text-white/80 text-xs font-bold">←</kbd>
+      <kbd className="inline-flex items-center justify-center w-6 h-6 rounded bg-white/15 border border-white/20 text-white/80 text-xs font-bold">→</kbd>
+      <span className="text-white/40 text-xs">или</span>
+      <kbd className="inline-flex items-center justify-center w-6 h-6 rounded bg-white/15 border border-white/20 text-white/80 text-xs font-bold">A</kbd>
+      <kbd className="inline-flex items-center justify-center w-6 h-6 rounded bg-white/15 border border-white/20 text-white/80 text-xs font-bold">D</kbd>
+      <span className="text-white/40 text-xs">•</span>
+      <kbd className="inline-flex items-center justify-center px-1.5 h-6 rounded bg-white/15 border border-white/20 text-white/80 text-[10px] font-bold">Space</kbd>
+    </>
+  );
 
   return (
     <motion.div
@@ -872,14 +925,7 @@ function SwipeHint({ pathCount }: { pathCount: number }) {
       transition={{ delay: 0.5, duration: 0.5 }}
     >
       <div className="flex items-center gap-2 rounded-2xl bg-black/40 backdrop-blur-sm px-4 py-2 border border-white/15">
-        <motion.span
-          className="text-white/80 text-sm font-bold"
-          animate={{ x: [-4, 4, -4] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
-        >
-          👈 👉
-        </motion.span>
-        <span className="text-white/60 text-xs font-medium">Swipe or tap to choose</span>
+        {isTouchDevice ? touchHint : keyboardHint}
       </div>
     </motion.div>
   );

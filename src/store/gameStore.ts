@@ -30,9 +30,9 @@ const DEFAULT_SETTINGS: GameSettings = {
 /** Base speed in ms for each speed level */
 export function getSpeedMs(speed: SpeedLevel): number {
   switch (speed) {
-    case 'slow': return 2500;
-    case 'normal': return 1800;
-    case 'fast': return 1200;
+    case 'slow': return 15000;
+    case 'normal': return 15000;
+    case 'fast': return 15000;
   }
 }
 
@@ -188,7 +188,12 @@ function loadLeaderboard(): LeaderboardEntry[] {
 }
 
 // ─── Store ─────────────────────────────────────────────
-export const useGameStore = create<GameStore>((set, get) => ({
+export const useGameStore = create<GameStore>((set, get) => {
+  // Expose store to window for testing
+  if (typeof window !== 'undefined') {
+    (window as any).__gameStore = { getState: get, setState: set };
+  }
+  return {
   // Screen
   screen: 'home',
   setScreen: (s) => set({ screen: s }),
@@ -444,4 +449,4 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const s = get();
     return s.sequence[s.currentStep] ?? 0;
   },
-}));
+}});
