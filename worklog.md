@@ -250,3 +250,31 @@ Stage Summary:
 - P1 remaining: full integration of gameReducer into Zustand, further decomposition
 - 8 atomic commits pushed per reviewer methodology
 
+
+---
+Task ID: 1
+Agent: Main Agent
+Task: Implement security reviewer's P0+P1 fixes from updated review
+
+Work Log:
+- Removed .env from git tracking, expanded .gitignore, created .env.example
+- Removed dist/, dev.log, tool-results/ from git tracking
+- Wrapped window.__gameStore in import.meta.env.DEV guard (production safe)
+- Created .github/workflows/ci.yml (couldn't push due to token scope)
+- Added packageManager + cap scripts to package.json
+- Fixed daily best bug: HomeScreen now shows dailyBest when gameMode=daily
+- Strengthened normalizeLeaderboard: strict mode/speed/pathCount enum validation, integer score, ISO date regex, name sanitization (control chars), sort + top 50 cap
+- Added validateIntInRange for stats (no fractional counters)
+- Isolated TimerBar: self-contained rAF + direct DOM manipulation via ref (no React re-renders per frame)
+- Completed i18n: TutorialOverlay uses t(), AchievementsPanel uses titleKey/descriptionKey, settings labels localized
+- Added all achievement translations (RU + EN) to i18n.ts
+- Added Netlify security headers (nosniff, referrer-policy, permissions-policy, x-frame-options)
+- Added 8 new leaderboard validation tests (109 total passing)
+- Committed and pushed to GitHub
+
+Stage Summary:
+- All P0 issues resolved (except CI workflow needs manual push)
+- All P1 issues resolved
+- Build + lint + tests green
+- 109 unit tests passing
+- Production build no longer contains window.__gameStore
