@@ -36,7 +36,7 @@ function AnimatedScreen({ screen, screenKey, prevScreen }: { screen: GameScreenT
   return (
     <motion.div
       key={screenKey}
-      className="absolute inset-0"
+      className="absolute inset-0 overflow-y-auto"
       variants={variants}
       initial="initial"
       animate="animate"

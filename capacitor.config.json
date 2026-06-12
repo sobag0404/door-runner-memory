@@ -1,0 +1,19 @@
+{
+  "appId": "com.doorrunner.memory",
+  "appName": "Door Runner Memory",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 1500,
+      "backgroundColor": "#FF8C42",
+      "showSpinner": false
+    },
+    "StatusBar": {
+      "style": "Dark",
+      "backgroundColor": "#FF6B35"
+    }
+  }
+}

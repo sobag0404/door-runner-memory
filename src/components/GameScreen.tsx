@@ -196,6 +196,7 @@ export default function GameScreen() {
       <button
         onClick={handleBack}
         className="absolute top-3 left-3 z-50 w-10 h-10 flex items-center justify-center rounded-2xl bg-white/20 backdrop-blur-sm text-white/90 hover:text-white hover:bg-white/30 active:scale-90 transition-all shadow-md border border-white/15"
+        style={{ marginTop: 'env(safe-area-inset-top)' }}
         aria-label={t('game.back', lang)}
       >
         <ArrowLeft size={20} />

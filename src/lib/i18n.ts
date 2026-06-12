@@ -112,6 +112,15 @@ const RU: Translations = {
   'game.correct': '✓ Верно!',
   'game.wrong': '✗ Ошибка!',
 
+  // Install banner
+  'install.title': 'Установить игру',
+  'install.close': 'Закрыть',
+  'install.android': 'Установить',
+  'install.ios': 'Нажми ⬆️ и выбери «На экран Домой»',
+  'install.later': 'Позже',
+  'install.iosStep1': '1. Нажми кнопку «Поделиться»',
+  'install.iosStep2': '2. Выбери «На экран Домой»',
+
   // A11y
   'a11y.newGame': 'Новая игра началась!',
   'a11y.correct': 'Правильно! Счёт: {score}',
@@ -223,6 +232,15 @@ const EN: Translations = {
   // Game feedback
   'game.correct': '✓ Correct!',
   'game.wrong': '✗ Wrong!',
+
+  // Install banner
+  'install.title': 'Install the game',
+  'install.close': 'Close',
+  'install.android': 'Install',
+  'install.ios': 'Tap ⬆️ then "Add to Home Screen"',
+  'install.later': 'Later',
+  'install.iosStep1': '1. Tap the Share button',
+  'install.iosStep2': '2. Select "Add to Home Screen"',
 
   // A11y
   'a11y.newGame': 'New game started!',

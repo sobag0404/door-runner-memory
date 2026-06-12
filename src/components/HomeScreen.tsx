@@ -11,6 +11,7 @@ import { localStore } from '../lib/localStore';
 import { t, type Lang } from '../lib/i18n';
 import { THEMES, type ThemeId } from '../lib/themes';
 import { type SoundPack } from '../lib/sounds';
+import InstallBanner from './InstallBanner';
 import AchievementsPanel from './AchievementsPanel';
 import TutorialOverlay from './TutorialOverlay';
 import BackgroundParticles from './BackgroundParticles';
@@ -166,7 +167,7 @@ export default function HomeScreen() {
 
   return (
     <motion.div
-      className="relative flex min-h-dvh flex-col items-center justify-center px-5 py-6 selection:bg-orange-200"
+      className="relative flex min-h-dvh flex-col items-center justify-start px-5 pt-6 pb-36 selection:bg-orange-200"
       style={{ background: theme.homeBg }}
       variants={containerVariants}
       initial="hidden"
@@ -595,6 +596,9 @@ export default function HomeScreen() {
       <AnimatePresence>
         {showTutorial && <TutorialOverlay onClose={() => setShowTutorial(false)} />}
       </AnimatePresence>
+
+      {/* ── Install Banner ────────────────────────────── */}
+      <InstallBanner />
     </motion.div>
   );
 }
