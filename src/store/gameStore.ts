@@ -10,6 +10,8 @@ import { hapticFeedback } from '../lib/constants';
 import { type Lang, detectLang, saveLang, t } from '../lib/i18n';
 import { type ThemeId, detectTheme, saveTheme } from '../lib/themes';
 import { announce } from '../lib/a11y';
+import { gameReducer } from '../core/game/gameReducer';
+import { INITIAL_GAME_STATE } from '../core/game/gameTypes';
 
 // ─── Types ─────────────────────────────────────────────
 export type GameScreen = 'home' | 'game' | 'leaderboard';
@@ -366,15 +368,13 @@ export const useGameStore = create<GameStore>((set, get) => {
     clearFeedbackTimers();
     if (settings.soundEnabled) playStart();
     announce(t('a11y.newGame', settings.lang));
+
+    // Delegate pure state transition to reducer
+    const next = gameReducer(INITIAL_GAME_STATE, { type: 'START' });
     set({
       seasonId,
       sequence,
-      currentStep: 0,
-      score: 0,
-      combo: 0,
-      isRunning: true,
-      feedback: null,
-      timeLeft: 1,
+      ...next,
       screen: 'game',
     });
   },
@@ -386,68 +386,70 @@ export const useGameStore = create<GameStore>((set, get) => {
     const correct = getExpectedPath(state.sequence, state.seasonId, state.settings.pathCount, state.currentStep);
     const soundOn = state.settings.soundEnabled;
 
+    // Build current game state for reducer
+    const currentGameState = {
+      currentStep: state.currentStep,
+      score: state.score,
+      combo: state.combo,
+      isRunning: state.isRunning,
+      feedback: state.feedback,
+      timeLeft: state.timeLeft,
+    };
+
     if (laneIndex === correct) {
-      const newScore = state.score + 1;
-      const newStep = state.currentStep + 1;
-      const newCombo = state.combo + 1;
+      const next = gameReducer(currentGameState, { type: 'CHOOSE_CORRECT' });
 
       const key = bestScoreKey(state.seasonId, state.settings.pathCount);
-      const updatedBestScores = saveBestScoreMut(state.bestScores, key, newScore);
+      const updatedBestScores = saveBestScoreMut(state.bestScores, key, next.score);
 
       if (soundOn) {
         playCorrect();
-        // Combo sound at milestones
-        if (newCombo >= 3 && (newCombo === 3 || newCombo === 5 || newCombo === 7 || newCombo === 10 || newCombo % 10 === 0)) {
-          playCombo(newCombo);
+        if (next.combo >= 3 && (next.combo === 3 || next.combo === 5 || next.combo === 7 || next.combo === 10 || next.combo % 10 === 0)) {
+          playCombo(next.combo);
         }
-        // Score milestone every 10
-        if (newScore % 10 === 0) {
+        if (next.score % 10 === 0) {
           playMilestone();
         }
       }
       hapticFeedback('light');
 
-      // A11y: announce correct answer + score
-      announce(t('a11y.correct', state.settings.lang, { score: String(newScore) }));
-      if (newCombo >= 3 && (newCombo === 3 || newCombo === 5 || newCombo === 7 || newCombo === 10 || newCombo % 10 === 0)) {
-        announce(t('a11y.combo', state.settings.lang, { combo: String(newCombo) }));
+      announce(t('a11y.correct', state.settings.lang, { score: String(next.score) }));
+      if (next.combo >= 3 && (next.combo === 3 || next.combo === 5 || next.combo === 7 || next.combo === 10 || next.combo % 10 === 0)) {
+        announce(t('a11y.combo', state.settings.lang, { combo: String(next.combo) }));
       }
 
       set({
-        score: newScore,
-        currentStep: newStep,
-        combo: newCombo,
-        feedback: 'correct',
-        timeLeft: 1,
+        ...next,
         bestScores: updatedBestScores,
       });
 
       clearFeedbackTimers();
       _correctTimeoutId = setTimeout(() => {
         _correctTimeoutId = null;
-        set({ feedback: null });
+        const s = get();
+        const cleared = gameReducer({ currentStep: s.currentStep, score: s.score, combo: s.combo, isRunning: s.isRunning, feedback: s.feedback, timeLeft: s.timeLeft }, { type: 'CLEAR_FEEDBACK' });
+        set({ feedback: cleared.feedback });
       }, 350);
     } else {
+      const next = gameReducer(currentGameState, { type: 'CHOOSE_WRONG' });
       const seasonId = state.gameMode === 'daily' ? getDailyId() : getCurrentSeasonId();
       const sequence = createSeasonSequence(seasonId, state.settings.pathCount);
       if (soundOn) playWrong();
       hapticFeedback('heavy');
 
-      // A11y: announce wrong answer
       announce(t('a11y.wrong', state.settings.lang));
 
       set({
-        currentStep: 0,
+        ...next,
         sequence,
-        combo: 0,
-        feedback: 'wrong',
-        timeLeft: 1,
       });
 
       clearFeedbackTimers();
       _wrongTimeoutId = setTimeout(() => {
         _wrongTimeoutId = null;
-        set({ feedback: null });
+        const s = get();
+        const cleared = gameReducer({ currentStep: s.currentStep, score: s.score, combo: s.combo, isRunning: s.isRunning, feedback: s.feedback, timeLeft: s.timeLeft }, { type: 'CLEAR_FEEDBACK' });
+        set({ feedback: cleared.feedback });
       }, 600);
     }
   },
@@ -456,35 +458,56 @@ export const useGameStore = create<GameStore>((set, get) => {
     const state = get();
     if (!state.isRunning || state.feedback !== null) return;
 
+    const currentGameState = {
+      currentStep: state.currentStep,
+      score: state.score,
+      combo: state.combo,
+      isRunning: state.isRunning,
+      feedback: state.feedback,
+      timeLeft: state.timeLeft,
+    };
+
+    const next = gameReducer(currentGameState, { type: 'TIMEOUT' });
     const seasonId = state.gameMode === 'daily' ? getDailyId() : getCurrentSeasonId();
     const sequence = createSeasonSequence(seasonId, state.settings.pathCount);
     if (state.settings.soundEnabled) playTimeout();
     hapticFeedback('medium');
 
     set({
-      currentStep: 0,
+      ...next,
       sequence,
-      combo: 0,
-      feedback: 'wrong',
-      timeLeft: 1,
     });
 
     clearFeedbackTimers();
     _wrongTimeoutId = setTimeout(() => {
       _wrongTimeoutId = null;
-      set({ feedback: null });
+      const s = get();
+      const cleared = gameReducer({ currentStep: s.currentStep, score: s.score, combo: s.combo, isRunning: s.isRunning, feedback: s.feedback, timeLeft: s.timeLeft }, { type: 'CLEAR_FEEDBACK' });
+      set({ feedback: cleared.feedback });
     }, 600);
   },
 
   resetGame: () => {
     const state = get();
     clearFeedbackTimers();
+
+    const currentGameState = {
+      currentStep: state.currentStep,
+      score: state.score,
+      combo: state.combo,
+      isRunning: state.isRunning,
+      feedback: state.feedback,
+      timeLeft: state.timeLeft,
+    };
+
+    const next = gameReducer(currentGameState, { type: 'STOP' });
+
     if (state.score > 0) {
       const key = bestScoreKey(state.seasonId, state.settings.pathCount);
       const updatedBestScores = saveBestScoreMut(state.bestScores, key, state.score);
       set({
         screen: 'home',
-        isRunning: false,
+        ...next,
         currentStep: 0,
         score: 0,
         combo: 0,
@@ -496,7 +519,7 @@ export const useGameStore = create<GameStore>((set, get) => {
     } else {
       set({
         screen: 'home',
-        isRunning: false,
+        ...next,
         currentStep: 0,
         score: 0,
         combo: 0,
