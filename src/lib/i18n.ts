@@ -20,8 +20,8 @@ const RU: Translations = {
   'home.custom': 'Своё',
   'home.regular': 'Обычный',
   'home.dailyMode': 'Дейли',
-  'home.seasonBest': 'Лучший за сезон',
-  'home.dailyBest': 'Лучший за день',
+  'home.seasonBest': 'Лучший (устройство)',
+  'home.dailyBest': 'Лучший за день (устройство)',
   'home.install': 'Установить',
   'home.howToPlay': 'Как играть',
   'home.mute': 'Выкл. звук',
@@ -68,7 +68,7 @@ const RU: Translations = {
   'tutorial.step4Text': 'Время на ответ ограничено. Чем дальше — тем быстрее!',
 
   // Leaderboard
-  'lb.title': 'Таблица лидеров',
+  'lb.title': 'Рекорды на устройстве',
   'lb.all': 'Все',
   'lb.regular': 'Обычный',
   'lb.daily': 'Дейли',
@@ -141,8 +141,8 @@ const EN: Translations = {
   'home.custom': 'Custom',
   'home.regular': 'Regular',
   'home.dailyMode': 'Daily',
-  'home.seasonBest': 'Season Best',
-  'home.dailyBest': 'Daily Best',
+  'home.seasonBest': 'Best (this device)',
+  'home.dailyBest': 'Daily best (this device)',
   'home.install': 'Install',
   'home.howToPlay': 'How to play',
   'home.mute': 'Mute sounds',
@@ -189,7 +189,7 @@ const EN: Translations = {
   'tutorial.step4Text': 'Time is limited. The further you go, the faster it gets!',
 
   // Leaderboard
-  'lb.title': 'Leaderboard',
+  'lb.title': 'Records on this device',
   'lb.all': 'All',
   'lb.regular': 'Regular',
   'lb.daily': 'Daily',
