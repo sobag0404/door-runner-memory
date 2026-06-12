@@ -47,7 +47,7 @@ export default class ErrorBoundary extends Component<Props, State> {
           role="alert"
         >
           {/* Sad door */}
-          <div className="text-6xl mb-4" aria-hidden="true">🚪💥</div>
+          <div className="text-6xl mb-4 font-black text-[#EF476F]" aria-hidden="true">X(</div>
 
           <h1 className="text-2xl font-black text-white mb-2">
             {t('error.title', lang)}

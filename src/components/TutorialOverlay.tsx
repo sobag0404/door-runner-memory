@@ -11,25 +11,25 @@ function markTutorialSeen(): void {
 // ─── Tutorial Steps ───
 const STEPS = [
   {
-    emoji: '🚪',
+    emoji: '[ ]',
     title: 'Запомни дверь',
     text: 'Смотри, какая дверь подсвечена — это правильный путь!',
     visual: 'door',
   },
   {
-    emoji: '👆',
+    emoji: '>',
     title: 'Выбери путь',
-    text: 'Тапни по двери, свайпни или нажми ← → / A D на клавиатуре',
+    text: 'Тапни по двери, свайпни или нажми стрелки / A D на клавиатуре',
     visual: 'controls',
   },
   {
-    emoji: '🔥',
+    emoji: 'x3',
     title: 'Собирай комбо',
     text: 'Ответил правильно 3+ раз подряд — получи комбо-бонус!',
     visual: 'combo',
   },
   {
-    emoji: '⏱️',
+    emoji: ':)',
     title: 'Не медли!',
     text: 'Время на ответ ограничено. Чем дальше — тем быстрее!',
     visual: 'timer',
@@ -43,13 +43,13 @@ function DoorVisual() {
       {[0, 1, 2].map((i) => (
         <motion.div
           key={i}
-          className={`w-14 h-20 rounded-t-lg border-2 flex items-center justify-center text-2xl ${
-            i === 1 ? 'bg-[#06D6A0]/80 border-[#06D6A0]' : 'bg-white/10 border-white/20'
+          className={`w-14 h-20 rounded-t-lg border-2 flex items-center justify-center text-lg font-black ${
+            i === 1 ? 'bg-[#06D6A0]/80 border-[#06D6A0] text-white' : 'bg-white/10 border-white/20 text-white/40'
           }`}
           animate={i === 1 ? { scale: [1, 1.1, 1] } : {}}
           transition={{ duration: 1, repeat: Infinity }}
         >
-          🚪
+          {i + 1}
         </motion.div>
       ))}
     </div>
@@ -65,19 +65,19 @@ function ControlsVisual() {
     return (
       <div className="flex items-center justify-center gap-2 h-24">
         <motion.span
-          className="text-3xl"
+          className="text-3xl font-black text-white/80"
           animate={{ x: [-6, 6, -6] }}
           transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
         >
-          👈
+          {'<'}
         </motion.span>
-        <span className="text-white/30 text-lg">•</span>
+        <span className="text-white/30 text-lg">/</span>
         <motion.span
-          className="text-3xl"
+          className="text-3xl font-black text-white/80"
           animate={{ x: [6, -6, 6] }}
           transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
         >
-          👉
+          {'>'}
         </motion.span>
       </div>
     );
@@ -85,8 +85,8 @@ function ControlsVisual() {
 
   return (
     <div className="flex items-center justify-center gap-2 h-24">
-      <kbd className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-white/15 border border-white/25 text-white/80 text-lg font-bold shadow-lg">←</kbd>
-      <kbd className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-white/15 border border-white/25 text-white/80 text-lg font-bold shadow-lg">→</kbd>
+      <kbd className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-white/15 border border-white/25 text-white/80 text-lg font-bold shadow-lg">{'<-'}</kbd>
+      <kbd className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-white/15 border border-white/25 text-white/80 text-lg font-bold shadow-lg">{'->'}</kbd>
       <span className="text-white/30 text-sm mx-1">или</span>
       <kbd className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-white/15 border border-white/25 text-white/80 text-lg font-bold shadow-lg">A</kbd>
       <kbd className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-white/15 border border-white/25 text-white/80 text-lg font-bold shadow-lg">D</kbd>
@@ -103,7 +103,7 @@ function ComboVisual() {
         animate={{ scale: [1, 1.3, 1], opacity: [0.7, 1, 0.7] }}
         transition={{ duration: 1.5, repeat: Infinity }}
       >
-        👍 NICE! → ⚡ SUPER! → 🔥 INSANE!
+        NICE! &gt;&gt; SUPER! &gt;&gt; INSANE!
       </motion.div>
     </div>
   );
@@ -195,7 +195,7 @@ export default function TutorialOverlay({ onClose }: { onClose: () => void }) {
             className="text-center"
           >
             <motion.div
-              className="text-5xl mb-3"
+              className="text-5xl mb-3 font-black text-[#FF6B35]"
               animate={{ y: [0, -6, 0] }}
               transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
             >
@@ -219,7 +219,7 @@ export default function TutorialOverlay({ onClose }: { onClose: () => void }) {
             onClick={handleNext}
             className="flex-1 h-11 rounded-2xl bg-[#FF6B35] text-white font-bold text-sm shadow-lg shadow-[#FF6B35]/30 active:scale-95 transition-all"
           >
-            {isLast ? 'Поехали! 🚀' : 'Далее →'}
+            {isLast ? 'Поехали!' : 'Далее >>'}
           </button>
         </div>
       </motion.div>

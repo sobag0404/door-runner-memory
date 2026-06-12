@@ -18,8 +18,11 @@ html, body {
   overflow: hidden;
   background: var(--background);
   color: var(--foreground);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   touch-action: manipulation;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 body {
@@ -101,18 +104,18 @@ input[type="range"]::-moz-range-thumb {
 
 /* ─── Runner limb swing ─── */
 @keyframes armSwing {
-  0% { transform: rotate(-30deg); }
-  100% { transform: rotate(30deg); }
+  0% { transform: rotate(-25deg); }
+  100% { transform: rotate(25deg); }
 }
 @keyframes legSwing {
-  0% { transform: rotate(-20deg); }
-  100% { transform: rotate(20deg); }
+  0% { transform: rotate(-15deg); }
+  100% { transform: rotate(15deg); }
 }
 
 /* ─── Runner bounce while running ─── */
 @keyframes runnerBounce {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
+  50% { transform: translateY(-4px); }
 }
 
 /* ─── Road dash scroll ─── */

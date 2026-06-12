@@ -45,7 +45,7 @@ const RU: Translations = {
   'game.score': 'Счёт',
   'game.combo': 'Комбо',
   'game.share': 'Поделиться',
-  'game.copied': '✓ Скопировано!',
+  'game.copied': 'Скопировано!',
   'game.shareText': '🚪 Door Runner Memory\n{mode}\n🏆 Счёт: {score}{combo}\n\nСможешь побить? 👇',
   'game.shareDaily': '📅 Дейли',
   'game.shareRegular': '🎮 Обычный',
@@ -90,10 +90,10 @@ const RU: Translations = {
   'offline.backOnline': 'Снова онлайн!',
 
   // Combo labels
-  'combo.nice': '👍 КРУТО!',
-  'combo.great': '✨ ОТЛИЧНО!',
-  'combo.super': '⚡ СУПЕР!',
-  'combo.insane': '🔥 БЕЗУМИЕ!',
+  'combo.nice': 'КРУТО!',
+  'combo.great': 'ОТЛИЧНО!',
+  'combo.super': 'СУПЕР!',
+  'combo.insane': 'БЕЗУМИЕ!',
 
   // Error Boundary
   'error.title': 'Что-то сломалось!',
@@ -109,14 +109,14 @@ const RU: Translations = {
   'sound.pack': 'Звуки',
 
   // Game feedback
-  'game.correct': '✓ Верно!',
-  'game.wrong': '✗ Ошибка!',
+  'game.correct': 'Верно!',
+  'game.wrong': 'Ошибка!',
 
   // Install banner
   'install.title': 'Установить игру',
   'install.close': 'Закрыть',
   'install.android': 'Установить',
-  'install.ios': 'Нажми ⬆️ и выбери «На экран Домой»',
+  'install.ios': 'Нажми кнопку "Поделиться" и выбери "На экран Домой"',
   'install.later': 'Позже',
   'install.iosStep1': '1. Нажми кнопку «Поделиться»',
   'install.iosStep2': '2. Выбери «На экран Домой»',
@@ -166,7 +166,7 @@ const EN: Translations = {
   'game.score': 'Score',
   'game.combo': 'Combo',
   'game.share': 'Share result',
-  'game.copied': '✓ Copied!',
+  'game.copied': 'Copied!',
   'game.shareText': '🚪 Door Runner Memory\n{mode}\n🏆 Score: {score}{combo}\n\nCan you beat me? 👇',
   'game.shareDaily': '📅 Daily',
   'game.shareRegular': '🎮 Regular',
@@ -211,10 +211,10 @@ const EN: Translations = {
   'offline.backOnline': 'Back online!',
 
   // Combo labels
-  'combo.nice': '👍 NICE!',
-  'combo.great': '✨ GREAT!',
-  'combo.super': '⚡ SUPER!',
-  'combo.insane': '🔥 INSANE!',
+  'combo.nice': 'NICE!',
+  'combo.great': 'GREAT!',
+  'combo.super': 'SUPER!',
+  'combo.insane': 'INSANE!',
 
   // Error Boundary
   'error.title': 'Something broke!',
@@ -230,14 +230,14 @@ const EN: Translations = {
   'sound.pack': 'Sounds',
 
   // Game feedback
-  'game.correct': '✓ Correct!',
-  'game.wrong': '✗ Wrong!',
+  'game.correct': 'Correct!',
+  'game.wrong': 'Wrong!',
 
   // Install banner
   'install.title': 'Install the game',
   'install.close': 'Close',
   'install.android': 'Install',
-  'install.ios': 'Tap ⬆️ then "Add to Home Screen"',
+  'install.ios': 'Tap Share button, then "Add to Home Screen"',
   'install.later': 'Later',
   'install.iosStep1': '1. Tap the Share button',
   'install.iosStep2': '2. Select "Add to Home Screen"',

@@ -64,7 +64,7 @@ function SpeedIndicator({ currentMs, baseMs }: { currentMs: number; baseMs: numb
   const ratio = baseMs / currentMs; // >1 means faster
   if (ratio < 1.05) return null; // no speed boost yet
 
-  const label = ratio >= 2 ? '⚡⚡' : ratio >= 1.5 ? '⚡' : '💨';
+  const label = ratio >= 2 ? '>>' : ratio >= 1.5 ? '>' : '~';
   return (
     <motion.div
       className="absolute top-14 right-3 z-40 pointer-events-none"
@@ -90,7 +90,7 @@ function Runner({ pathCount, currentLane, feedback }: {
 
   return (
     <motion.div
-      className="absolute bottom-[20%] z-20"
+      className="absolute bottom-[22%] z-20"
       animate={{
         left: `${leftPercent}%`,
         y: feedback === 'wrong' ? [0, -12, 6, -4, 0] : 0,
@@ -99,11 +99,11 @@ function Runner({ pathCount, currentLane, feedback }: {
         left: { type: 'spring', stiffness: 320, damping: 22 },
         y: { duration: 0.5, ease: 'easeOut' },
       }}
-      style={{ transform: 'translateX(-50%)' }}
+      style={{ transform: 'translateX(-50%)', willChange: 'left' }}
     >
       <div
         className="relative flex flex-col items-center"
-        style={{ animation: feedback !== 'wrong' ? 'runnerBounce 0.35s ease-in-out infinite' : undefined }}
+        style={{ animation: feedback !== 'wrong' ? 'runnerBounce 0.5s ease-in-out infinite' : undefined }}
       >
         {/* Shadow on ground */}
         <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-10 h-3 bg-black/25 rounded-full blur-sm" />
@@ -170,16 +170,16 @@ function Runner({ pathCount, currentLane, feedback }: {
 
         {/* ── Arms ── */}
         <div className="absolute top-[38px] -left-3.5 w-3 h-7 rounded-full bg-[#FFDBB5] origin-top shadow-sm"
-          style={{ animation: 'armSwing 0.3s ease-in-out infinite alternate' }} />
+          style={{ animation: 'armSwing 0.4s ease-in-out infinite alternate' }} />
         <div className="absolute top-[38px] -right-3.5 w-3 h-7 rounded-full bg-[#FFDBB5] origin-top shadow-sm"
-          style={{ animation: 'armSwing 0.3s ease-in-out infinite alternate-reverse' }} />
+          style={{ animation: 'armSwing 0.4s ease-in-out infinite alternate-reverse' }} />
 
         {/* ── Legs ── */}
         <div className="flex gap-1 -mt-0.5">
           <div className="w-2.5 h-7 rounded-full bg-[#2B4C7E] origin-top shadow-sm"
-            style={{ animation: 'legSwing 0.25s ease-in-out infinite alternate' }} />
+            style={{ animation: 'legSwing 0.35s ease-in-out infinite alternate' }} />
           <div className="w-2.5 h-7 rounded-full bg-[#2B4C7E] origin-top shadow-sm"
-            style={{ animation: 'legSwing 0.25s ease-in-out infinite alternate-reverse' }} />
+            style={{ animation: 'legSwing 0.35s ease-in-out infinite alternate-reverse' }} />
         </div>
 
         {/* ── Shoes ── */}
@@ -225,7 +225,7 @@ function Runner({ pathCount, currentLane, feedback }: {
               exit={{ scale: 0, opacity: 0 }}
               transition={{ type: 'spring', stiffness: 500, damping: 15 }}
             >
-              ✗
+              X
             </motion.div>
           )}
         </AnimatePresence>
@@ -257,44 +257,48 @@ function Door({
   const isFeedbackWrong = isCurrent && feedback === 'wrong' && !isCorrect;
   const isHint = isCurrent && feedback === 'wrong' && isCorrect;
 
-  let bgStyle: React.CSSProperties = {
+  let doorBg: React.CSSProperties = {
     background: `linear-gradient(180deg, ${light} 0%, ${color} 100%)`,
-    borderColor: isCurrent ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.15)',
   };
-  let shadowStr = `0 4px 12px ${color}60, inset 0 2px 0 rgba(255,255,255,0.3)`;
+  let frameBorder = isCurrent ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.25)';
+  let shadowStr = `0 4px 16px ${color}50, inset 0 1px 0 rgba(255,255,255,0.3)`;
+  let glowStr = 'none';
 
   if (isFeedbackCorrect) {
-    bgStyle = { background: 'linear-gradient(180deg, #5EEFC0 0%, #06D6A0 100%)', borderColor: '#06D6A0' };
-    shadowStr = '0 0 20px #06D6A080, 0 0 40px #06D6A040, inset 0 2px 0 rgba(255,255,255,0.4)';
+    doorBg = { background: 'linear-gradient(180deg, #5EEFC0 0%, #06D6A0 100%)' };
+    frameBorder = '#06D6A0';
+    shadowStr = '0 0 20px #06D6A080, 0 0 40px #06D6A040';
+    glowStr = '0 0 12px #06D6A0';
   } else if (isFeedbackWrong) {
-    bgStyle = { background: 'linear-gradient(180deg, #F47A9E 0%, #EF476F 100%)', borderColor: '#EF476F' };
-    shadowStr = '0 0 20px #EF476F80, 0 0 40px #EF476F40, inset 0 2px 0 rgba(255,255,255,0.3)';
+    doorBg = { background: 'linear-gradient(180deg, #F47A9E 0%, #EF476F 100%)' };
+    frameBorder = '#EF476F';
+    shadowStr = '0 0 20px #EF476F80, 0 0 40px #EF476F40';
+    glowStr = '0 0 12px #EF476F';
   } else if (isHint) {
-    bgStyle = { background: `linear-gradient(180deg, ${light} 0%, ${color} 100%)`, borderColor: '#FFD23F' };
-    shadowStr = '0 0 15px #FFD23F60, inset 0 2px 0 rgba(255,255,255,0.4)';
+    frameBorder = '#FFD23F';
+    shadowStr = '0 0 15px #FFD23F60';
+    glowStr = '0 0 10px #FFD23F';
   }
 
   return (
     <motion.button
       onClick={() => isCurrent && onChoose(laneIdx)}
       disabled={!isCurrent || feedback !== null}
-      className="relative flex-1 rounded-2xl overflow-hidden"
+      className="relative flex-1 flex items-center justify-center"
       style={{
-        maxWidth: `${88 / pathCount}%`,
-        height: '62px',
-        ...bgStyle,
-        border: `3px solid ${bgStyle.borderColor}`,
-        boxShadow: shadowStr,
+        maxWidth: `${85 / pathCount}%`,
+        height: '80px',
+        willChange: 'transform',
       }}
-      whileHover={!prefersReducedMotion() && isCurrent ? { scale: 1.08, y: -3 } : undefined}
-      whileTap={isCurrent ? { scale: 0.92 } : undefined}
+      whileHover={!prefersReducedMotion() && isCurrent ? { scale: 1.06, y: -2 } : undefined}
+      whileTap={isCurrent ? { scale: 0.93 } : undefined}
       animate={
         prefersReducedMotion()
           ? undefined
           : isFeedbackWrong
-            ? { x: [0, -8, 8, -5, 5, 0] }
+            ? { x: [0, -6, 6, -4, 4, 0] }
             : isFeedbackCorrect
-              ? { scale: [1, 1.12, 1] }
+              ? { scale: [1, 1.1, 1] }
               : isCurrent
                 ? { scale: [1, 1.03, 1] }
                 : undefined
@@ -303,33 +307,71 @@ function Door({
       aria-label={`Door ${laneIdx + 1}${isCurrent ? ' (choose this lane)' : ''}`}
       aria-pressed={isCurrent}
     >
-      <div className="absolute inset-x-0 top-0 h-3 bg-gradient-to-b from-white/35 to-transparent rounded-t-2xl" />
-      <div className="absolute inset-x-1.5 top-1 bottom-1 border-2 border-white/15 rounded-xl" />
-      <span className="relative text-white font-black text-2xl drop-shadow-md z-10"
-        style={{ textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>
+      {/* Door frame (outer) - dark wood look */}
+      <div className="absolute inset-0 rounded-t-[40%] rounded-b-lg"
+        style={{
+          background: 'linear-gradient(180deg, #8B6B4A 0%, #5C3D2E 100%)',
+          border: `3px solid ${frameBorder}`,
+          boxShadow: shadowStr,
+        }}
+      >
+        {/* Door arch (top semicircle) */}
+        <div className="absolute inset-x-[3px] top-[3px] h-[35%] rounded-t-[40%]"
+          style={{
+            background: `linear-gradient(180deg, ${light}dd 0%, ${color}aa 100%)`,
+          }}
+        >
+          {/* Arch keystone detail */}
+          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3 h-1.5 bg-white/20 rounded-b-full" />
+        </div>
+
+        {/* Door panel (main body) */}
+        <div className="absolute inset-x-[3px] top-[30%] bottom-[3px] rounded-b-md"
+          style={doorBg}
+        >
+          {/* Panel inset top */}
+          <div className="absolute inset-x-1 top-1 bottom-[45%] border-2 border-white/15 rounded-md" />
+          {/* Panel inset bottom */}
+          <div className="absolute inset-x-1 top-[58%] bottom-1 border-2 border-white/15 rounded-md" />
+
+          {/* Door handle */}
+          <div className="absolute right-2 top-1/2 -translate-y-1/2">
+            <div className="w-2.5 h-4 rounded-full bg-[#FFD23F] border border-[#E5B82E] shadow-sm"
+              style={{ boxShadow: glowStr !== 'none' ? glowStr : '0 1px 3px rgba(0,0,0,0.3)' }} />
+          </div>
+        </div>
+
+        {/* Glow overlay for current door */}
+        {isCurrent && !feedback && (
+          <div className="absolute inset-0 rounded-t-[40%] rounded-b-lg border-2 border-[#FFD23F]/40"
+            style={{ animation: 'portalPulse 1.5s ease-in-out infinite' }} />
+        )}
+      </div>
+
+      {/* Door number - centered on the door */}
+      <span className="relative text-white font-black text-xl drop-shadow-md z-10 select-none mt-2"
+        style={{ textShadow: '0 2px 4px rgba(0,0,0,0.4)' }}>
         {laneIdx + 1}
       </span>
-      <div className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-white/30 border border-white/25 shadow-sm" />
-      <div className="absolute inset-x-1 bottom-1 h-1.5 bg-white/15 rounded-full" />
 
       <AnimatePresence>
         {isFeedbackCorrect && (
-          <motion.div className="absolute inset-0 flex items-center justify-center bg-[#06D6A0]/40 rounded-2xl"
+          <motion.div className="absolute inset-0 flex items-center justify-center bg-[#06D6A0]/50 rounded-t-[40%] rounded-b-lg z-20"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <span className="text-white text-3xl font-black drop-shadow-lg">✓</span>
+            <span className="text-white text-2xl font-black drop-shadow-lg">OK</span>
           </motion.div>
         )}
         {isFeedbackWrong && (
-          <motion.div className="absolute inset-0 flex items-center justify-center bg-[#EF476F]/40 rounded-2xl"
+          <motion.div className="absolute inset-0 flex items-center justify-center bg-[#EF476F]/50 rounded-t-[40%] rounded-b-lg z-20"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <span className="text-white text-3xl font-black drop-shadow-lg">✗</span>
+            <span className="text-white text-2xl font-black drop-shadow-lg">X</span>
           </motion.div>
         )}
         {isHint && (
-          <motion.div className="absolute inset-0 flex items-center justify-center bg-[#FFD23F]/30 rounded-2xl"
+          <motion.div className="absolute inset-0 flex items-center justify-center bg-[#FFD23F]/30 rounded-t-[40%] rounded-b-lg z-20"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             transition={{ delay: 0.15 }}>
-            <span className="text-white text-2xl font-black drop-shadow-lg">⇨</span>
+            <span className="text-white text-xl font-black drop-shadow-lg">{'>>'}</span>
           </motion.div>
         )}
       </AnimatePresence>
@@ -345,15 +387,15 @@ function DoorRow({
   isCurrent: boolean; feedback: 'correct' | 'wrong' | null;
   onChoose: (lane: number) => void;
 }) {
-  const bottomPercent = 20 + doorIndex * 18;
-  const scale = 1 - doorIndex * 0.11;
-  const opacity = Math.max(0.25, 1 - doorIndex * 0.2);
+  const bottomPercent = 22 + doorIndex * 16;
+  const scale = 1 - doorIndex * 0.08;
+  const opacity = Math.max(0.35, 1 - doorIndex * 0.18);
 
   return (
     <motion.div
-      className="absolute left-0 right-0 flex justify-center gap-2 px-5"
-      style={{ bottom: `${bottomPercent}%`, transformOrigin: 'center bottom' }}
-      animate={{ scale, opacity, rotateX: doorIndex * 3 }}
+      className="absolute left-0 right-0 flex justify-center gap-2 px-5 z-15"
+      style={{ bottom: `${bottomPercent}%`, transformOrigin: 'center bottom', willChange: 'transform, opacity' }}
+      animate={{ scale, opacity }}
       transition={{ type: 'spring', stiffness: 200, damping: 20 }}
     >
       {Array.from({ length: pathCount }).map((_, laneIdx) => (
@@ -415,8 +457,6 @@ function RoadVisual({ pathCount }: { pathCount: number }) {
         style={{
           height: '78%',
           background: `linear-gradient(to bottom, #5C3D2E 0%, #7B5B3A 20%, #8B6B4A 50%, #6B4B2A 100%)`,
-          transform: 'perspective(600px) rotateX(4deg)',
-          transformOrigin: 'center bottom',
           borderLeft: '3px solid #FFD23F80',
           borderRight: '3px solid #FFD23F80',
         }}
@@ -488,7 +528,7 @@ function ParticleBurst({ type }: { type: 'correct' | 'wrong' }) {
           transition={{ duration: p.duration, delay: p.delay, ease: 'easeOut' }}
         >
           {p.isStar ? (
-            <div style={{ color: p.color, fontSize: p.size, lineHeight: 1 }}>★</div>
+            <div style={{ color: p.color, fontSize: p.size, lineHeight: 1 }}>*</div>
           ) : (
             <div className="w-full h-full rounded-full" style={{ backgroundColor: p.color }} />
           )}
@@ -508,7 +548,7 @@ function CoinEffect({ laneX }: { laneX: number }) {
         animate={{ opacity: 0, y: -70, scale: 1.3 }}
         transition={{ duration: 0.7, ease: 'easeOut' }}
       >
-        +1 🪙
+        +1
       </motion.div>
     </div>
   );
@@ -525,7 +565,7 @@ function HUD({ combo, lang }: { combo: number; lang: string }) {
     >
       <div className="flex justify-between items-start p-3 pt-5">
         <div className="flex items-center gap-2 bg-black/40 backdrop-blur-md rounded-2xl px-4 py-2 border border-white/15 shadow-lg">
-          <span className="text-[#FFD23F] text-sm">🪙</span>
+          <span className="text-[#FFD23F] text-sm">$</span>
           <motion.span
             key={score}
             className="text-white font-black text-2xl tabular-nums"
@@ -910,7 +950,7 @@ function SwipeHint({ pathCount }: { pathCount: number }) {
         animate={{ x: [-4, 4, -4] }}
         transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
       >
-        👈 👉
+        {'< >'}
       </motion.span>
       <span className="text-white/60 text-xs font-medium">{t('hint.swipe', lang)}</span>
     </>

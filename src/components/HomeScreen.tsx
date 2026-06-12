@@ -80,21 +80,21 @@ function FloatingDecor() {
         animate={{ y: [0, -12, 0], rotate: [0, 10, -10, 0] }}
         transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
       >
-        🚪
+        {'{ }'}
       </motion.div>
       <motion.div
         className="absolute top-[18%] left-[8%] text-2xl"
         animate={{ y: [0, -10, 0], rotate: [0, -15, 15, 0] }}
         transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
       >
-        🏃
+        {'>>'}
       </motion.div>
       <motion.div
-        className="absolute bottom-[25%] right-[15%] text-2xl"
+        className="absolute bottom-[25%] right-[15%] text-2xl font-black text-[#FFD23F]"
         animate={{ y: [0, -8, 0], scale: [1, 1.2, 1] }}
         transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
       >
-        🪙
+        $
       </motion.div>
     </div>
   );
@@ -421,7 +421,7 @@ export default function HomeScreen() {
           >
             <div className="rounded-2xl bg-[#8338EC]/20 px-4 py-3 border border-[#8338EC]/30">
               <div className="flex items-center justify-between mb-1">
-                <span className={`text-sm font-bold ${textOnBg}`}>📅 {dayName} {t('daily.challenge', lang)}</span>
+                <span className={`text-sm font-bold ${textOnBg}`}>{dayName} {t('daily.challenge', lang)}</span>
                 <div className={`flex items-center gap-1 text-xs ${textOnBgSub}`}>
                   <Clock className="h-3 w-3" />
                   <DailyCountdown />

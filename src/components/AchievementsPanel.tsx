@@ -112,7 +112,7 @@ export default function AchievementsPanel({ onClose }: { onClose: () => void }) 
                   )}
                 </div>
                 {isUnlocked && (
-                  <div className="text-[#FFD23F] text-xs font-bold shrink-0">✓</div>
+                  <div className="text-[#FFD23F] text-xs font-bold shrink-0">OK</div>
                 )}
               </motion.div>
             );

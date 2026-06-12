@@ -105,7 +105,7 @@ function LeaderboardRow({ entry, rank, lang }: { entry: LeaderboardEntry; rank: 
 
       {/* Score */}
       <div className="flex items-center gap-1.5 shrink-0">
-        <span className="text-[#FFD23F] text-xs">🪙</span>
+        <span className="text-[#FFD23F] text-xs font-black">$</span>
         <span className="text-white font-black text-lg">{entry.score}</span>
       </div>
     </motion.div>
