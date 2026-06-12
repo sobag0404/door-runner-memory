@@ -1,6 +1,7 @@
 // ─── Animated Background Particles ─────────────────────
 import { useEffect, useRef } from 'react';
 import type { GameTheme } from '../lib/themes';
+import { prefersReducedMotion } from '../lib/a11y';
 
 interface Particle {
   x: number;
@@ -20,8 +21,12 @@ export default function BackgroundParticles({ theme }: BackgroundParticlesProps)
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const particlesRef = useRef<Particle[]>([]);
   const rafRef = useRef<number>(0);
+  const pausedRef = useRef(false);
 
   useEffect(() => {
+    // Respect reduced motion preference
+    if (prefersReducedMotion()) return;
+
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -33,6 +38,16 @@ export default function BackgroundParticles({ theme }: BackgroundParticlesProps)
     };
     resize();
     window.addEventListener('resize', resize);
+
+    // Pause animation when tab is not visible (saves CPU/battery)
+    const handleVisibility = () => {
+      pausedRef.current = document.hidden;
+      if (!document.hidden) {
+        // Resume animation loop
+        rafRef.current = requestAnimationFrame(animate);
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
 
     // Initialize particles
     const COUNT = 30;
@@ -55,6 +70,9 @@ export default function BackgroundParticles({ theme }: BackgroundParticlesProps)
     const isRetro = theme.id === 'retro';
 
     const animate = () => {
+      // Stop loop when paused (tab hidden)
+      if (pausedRef.current) return;
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       for (const p of particlesRef.current) {
@@ -108,6 +126,7 @@ export default function BackgroundParticles({ theme }: BackgroundParticlesProps)
     return () => {
       cancelAnimationFrame(rafRef.current);
       window.removeEventListener('resize', resize);
+      document.removeEventListener('visibilitychange', handleVisibility);
     };
   }, [theme]);
 

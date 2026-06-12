@@ -40,7 +40,7 @@ export default function AchievementsPanel({ onClose }: { onClose: () => void }) 
           <button
             onClick={onClose}
             className="w-8 h-8 flex items-center justify-center rounded-xl bg-white/10 text-white/60 hover:bg-white/20 hover:text-white transition-all"
-            aria-label="Close"
+            aria-label={t('install.close', lang)}
           >
             <X size={16} />
           </button>

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, type Variants, AnimatePresence } from 'framer-motion';
 import { Play, Zap, Gauge, Trophy, Calendar, Award, Target, Clock, Download, Volume2, VolumeX, HelpCircle, Palette, Globe, Music, SlidersHorizontal, Timer } from 'lucide-react';
 import { useGameStore, type SpeedLevel } from '../store/gameStore';
+import { getCurrentSeasonId } from '../lib/season';
 import { ACHIEVEMENTS } from '../lib/achievements';
 import { getDailyId, secondsUntilNextDaily, formatCountdown, getDailyDayName } from '../lib/daily';
 import { usePWAInstall } from '../lib/usePWAInstall';
@@ -118,7 +119,7 @@ function DailyCountdown() {
 
 // ─── Component ──────────────────────────────────────────
 export default function HomeScreen() {
-  const { settings, setPathCount, setSpeed, setSoundEnabled, setLang, setTheme, setSoundPack, setCustomTimerSec, startGame, bestScores, seasonId,
+  const { settings, setPathCount, setSpeed, setSoundEnabled, setLang, setTheme, setSoundPack, setCustomTimerSec, startGame, bestScores,
     gameMode, setGameMode, setScreen, unlockedAchievements, stats } =
     useGameStore();
 
@@ -136,17 +137,19 @@ export default function HomeScreen() {
     initAudioOnInteraction();
   }, []);
 
-  const bestScoreKey = `${seasonId}_p${settings.pathCount}`;
-  const currentBest = bestScores[bestScoreKey] ?? 0;
+  // Always compute season best from the CURRENT season (not store's seasonId
+  // which may be stale from a previous daily game)
+  const currentSeasonId = getCurrentSeasonId();
+  const currentBest = bestScores[`${currentSeasonId}_p${settings.pathCount}`] ?? 0;
 
   const dailyId = getDailyId();
   const dailyBest = bestScores[`${dailyId}_p${settings.pathCount}`] ?? 0;
   const dayName = getDailyDayName();
 
   const seasonDisplay = (() => {
-    const match = seasonId.match(/^(\d{4})-(\d{2})$/);
+    const match = currentSeasonId.match(/^(\d{4})-(\d{2})$/);
     if (match) return `Week ${parseInt(match[2], 10)} · ${match[1]}`;
-    return seasonId;
+    return currentSeasonId;
   })();
 
   const handlePlay = () => {
