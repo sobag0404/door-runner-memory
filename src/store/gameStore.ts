@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { localStore } from '../lib/localStore';
-import { getCurrentSeasonId, createSeasonSequence } from '../lib/season';
+import { getCurrentSeasonId, createSeasonSequence, getExpectedPath } from '../lib/season';
 import { getDailyId } from '../lib/daily';
 import { ACHIEVEMENTS } from '../lib/achievements';
 import type { PlayerStats } from '../lib/achievements';
@@ -375,7 +375,7 @@ export const useGameStore = create<GameStore>((set, get) => {
     const state = get();
     if (!state.isRunning || state.feedback !== null) return;
 
-    const correct = state.sequence[state.currentStep];
+    const correct = getExpectedPath(state.sequence, state.seasonId, state.settings.pathCount, state.currentStep);
     const soundOn = state.settings.soundEnabled;
 
     if (laneIndex === correct) {
@@ -503,6 +503,6 @@ export const useGameStore = create<GameStore>((set, get) => {
   getSpeedMs: () => getProgressiveSpeedMs(get().settings.speed, get().currentStep, get().settings.customTimerSec),
   correctLane: () => {
     const s = get();
-    return s.sequence[s.currentStep] ?? 0;
+    return getExpectedPath(s.sequence, s.seasonId, s.settings.pathCount, s.currentStep);
   },
 }});

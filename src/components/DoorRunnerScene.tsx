@@ -5,6 +5,7 @@ import { LANE_COLORS, LANE_LIGHT, getLanePercent } from '../lib/constants';
 import { ACHIEVEMENTS } from '../lib/achievements';
 import { t } from '../lib/i18n';
 import { prefersReducedMotion } from '../lib/a11y';
+import { getExpectedPath } from '../lib/season';
 
 // ─── Re-export for sub-components ──
 export { LANE_COLORS, LANE_LIGHT, getLanePercent };
@@ -698,9 +699,10 @@ export default function DoorRunnerScene() {
   const chooseLane = useGameStore((s) => s.chooseLane);
   const handleTimeout = useGameStore((s) => s.handleTimeout);
   const score = useGameStore((s) => s.score);
+  const seasonId = useGameStore((s) => s.seasonId);
   const pathCount = settings.pathCount;
   const lang = settings.lang;
-  const correctLane = sequence[currentStep] ?? 0;
+  const correctLane = getExpectedPath(sequence, seasonId, pathCount, currentStep);
 
   // ─── Timer logic (requestAnimationFrame for smooth updates) ───
   const [timeLeft, setTimeLeft] = useState(1);
@@ -863,10 +865,10 @@ export default function DoorRunnerScene() {
     const rows = [];
     for (let i = 0; i < 4; i++) {
       const stepIdx = currentStep + i;
-      rows.push({ doorIndex: i, correctLane: sequence[stepIdx] ?? 0, isCurrent: i === 0 });
+      rows.push({ doorIndex: i, correctLane: getExpectedPath(sequence, seasonId, pathCount, stepIdx), isCurrent: i === 0 });
     }
     return rows;
-  }, [currentStep, sequence]);
+  }, [currentStep, sequence, seasonId, pathCount]);
 
   return (
     <motion.div

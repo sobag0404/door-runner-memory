@@ -1,4 +1,4 @@
-// Сезонная система: seasonId = YYYY-WW, createSeasonSequence
+// Сезонная система: seasonId = YYYY-WW, createSeasonSequence, getSeasonPathAt
 
 /** Получить текущий seasonId в формате YYYY-WW */
 export function getCurrentSeasonId(): string {
@@ -47,4 +47,66 @@ export function createSeasonSequence(
     sequence.push(Math.floor(rng() * pathCount));
   }
   return sequence;
+}
+
+// ─── Infinite Deterministic Generator ────────────────────
+// Per-reviewer recommendation: no fallback to door 0 after sequence length.
+// Uses per-index seeded PRNG: seed = hash(seasonId + pathCount + index)
+// Guarantees same result for any index without pre-generating the whole array.
+
+/** Комбинированный seed для конкретного индекса */
+function indexSeed(seasonId: string, pathCount: number, index: number): number {
+  const str = `${seasonId}:${pathCount}:${index}`;
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash << 5) - hash + str.charCodeAt(i);
+    hash |= 0;
+  }
+  return Math.abs(hash);
+}
+
+/**
+ * Получить правильную дверь для любого индекса.
+ * Детерминированно: одинаковый seasonId + pathCount + index = одинаковый результат.
+ * Бесконечный: работает для любого index >= 0.
+ * Не требует предгенерации массива.
+ *
+ * @throws Error если index < 0 или pathCount < 1
+ */
+export function getSeasonPathAt(
+  seasonId: string,
+  pathCount: number,
+  index: number
+): number {
+  if (!Number.isInteger(index) || index < 0) {
+    throw new Error(`Invalid sequence index: ${index}`);
+  }
+  if (!Number.isInteger(pathCount) || pathCount < 1) {
+    throw new Error(`Invalid pathCount: ${pathCount}`);
+  }
+
+  const rng = mulberry32(indexSeed(seasonId, pathCount, index));
+  return Math.floor(rng() * pathCount);
+}
+
+/**
+ * Безопасно получить путь из sequence array с fallback на getSeasonPathAt.
+ * Если индекс в пределах массива — берёт из массива (быстро).
+ * Если индекс за пределами — вычисляет детерминированно через getSeasonPathAt.
+ *
+ * @param sequence Предгенерированный массив
+ * @param seasonId Идентификатор сезона
+ * @param pathCount Количество дорожек
+ * @param index Индекс шага
+ */
+export function getExpectedPath(
+  sequence: readonly number[],
+  seasonId: string,
+  pathCount: number,
+  index: number
+): number {
+  if (index >= 0 && index < sequence.length) {
+    return sequence[index];
+  }
+  return getSeasonPathAt(seasonId, pathCount, index);
 }
