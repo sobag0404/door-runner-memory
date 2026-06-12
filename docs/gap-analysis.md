@@ -35,13 +35,13 @@
 
 | ID | Замечание безопасника | Статус в Vite-проекте | Комментарий |
 |---:|---|---|---|
-| P1-1 | Вынести pure game reducer | ⚠️ ЧАСТИЧНО | Используем Zustand store (`gameStore.ts`), который частично разделяет логику, но всё ещё смешивает state + actions + side effects (haptics, sounds, a11y). Рекомендация по чистому reducer валидна. |
-| P1-2 | Тесты reducer | ❌ НЕТ | Нет unit-тестов вообще. Нужно добавить vitest + тесты. |
+| P1-1 | Вынести pure game reducer | ✅ СДЕЛАНО | Создан `src/core/game/gameReducer.ts` — чистый reducer без side effects. Zustand пока не использует его, но reducer готов к интеграции.
+| P1-2 | Тесты reducer | ✅ СДЕЛАНО | 101 unit-тест: seasonSequence (15), validators (30), gameStore (22), gameReducer (34). vitest настроен.
 | P1-3 | Timers cleanup | ✅ ИСПРАВЛЕНО | `clearFeedbackTimers()` в gameStore.ts + `useRef` + cleanup в useEffect. |
-| P1-4 | Sequence overflow (`?? 0`) | ❌ НЕ ИСПРАВЛЕНО | `sequence[currentStep] ?? 0` — fallback к двери 0 после 100 шагов. Нужно исправить. |
-| P1-5 | Validation localStorage | ❌ НЕ ИСПРАВЛЕНО | `localStore.get()` просто парсит JSON без валидации. Повреждённые данные могут сломать игру. |
-| P1-6 | CI/CD | ❌ НЕТ | Нет `.github/workflows/ci.yml`. |
-| P1-7 | Декомпозиция DoorRunnerScene | ⚠️ ЧАСТИЧНО | DoorRunnerScene.tsx = ~985 строк (было 2100 на Expo/three). Всё ещё монолит, но уже без 3D. Нужно дробить дальше. |
+| P1-4 | Sequence overflow (`?? 0`) | ✅ ИСПРАВЛЕНО | Добавлен `getExpectedPath()` — бесконечный детерминированный генератор. Нет fallback к 0.
+| P1-5 | Validation localStorage | ✅ ИСПРАВЛЕНО | Добавлен `src/lib/validators.ts` — normalizeSettings, normalizeBestScores, normalizeStats и т.д.
+| P1-6 | CI/CD | ⚠️ ИНСТРУКЦИЯ | GitHub Actions config в README (token lacks workflow scope для прямого push .github/)
+| P1-7 | Декомпозиция DoorRunnerScene | ⚠️ ПРОГРЕСС | 985→784 строк. Вынесены VFX, HUD, LaneButtons, AchievementToast в src/components/game/. Нужно продолжить.
 
 ### P2 — Улучшения
 
@@ -57,7 +57,7 @@
 
 | Замечание | Статус | Комментарий |
 |---|---|---|
-| Local score нельзя доверять для online leaderboard | ✅ СОГЛАСЕН | У нас только local leaderboard. Назван "Таблица лидеров" — нужно честно назвать "На этом устройстве" |
+| Local score нельзя доверять для online leaderboard | ✅ ИСПРАВЛЕНО | Переименован: «Рекорды на устройстве» / «Records on this device»
 | Нельзя отправлять score на сервер без верификации | ✅ ПРИНЯТО | Нет online leaderboard — нет проблемы. При добавлении нужен server-side verification |
 | MVP: только local best score | ✅ ТАК И ЕСТЬ | Соответствует рекомендации |
 
