@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { localStore } from '../lib/localStore';
 import { getCurrentSeasonId, createSeasonSequence, getExpectedPath } from '../lib/season';
+import { normalizeSettings, normalizeBestScores, normalizeStats, normalizeAchievements, normalizeLeaderboard } from '../lib/validators';
 import { getDailyId } from '../lib/daily';
 import { ACHIEVEMENTS } from '../lib/achievements';
 import type { PlayerStats } from '../lib/achievements';
@@ -153,7 +154,8 @@ function bestScoreKey(seasonId: string, pathCount: number): string {
 }
 
 function loadBestScores(): Record<string, number> {
-  return localStore.get<Record<string, number>>('bestScores', {});
+  const raw = localStore.get<unknown>('bestScores', null);
+  return normalizeBestScores(raw, {});
 }
 
 /**
@@ -170,10 +172,8 @@ function saveBestScoreMut(scores: Record<string, number>, key: string, score: nu
 }
 
 function loadSettings(): GameSettings {
-  const saved = localStore.get<GameSettings>('settings', DEFAULT_SETTINGS);
-  // Ensure new fields have defaults
-  if (!saved.soundPack) saved.soundPack = 'classic';
-  if (!saved.customTimerSec) saved.customTimerSec = DEFAULT_SETTINGS.customTimerSec;
+  const raw = localStore.get<unknown>('settings', null);
+  const saved = normalizeSettings(raw, DEFAULT_SETTINGS);
   // Sync runtime sound pack
   setSoundPack(saved.soundPack);
   return saved;
@@ -194,7 +194,8 @@ const DEFAULT_STATS: PlayerStats = {
 };
 
 function loadStats(): PlayerStats {
-  return localStore.get<PlayerStats>('stats', DEFAULT_STATS);
+  const raw = localStore.get<unknown>('stats', null);
+  return normalizeStats(raw, DEFAULT_STATS);
 }
 
 function saveStats(stats: PlayerStats): void {
@@ -202,11 +203,13 @@ function saveStats(stats: PlayerStats): void {
 }
 
 function loadUnlockedAchievements(): string[] {
-  return localStore.get<string[]>('unlockedAchievements', []);
+  const raw = localStore.get<unknown>('unlockedAchievements', null);
+  return normalizeAchievements(raw, []);
 }
 
 function loadLeaderboard(): LeaderboardEntry[] {
-  return localStore.get<LeaderboardEntry[]>('leaderboard', []);
+  const raw = localStore.get<unknown>('leaderboard', null);
+  return normalizeLeaderboard(raw, []) as LeaderboardEntry[];
 }
 
 // ─── Store ─────────────────────────────────────────────
