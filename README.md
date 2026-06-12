@@ -107,15 +107,47 @@ src/
 - Swipe gestures
 - Haptic feedback
 
+## Tests
+
+```bash
+bun run test        # Run all tests once
+bun run test:watch  # Watch mode
+bun run quality     # Build + lint + test
+```
+
+67 unit tests covering:
+- Season sequence generation (determinism, boundaries, errors)
+- Validators (settings, scores, stats, leaderboard)
+- Game store (chooseLane, startGame, resetGame, speed calculations)
+
+## CI/CD
+
+Add `.github/workflows/ci.yml` to enable GitHub Actions:
+
+```yaml
+name: CI
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install
+      - run: bun run build
+      - run: bun run lint
+      - run: bun run test
+```
+
 ## Known Issues
 
 See `docs/gap-analysis.md` for full security review findings.
 
-- Sequence overflow after 100 steps (fallback to door 0)
-- No localStorage validation
-- No unit tests yet
 - DoorRunnerScene.tsx needs decomposition (~985 lines)
-- Leaderboard is local-only — labeled "Таблица лидеров" but should say "На этом устройстве"
+- Game logic mixed with side effects in Zustand (need pure reducer)
 
 ## Deploy
 
