@@ -186,3 +186,26 @@ Stage Summary:
 - Road background renders without dark tunnel effect
 - All Unicode symbols replaced with mobile-safe ASCII
 - Game is playable and functional
+
+---
+Task ID: 2
+Agent: main
+Task: Fix remaining visual bugs - character jerking, doors not visible, garbled text (continued from previous session)
+
+Work Log:
+- Investigated DoorRunnerScene.tsx, i18n.ts, GameScreen.tsx, gameStore.ts thoroughly
+- Fixed character jerking: CSS `runnerBounce` animation (transform: translateY) conflicted with framer-motion `y` animation (also sets transform: translateY). Replaced CSS animation with framer-motion-only bounce using animate={{ y: [0, -3, 0] }} with repeat: Infinity
+- Fixed doors not visible: DoorRow used `z-15` class (not standard Tailwind) → changed to `z-[15]` for Tailwind v4 compatibility. Also removed `willChange: 'transform, opacity'` that could cause rendering issues on mobile
+- Fixed DoorRow key from `row-${currentStep}-${doorIndex}` to `row-${doorIndex}` to prevent unnecessary remounts on every step change that caused door flash/disappear
+- Added `initial={false}` to DoorRow to prevent entry animation from wrong initial state
+- Fixed garbled text: removed `willChange: 'transform'` from Door component that caused sub-pixel text rendering on mobile. Removed pulsing `scale: [1, 1.03, 1]` animation on current door that distorted text
+- Bumped service worker cache version from v2 to v3 for fresh deployment
+- Browser verified: text readable, doors visible, character moves smoothly, game logic works
+- Pushed to GitHub: commit 4417192
+
+Stage Summary:
+- Character no longer jerks (framer-motion-only bounce, no CSS conflict)
+- Doors are visible (z-index fix, no remount flash, proper initial state)
+- Text is readable (no willChange distortion, no scale animation on text)
+- Service worker cache bumped to force update
+- All verified and pushed to GitHub
