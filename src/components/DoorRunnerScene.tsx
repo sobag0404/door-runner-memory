@@ -10,10 +10,6 @@ import { HUD } from './game/HUD';
 import { LaneButtons } from './game/LaneButtons';
 import { AchievementToast } from './game/AchievementToast';
 
-// ─── Re-export for sub-components ──
-export { LANE_COLORS, LANE_LIGHT, getLanePercent };
-// Extracted components imported from ./game/
-
 // ─── Combo Badge ──────────────────────────────────────
 function ComboBadge({ combo, lang }: { combo: number; lang: string }) {
   if (combo < 3) return null;
@@ -49,7 +45,7 @@ function TimerBar({ currentStep, speedMs, isRunning, feedback, onTimeout }: {
   const rafRef = useRef<number>(0);
   const stepStartRef = useRef<number>(0);
   const onTimeoutRef = useRef(onTimeout);
-  onTimeoutRef.current = onTimeout;
+  useEffect(() => { onTimeoutRef.current = onTimeout; });
 
   useEffect(() => {
     if (!isRunning || feedback !== null) {
@@ -574,11 +570,12 @@ export default function DoorRunnerScene() {
 
   // ─── Track last correct lane for coin effect ───
   const [lastCorrectLane, setLastCorrectLane] = useState<number | null>(null);
-  useEffect(() => {
-    if (feedback === 'correct') {
+  if (feedback === 'correct') {
+    // Derive state during render instead of using useEffect + setState
+    if (lastCorrectLane !== correctLane) {
       setLastCorrectLane(correctLane);
     }
-  }, [feedback, correctLane]);
+  }
 
   // ─── Keyboard support (1-6, arrows, A/D, Space/Enter) ───
   const activeLaneRef = useRef(0);

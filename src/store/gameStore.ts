@@ -91,6 +91,7 @@ function clearFeedbackTimers() {
 interface GameStore {
   // Screen
   screen: GameScreen;
+  prevScreen: GameScreen | null;
   setScreen: (s: GameScreen) => void;
 
   // Settings
@@ -224,7 +225,8 @@ export const useGameStore = create<GameStore>((set, get) => {
   return {
   // Screen
   screen: 'home',
-  setScreen: (s) => set({ screen: s }),
+  prevScreen: null,
+  setScreen: (s) => set((state) => ({ screen: s, prevScreen: state.screen })),
 
   // Settings
   settings: loadSettings(),

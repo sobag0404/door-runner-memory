@@ -1,4 +1,3 @@
-import { useRef } from 'react';
 import { useGameStore, type GameScreen as GameScreenType } from '../store/gameStore';
 import { motion, AnimatePresence, type Variants } from 'framer-motion';
 import HomeScreen from './HomeScreen';
@@ -51,12 +50,8 @@ function AnimatedScreen({ screen, screenKey, prevScreen }: { screen: GameScreenT
 
 export default function AppContent() {
   const screen = useGameStore((s) => s.screen);
+  const prevScreen = useGameStore((s) => s.prevScreen);
   const lang = useGameStore((s) => s.settings.lang);
-  const prevScreenRef = useRef<GameScreenType | null>(null);
-
-  // Capture previous screen before updating ref
-  const prevScreen = prevScreenRef.current;
-  prevScreenRef.current = screen;
 
   return (
     <ErrorBoundary lang={lang}>

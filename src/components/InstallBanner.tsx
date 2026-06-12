@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Download, Share } from 'lucide-react';
 import { usePWAInstall } from '../lib/usePWAInstall';
@@ -39,14 +39,7 @@ export default function InstallBanner() {
   const { isInstallable, install } = usePWAInstall();
   const lang = useGameStore((s) => s.settings.lang) as Lang;
 
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    // Show banner when app is not installed and not recently dismissed
-    if (!isStandalone() && !isDismissed()) {
-      setVisible(true);
-    }
-  }, []);
+  const [visible, setVisible] = useState(() => !isStandalone() && !isDismissed());
 
   const handleDismiss = useCallback(() => {
     try {

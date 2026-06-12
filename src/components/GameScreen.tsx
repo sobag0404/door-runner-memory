@@ -185,10 +185,11 @@ export default function GameScreen() {
     resetGame();
   };
 
-  // Reset submission flag when game starts
+  // Reset submission flag when game starts (score goes to 0)
+  const isGameStart = score === 0;
   useEffect(() => {
     hasSubmittedRef.current = false;
-  }, [score === 0]);
+  }, [isGameStart]);
 
   return (
     <div className="relative w-full h-dvh overflow-hidden bg-[#5C3D2E]">
