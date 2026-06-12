@@ -281,7 +281,7 @@ export default function HomeScreen() {
               <div>
                 <label className={`mb-1.5 flex items-center gap-1.5 text-sm font-bold ${textOnBg}`}>
                   <Palette className="h-4 w-4" />
-                  Theme
+                  {t('settings.theme', lang)}
                 </label>
                 <div className="grid grid-cols-3 gap-2">
                   {THEME_OPTIONS.map(({ value, labelKey, emoji }) => {
@@ -312,7 +312,7 @@ export default function HomeScreen() {
               <div>
                 <label className={`mb-1.5 flex items-center gap-1.5 text-sm font-bold ${textOnBg}`}>
                   <Globe className="h-4 w-4" />
-                  Language
+                  {t('settings.language', lang)}
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   {LANG_OPTIONS.map(({ value, label }) => {
@@ -560,7 +560,7 @@ export default function HomeScreen() {
         </span>
         <div className={`flex items-center gap-2 text-sm font-bold ${textOnBg}`}>
           <Trophy className="h-4 w-4" style={{ color: theme.accent2 }} />
-          <span>{currentBest > 0 ? currentBest : '—'}</span>
+          <span>{(gameMode === 'daily' ? dailyBest : currentBest) > 0 ? (gameMode === 'daily' ? dailyBest : currentBest) : '—'}</span>
         </div>
       </motion.section>
 

@@ -1,5 +1,34 @@
-skills/
+# Dependencies
 node_modules/
-tool-results/
+
+# Build output
 dist/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+dev.log
+
+# Tool outputs
+tool-results/
 upload/
+
+# Test / coverage
+coverage/
+playwright-report/
+test-results/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Skills (internal)
+skills/
+
+# Database (local only)
+*.db
+db/

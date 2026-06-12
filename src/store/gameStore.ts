@@ -209,13 +209,16 @@ function loadUnlockedAchievements(): string[] {
 
 function loadLeaderboard(): LeaderboardEntry[] {
   const raw = localStore.get<unknown>('leaderboard', null);
-  return normalizeLeaderboard(raw, []) as LeaderboardEntry[];
+  return normalizeLeaderboard(raw, []);
 }
 
 // ─── Store ─────────────────────────────────────────────
 export const useGameStore = create<GameStore>((set, get) => {
-  // Expose store to window for testing
-  if (typeof window !== 'undefined') {
+  // Expose store to window for DEV-only debugging
+  // In production builds, window.__gameStore must NOT be available
+  // to prevent score/state manipulation from the console.
+  if (typeof window !== 'undefined' && import.meta.env.DEV) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- dev-only debug hook
     (window as any).__gameStore = { getState: get, setState: set };
   }
   return {

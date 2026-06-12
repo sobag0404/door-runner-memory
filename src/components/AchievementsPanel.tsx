@@ -87,10 +87,10 @@ export default function AchievementsPanel({ onClose }: { onClose: () => void }) 
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className={`text-sm font-bold truncate ${isUnlocked ? 'text-white' : 'text-white/50'}`}>
-                    {a.title}
+                    {t(a.titleKey, lang)}
                   </div>
                   <div className={`text-xs truncate ${isUnlocked ? 'text-white/60' : 'text-white/30'}`}>
-                    {a.description}
+                    {t(a.descriptionKey, lang)}
                   </div>
                   {/* Progress bar for locked achievements */}
                   {!isUnlocked && (

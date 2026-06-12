@@ -168,20 +168,20 @@ describe('normalizeLeaderboard', () => {
   });
 
   it('valid entries pass through', () => {
-    const entries = [{ name: 'Alice', score: 100, mode: 'regular', pathCount: 3, speed: 'normal', date: '2026-01-01' }];
+    const entries = [{ name: 'Alice', score: 100, mode: 'regular', pathCount: 3, speed: 'normal', date: '2026-01-01T12:00:00.000Z' }];
     expect(normalizeLeaderboard(entries, [])).toEqual(entries);
   });
 
-  it('name is truncated to 20 chars', () => {
-    const entries = [{ name: 'A'.repeat(50), score: 100, mode: 'regular', pathCount: 3, speed: 'normal', date: '2026-01-01' }];
+  it('name longer than 20 chars is rejected', () => {
+    const entries = [{ name: 'A'.repeat(50), score: 100, mode: 'regular', pathCount: 3, speed: 'normal', date: '2026-01-01T12:00:00.000Z' }];
     const result = normalizeLeaderboard(entries, []);
-    expect(result[0].name).toHaveLength(20);
+    expect(result).toEqual([]); // rejected, not truncated
   });
 
   it('entries with missing fields are filtered', () => {
     const entries = [
       { name: 'Alice', score: 100 }, // missing fields
-      { name: 'Bob', score: 50, mode: 'regular', pathCount: 3, speed: 'normal', date: '2026-01-01' },
+      { name: 'Bob', score: 50, mode: 'regular', pathCount: 3, speed: 'normal', date: '2026-01-01T12:00:00.000Z' },
     ];
     const result = normalizeLeaderboard(entries, []);
     expect(result).toHaveLength(1);
@@ -189,7 +189,63 @@ describe('normalizeLeaderboard', () => {
   });
 
   it('negative scores are filtered', () => {
-    const entries = [{ name: 'Hacker', score: -999, mode: 'regular', pathCount: 3, speed: 'normal', date: '2026-01-01' }];
+    const entries = [{ name: 'Hacker', score: -999, mode: 'regular', pathCount: 3, speed: 'normal', date: '2026-01-01T12:00:00.000Z' }];
     expect(normalizeLeaderboard(entries, [])).toEqual([]);
+  });
+
+  it('invalid mode is rejected', () => {
+    const entries = [{ name: 'Hacker', score: 100, mode: 'pvp', pathCount: 3, speed: 'normal', date: '2026-01-01T12:00:00.000Z' }];
+    expect(normalizeLeaderboard(entries, [])).toEqual([]);
+  });
+
+  it('invalid speed is rejected', () => {
+    const entries = [{ name: 'Hacker', score: 100, mode: 'regular', pathCount: 3, speed: 'turbo', date: '2026-01-01T12:00:00.000Z' }];
+    expect(normalizeLeaderboard(entries, [])).toEqual([]);
+  });
+
+  it('invalid pathCount is rejected', () => {
+    const entries = [{ name: 'Hacker', score: 100, mode: 'regular', pathCount: 99, speed: 'normal', date: '2026-01-01T12:00:00.000Z' }];
+    expect(normalizeLeaderboard(entries, [])).toEqual([]);
+  });
+
+  it('fractional score is rejected (must be integer)', () => {
+    const entries = [{ name: 'Hacker', score: 10.5, mode: 'regular', pathCount: 3, speed: 'normal', date: '2026-01-01T12:00:00.000Z' }];
+    expect(normalizeLeaderboard(entries, [])).toEqual([]);
+  });
+
+  it('non-ISO date is rejected', () => {
+    const entries = [{ name: 'Hacker', score: 100, mode: 'regular', pathCount: 3, speed: 'normal', date: 'yesterday' }];
+    expect(normalizeLeaderboard(entries, [])).toEqual([]);
+  });
+
+  it('control characters in name are stripped', () => {
+    const entries = [{ name: 'Al\x01ice', score: 100, mode: 'regular', pathCount: 3, speed: 'normal', date: '2026-01-01T12:00:00.000Z' }];
+    const result = normalizeLeaderboard(entries, []);
+    expect(result).toHaveLength(1);
+    expect(result[0].name).toBe('Alice');
+  });
+
+  it('entries are sorted by score descending', () => {
+    const entries = [
+      { name: 'Low', score: 10, mode: 'regular', pathCount: 3, speed: 'normal', date: '2026-01-01T12:00:00.000Z' },
+      { name: 'High', score: 100, mode: 'regular', pathCount: 3, speed: 'normal', date: '2026-01-01T12:00:00.000Z' },
+      { name: 'Mid', score: 50, mode: 'regular', pathCount: 3, speed: 'normal', date: '2026-01-01T12:00:00.000Z' },
+    ];
+    const result = normalizeLeaderboard(entries, []);
+    expect(result.map(e => e.name)).toEqual(['High', 'Mid', 'Low']);
+  });
+
+  it('leaderboard is capped at 50 entries', () => {
+    const entries = Array.from({ length: 60 }, (_, i) => ({
+      name: `Player${i}`,
+      score: i + 1,
+      mode: 'regular' as const,
+      pathCount: 3,
+      speed: 'normal' as const,
+      date: '2026-01-01T12:00:00.000Z',
+    }));
+    const result = normalizeLeaderboard(entries, []);
+    expect(result).toHaveLength(50);
+    expect(result[0].score).toBe(60); // highest first
   });
 });

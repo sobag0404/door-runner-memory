@@ -36,27 +36,90 @@ function ComboBadge({ combo, lang }: { combo: number; lang: string }) {
 }
 
 // ─── Timer Bar (countdown for each step) ──────────────
-function TimerBar({ timeLeft }: { timeLeft: number }) {
-  const barColor = timeLeft > 0.5
-    ? '#06D6A0'
-    : timeLeft > 0.25
-      ? '#FFD23F'
-      : '#EF476F';
+// Self-contained: uses rAF + direct DOM manipulation via ref.
+// Does NOT trigger React re-renders on each animation frame.
+function TimerBar({ currentStep, speedMs, isRunning, feedback, onTimeout }: {
+  currentStep: number;
+  speedMs: number;
+  isRunning: boolean;
+  feedback: 'correct' | 'wrong' | null;
+  onTimeout: () => void;
+}) {
+  const barRef = useRef<HTMLDivElement>(null);
+  const rafRef = useRef<number>(0);
+  const stepStartRef = useRef<number>(0);
+  const onTimeoutRef = useRef(onTimeout);
+  onTimeoutRef.current = onTimeout;
 
-  const barGlow = timeLeft <= 0.25
-    ? `0 0 12px #EF476F80`
-    : timeLeft <= 0.5
-      ? `0 0 8px #FFD23F60`
-      : `0 0 6px #06D6A040`;
+  useEffect(() => {
+    if (!isRunning || feedback !== null) {
+      // Reset bar to full when not running or during feedback
+      if (barRef.current) {
+        barRef.current.style.width = '100%';
+        barRef.current.style.background = 'linear-gradient(90deg, #06D6A0, #06D6A0dd)';
+        barRef.current.style.boxShadow = '0 0 6px #06D6A040';
+      }
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = 0;
+      }
+      return;
+    }
+
+    stepStartRef.current = performance.now();
+    if (barRef.current) {
+      barRef.current.style.width = '100%';
+    }
+
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+
+    const tick = (now: number) => {
+      const elapsed = now - stepStartRef.current;
+      const remaining = Math.max(0, 1 - elapsed / speedMs);
+
+      if (barRef.current) {
+        const pct = remaining * 100;
+        barRef.current.style.width = `${pct}%`;
+
+        if (remaining > 0.5) {
+          barRef.current.style.background = 'linear-gradient(90deg, #06D6A0, #06D6A0dd)';
+          barRef.current.style.boxShadow = '0 0 6px #06D6A040';
+        } else if (remaining > 0.25) {
+          barRef.current.style.background = 'linear-gradient(90deg, #FFD23F, #FFD23Fdd)';
+          barRef.current.style.boxShadow = '0 0 8px #FFD23F60';
+        } else {
+          barRef.current.style.background = 'linear-gradient(90deg, #EF476F, #EF476Fdd)';
+          barRef.current.style.boxShadow = '0 0 12px #EF476F80';
+        }
+      }
+
+      if (remaining <= 0) {
+        rafRef.current = 0;
+        onTimeoutRef.current();
+        return;
+      }
+      rafRef.current = requestAnimationFrame(tick);
+    };
+
+    rafRef.current = requestAnimationFrame(tick);
+
+    return () => {
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = 0;
+      }
+    };
+  }, [currentStep, isRunning, feedback, speedMs]);
 
   return (
     <div className="absolute top-0 left-0 right-0 z-40 h-1.5 bg-black/30">
       <div
+        ref={barRef}
         className="h-full rounded-full"
         style={{
-          width: `${timeLeft * 100}%`,
-          background: `linear-gradient(90deg, ${barColor}, ${barColor}dd)`,
-          boxShadow: barGlow,
+          width: '100%',
+          background: 'linear-gradient(90deg, #06D6A0, #06D6A0dd)',
+          boxShadow: '0 0 6px #06D6A040',
           transition: 'width 0.05s linear, background 0.3s ease',
         }}
       />
@@ -505,56 +568,9 @@ export default function DoorRunnerScene() {
   const lang = settings.lang;
   const correctLane = getExpectedPath(sequence, seasonId, pathCount, currentStep);
 
-  // ─── Timer logic (requestAnimationFrame for smooth updates) ───
-  const [timeLeft, setTimeLeft] = useState(1);
-  const rafRef = useRef<number>(0);
-  const stepStartRef = useRef<number>(0);
+  // ─── Timer speed calculations (TimerBar now manages its own rAF) ───
   const currentSpeedMs = getProgressiveSpeedMs(settings.speed, currentStep, settings.customTimerSec);
   const baseSpeedMs = getProgressiveSpeedMs(settings.speed, 0, settings.customTimerSec);
-
-  // Use ref for handleTimeout to avoid re-creating loop on every render
-  const handleTimeoutRef = useRef(handleTimeout);
-  handleTimeoutRef.current = handleTimeout;
-
-  // Start/reset timer when step changes
-  useEffect(() => {
-    if (!isRunning || feedback !== null) return;
-
-    stepStartRef.current = performance.now();
-    setTimeLeft(1);
-
-    if (rafRef.current) cancelAnimationFrame(rafRef.current);
-
-    const tick = (now: number) => {
-      const elapsed = now - stepStartRef.current;
-      const remaining = Math.max(0, 1 - elapsed / currentSpeedMs);
-      setTimeLeft(remaining);
-
-      if (remaining <= 0) {
-        rafRef.current = 0;
-        handleTimeoutRef.current();
-        return;
-      }
-      rafRef.current = requestAnimationFrame(tick);
-    };
-
-    rafRef.current = requestAnimationFrame(tick);
-
-    return () => {
-      if (rafRef.current) {
-        cancelAnimationFrame(rafRef.current);
-        rafRef.current = 0;
-      }
-    };
-  }, [currentStep, isRunning, feedback, currentSpeedMs]);
-
-  // Clear timer when feedback is active
-  useEffect(() => {
-    if (feedback !== null && rafRef.current) {
-      cancelAnimationFrame(rafRef.current);
-      rafRef.current = 0;
-    }
-  }, [feedback]);
 
   // ─── Track last correct lane for coin effect ───
   const [lastCorrectLane, setLastCorrectLane] = useState<number | null>(null);
@@ -683,8 +699,8 @@ export default function DoorRunnerScene() {
       <RoadVisual pathCount={pathCount} />
       {isRunning && <SpeedLines />}
 
-      {/* Timer bar */}
-      {isRunning && <TimerBar timeLeft={timeLeft} />}
+      {/* Timer bar — self-contained, no re-renders on each frame */}
+      {isRunning && <TimerBar currentStep={currentStep} speedMs={currentSpeedMs} isRunning={isRunning} feedback={feedback} onTimeout={handleTimeout} />}
 
       {/* Speed indicator */}
       {isRunning && <SpeedIndicator currentMs={currentSpeedMs} baseMs={baseSpeedMs} />}

@@ -108,6 +108,10 @@ const RU: Translations = {
   'sound.soft': 'Мягкий',
   'sound.pack': 'Звуки',
 
+  // Settings labels
+  'settings.theme': 'Тема',
+  'settings.language': 'Язык',
+
   // Game feedback
   'game.correct': 'Верно!',
   'game.wrong': 'Ошибка!',
@@ -126,6 +130,51 @@ const RU: Translations = {
   'a11y.correct': 'Правильно! Счёт: {score}',
   'a11y.wrong': 'Неправильно! Счёт сброшен.',
   'a11y.combo': 'Комбо {combo}!',
+
+  // Tutorial extra
+  'tutorial.or': 'или',
+
+  // Achievement titles
+  'ach.first10': 'Первые шаги',
+  'ach.first10Desc': 'Набери 10 очков за одну игру',
+  'ach.score25': 'Неплохо!',
+  'ach.score25Desc': 'Набери 25 очков за одну игру',
+  'ach.score50': 'Мастер памяти',
+  'ach.score50Desc': 'Набери 50 очков за одну игру',
+  'ach.score100': 'Легенда',
+  'ach.score100Desc': 'Набери 100 очков за одну игру',
+  'ach.combo5': 'В ударе!',
+  'ach.combo5Desc': 'Достигни комбо x5',
+  'ach.combo10': 'Неудержимый',
+  'ach.combo10Desc': 'Достигни комбо x10',
+  'ach.combo20': 'Сверхчеловек',
+  'ach.combo20Desc': 'Достигни комбо x20',
+  'ach.total100': 'Настойчивый',
+  'ach.total100Desc': 'Дай 100 правильных ответов всего',
+  'ach.total500': 'Преданный',
+  'ach.total500Desc': 'Дай 500 правильных ответов всего',
+  'ach.total1000': 'Одержимый',
+  'ach.total1000Desc': 'Дай 1000 правильных ответов всего',
+  'ach.games10': 'Разминка',
+  'ach.games10Desc': 'Сыграй 10 игр',
+  'ach.games50': 'Ветеран',
+  'ach.games50Desc': 'Сыграй 50 игр',
+  'ach.fast10': 'Скоростной',
+  'ach.fast10Desc': 'Набери 10 на быстрой скорости',
+  'ach.fast25': 'Молниеносный',
+  'ach.fast25Desc': 'Набери 25 на быстрой скорости',
+  'ach.lane4': 'Мультитаскер',
+  'ach.lane4Desc': 'Набери 20 на 4 дорожках',
+  'ach.lane5': 'Следопыт',
+  'ach.lane5Desc': 'Набери 15 на 5 дорожках',
+  'ach.lane6': 'Штурман хаоса',
+  'ach.lane6Desc': 'Набери 10 на 6 дорожках',
+  'ach.daily1': 'Дейли-игрок',
+  'ach.daily1Desc': 'Пройди первый дейли-челлендж',
+  'ach.daily7': 'Воин недели',
+  'ach.daily7Desc': 'Пройди 7 дейли-челленджей',
+  'ach.dailyBest': 'Чемпион дня',
+  'ach.dailyBestDesc': 'Набери 10 в дейли-челлендже',
 };
 
 const EN: Translations = {
@@ -229,6 +278,10 @@ const EN: Translations = {
   'sound.soft': 'Soft',
   'sound.pack': 'Sounds',
 
+  // Settings labels
+  'settings.theme': 'Theme',
+  'settings.language': 'Language',
+
   // Game feedback
   'game.correct': 'Correct!',
   'game.wrong': 'Wrong!',
@@ -247,6 +300,51 @@ const EN: Translations = {
   'a11y.correct': 'Correct! Score: {score}',
   'a11y.wrong': 'Wrong! Score reset.',
   'a11y.combo': 'Combo {combo}!',
+
+  // Tutorial extra
+  'tutorial.or': 'or',
+
+  // Achievement titles
+  'ach.first10': 'First Steps',
+  'ach.first10Desc': 'Score 10 in a single game',
+  'ach.score25': 'Getting Good',
+  'ach.score25Desc': 'Score 25 in a single game',
+  'ach.score50': 'Memory Master',
+  'ach.score50Desc': 'Score 50 in a single game',
+  'ach.score100': 'Legendary',
+  'ach.score100Desc': 'Score 100 in a single game',
+  'ach.combo5': 'On Fire!',
+  'ach.combo5Desc': 'Reach a 5x combo',
+  'ach.combo10': 'Unstoppable',
+  'ach.combo10Desc': 'Reach a 10x combo',
+  'ach.combo20': 'Superhuman',
+  'ach.combo20Desc': 'Reach a 20x combo',
+  'ach.total100': 'Persistent',
+  'ach.total100Desc': 'Answer 100 correct total',
+  'ach.total500': 'Dedicated',
+  'ach.total500Desc': 'Answer 500 correct total',
+  'ach.total1000': 'Obsessed',
+  'ach.total1000Desc': 'Answer 1000 correct total',
+  'ach.games10': 'Warming Up',
+  'ach.games10Desc': 'Play 10 games',
+  'ach.games50': 'Veteran',
+  'ach.games50Desc': 'Play 50 games',
+  'ach.fast10': 'Speed Demon',
+  'ach.fast10Desc': 'Score 10 on Fast speed',
+  'ach.fast25': 'Lightning Reflexes',
+  'ach.fast25Desc': 'Score 25 on Fast speed',
+  'ach.lane4': 'Multitasker',
+  'ach.lane4Desc': 'Score 20 with 4 lanes',
+  'ach.lane5': 'Path Finder',
+  'ach.lane5Desc': 'Score 15 with 5 lanes',
+  'ach.lane6': 'Chaos Navigator',
+  'ach.lane6Desc': 'Score 10 with 6 lanes',
+  'ach.daily1': 'Daily Player',
+  'ach.daily1Desc': 'Complete your first Daily Challenge',
+  'ach.daily7': 'Week Warrior',
+  'ach.daily7Desc': 'Complete 7 Daily Challenges',
+  'ach.dailyBest': 'Daily Champion',
+  'ach.dailyBestDesc': 'Score 10 in a Daily Challenge',
 };
 
 const TRANSLATIONS: Record<Lang, Translations> = { ru: RU, en: EN };

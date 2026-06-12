@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { localStore } from '../lib/localStore';
+import { t, type Lang } from '../lib/i18n';
+import { useGameStore } from '../store/gameStore';
 
 const TUTORIAL_SEEN_KEY = 'tutorialSeen';
 
@@ -8,33 +10,13 @@ function markTutorialSeen(): void {
   localStore.set(TUTORIAL_SEEN_KEY, true);
 }
 
-// ─── Tutorial Steps ───
-const STEPS = [
-  {
-    emoji: '[ ]',
-    title: 'Запомни дверь',
-    text: 'Смотри, какая дверь подсвечена — это правильный путь!',
-    visual: 'door',
-  },
-  {
-    emoji: '>',
-    title: 'Выбери путь',
-    text: 'Тапни по двери, свайпни или нажми стрелки / A D на клавиатуре',
-    visual: 'controls',
-  },
-  {
-    emoji: 'x3',
-    title: 'Собирай комбо',
-    text: 'Ответил правильно 3+ раз подряд — получи комбо-бонус!',
-    visual: 'combo',
-  },
-  {
-    emoji: ':)',
-    title: 'Не медли!',
-    text: 'Время на ответ ограничено. Чем дальше — тем быстрее!',
-    visual: 'timer',
-  },
-];
+// ─── Tutorial Steps (i18n keys) ───
+const STEP_KEYS = [
+  { emoji: '[ ]', titleKey: 'tutorial.step1Title', textKey: 'tutorial.step1Text', visual: 'door' },
+  { emoji: '>', titleKey: 'tutorial.step2Title', textKey: 'tutorial.step2Text', visual: 'controls' },
+  { emoji: 'x3', titleKey: 'tutorial.step3Title', textKey: 'tutorial.step3Text', visual: 'combo' },
+  { emoji: ':)', titleKey: 'tutorial.step4Title', textKey: 'tutorial.step4Text', visual: 'timer' },
+] as const;
 
 // ─── Mini Visuals ───
 function DoorVisual() {
@@ -56,7 +38,7 @@ function DoorVisual() {
   );
 }
 
-function ControlsVisual() {
+function ControlsVisual({ lang }: { lang: Lang }) {
   const [isTouch] = useState(
     () => typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0)
   );
@@ -87,14 +69,14 @@ function ControlsVisual() {
     <div className="flex items-center justify-center gap-2 h-24">
       <kbd className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-white/15 border border-white/25 text-white/80 text-lg font-bold shadow-lg">{'<-'}</kbd>
       <kbd className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-white/15 border border-white/25 text-white/80 text-lg font-bold shadow-lg">{'->'}</kbd>
-      <span className="text-white/30 text-sm mx-1">или</span>
+      <span className="text-white/30 text-sm mx-1">{t('tutorial.or', lang)}</span>
       <kbd className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-white/15 border border-white/25 text-white/80 text-lg font-bold shadow-lg">A</kbd>
       <kbd className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-white/15 border border-white/25 text-white/80 text-lg font-bold shadow-lg">D</kbd>
     </div>
   );
 }
 
-function ComboVisual() {
+function ComboVisual({ lang }: { lang: Lang }) {
   return (
     <div className="flex items-center justify-center h-24">
       <motion.div
@@ -103,7 +85,7 @@ function ComboVisual() {
         animate={{ scale: [1, 1.3, 1], opacity: [0.7, 1, 0.7] }}
         transition={{ duration: 1.5, repeat: Infinity }}
       >
-        NICE! &gt;&gt; SUPER! &gt;&gt; INSANE!
+        {t('combo.nice', lang)} &gt;&gt; {t('combo.super', lang)} &gt;&gt; {t('combo.insane', lang)}
       </motion.div>
     </div>
   );
@@ -124,19 +106,12 @@ function TimerVisual() {
   );
 }
 
-const VISUALS: Record<string, () => React.JSX.Element> = {
-  door: DoorVisual,
-  controls: ControlsVisual,
-  combo: ComboVisual,
-  timer: TimerVisual,
-};
-
 // ─── Main Component ───
 export default function TutorialOverlay({ onClose }: { onClose: () => void }) {
   const [step, setStep] = useState(0);
-  const current = STEPS[step];
-  const isLast = step === STEPS.length - 1;
-  const Visual = VISUALS[current.visual];
+  const lang = useGameStore((s) => s.settings.lang);
+  const current = STEP_KEYS[step];
+  const isLast = step === STEP_KEYS.length - 1;
 
   const handleNext = () => {
     if (isLast) {
@@ -151,6 +126,15 @@ export default function TutorialOverlay({ onClose }: { onClose: () => void }) {
     markTutorialSeen();
     onClose();
   };
+
+  const Visual = (() => {
+    switch (current.visual) {
+      case 'door': return <DoorVisual />;
+      case 'controls': return <ControlsVisual lang={lang} />;
+      case 'combo': return <ComboVisual lang={lang} />;
+      case 'timer': return <TimerVisual />;
+    }
+  })();
 
   return (
     <motion.div
@@ -170,11 +154,11 @@ export default function TutorialOverlay({ onClose }: { onClose: () => void }) {
         transition={{ type: 'spring', stiffness: 300, damping: 25 }}
         role="dialog"
         aria-modal="true"
-        aria-label="Tutorial"
+        aria-label={t('tutorial.step1Title', lang)}
       >
         {/* Step indicator */}
         <div className="flex items-center justify-center gap-1.5 mb-5">
-          {STEPS.map((_, i) => (
+          {STEP_KEYS.map((_, i) => (
             <div
               key={i}
               className={`h-1.5 rounded-full transition-all duration-300 ${
@@ -201,9 +185,9 @@ export default function TutorialOverlay({ onClose }: { onClose: () => void }) {
             >
               {current.emoji}
             </motion.div>
-            <h3 className="text-xl font-black text-white mb-2">{current.title}</h3>
-            <p className="text-white/60 text-sm leading-relaxed mb-4">{current.text}</p>
-            <Visual />
+            <h3 className="text-xl font-black text-white mb-2">{t(current.titleKey, lang)}</h3>
+            <p className="text-white/60 text-sm leading-relaxed mb-4">{t(current.textKey, lang)}</p>
+            {Visual}
           </motion.div>
         </AnimatePresence>
 
@@ -213,13 +197,13 @@ export default function TutorialOverlay({ onClose }: { onClose: () => void }) {
             onClick={handleSkip}
             className="flex-1 h-11 rounded-2xl bg-white/10 text-white/50 font-bold text-sm hover:bg-white/15 transition-all"
           >
-            Пропустить
+            {t('tutorial.skip', lang)}
           </button>
           <button
             onClick={handleNext}
             className="flex-1 h-11 rounded-2xl bg-[#FF6B35] text-white font-bold text-sm shadow-lg shadow-[#FF6B35]/30 active:scale-95 transition-all"
           >
-            {isLast ? 'Поехали!' : 'Далее >>'}
+            {isLast ? t('tutorial.go', lang) : t('tutorial.next', lang)}
           </button>
         </div>
       </motion.div>
