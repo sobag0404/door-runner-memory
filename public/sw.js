@@ -1,5 +1,5 @@
 // ─── Door Runner Memory — Service Worker ────────────────
-const CACHE_NAME = 'door-runner-v2';
+const CACHE_NAME = 'door-runner-v3';
 const STATIC_ASSETS = [
   '/',
   '/index.html',

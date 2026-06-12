@@ -93,18 +93,17 @@ function Runner({ pathCount, currentLane, feedback }: {
       className="absolute bottom-[22%] z-20"
       animate={{
         left: `${leftPercent}%`,
-        y: feedback === 'wrong' ? [0, -12, 6, -4, 0] : 0,
+        y: feedback === 'wrong' ? [0, -12, 6, -4, 0] : [0, -3, 0],
       }}
       transition={{
         left: { type: 'spring', stiffness: 320, damping: 22 },
-        y: { duration: 0.5, ease: 'easeOut' },
+        y: feedback === 'wrong'
+          ? { duration: 0.5, ease: 'easeOut' }
+          : { duration: 0.5, repeat: Infinity, ease: 'easeInOut' },
       }}
       style={{ transform: 'translateX(-50%)', willChange: 'left' }}
     >
-      <div
-        className="relative flex flex-col items-center"
-        style={{ animation: feedback !== 'wrong' ? 'runnerBounce 0.5s ease-in-out infinite' : undefined }}
-      >
+      <div className="relative flex flex-col items-center">
         {/* Shadow on ground */}
         <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-10 h-3 bg-black/25 rounded-full blur-sm" />
 
@@ -288,7 +287,6 @@ function Door({
       style={{
         maxWidth: `${85 / pathCount}%`,
         height: '80px',
-        willChange: 'transform',
       }}
       whileHover={!prefersReducedMotion() && isCurrent ? { scale: 1.06, y: -2 } : undefined}
       whileTap={isCurrent ? { scale: 0.93 } : undefined}
@@ -299,9 +297,7 @@ function Door({
             ? { x: [0, -6, 6, -4, 4, 0] }
             : isFeedbackCorrect
               ? { scale: [1, 1.1, 1] }
-              : isCurrent
-                ? { scale: [1, 1.03, 1] }
-                : undefined
+              : undefined
       }
       transition={{ duration: 0.4 }}
       aria-label={`Door ${laneIdx + 1}${isCurrent ? ' (choose this lane)' : ''}`}
@@ -393,8 +389,9 @@ function DoorRow({
 
   return (
     <motion.div
-      className="absolute left-0 right-0 flex justify-center gap-2 px-5 z-15"
-      style={{ bottom: `${bottomPercent}%`, transformOrigin: 'center bottom', willChange: 'transform, opacity' }}
+      className="absolute left-0 right-0 flex justify-center gap-2 px-5 z-[15]"
+      style={{ bottom: `${bottomPercent}%`, transformOrigin: 'center bottom' }}
+      initial={false}
       animate={{ scale, opacity }}
       transition={{ type: 'spring', stiffness: 200, damping: 20 }}
     >
@@ -890,7 +887,7 @@ export default function DoorRunnerScene() {
       {isRunning && <SpeedIndicator currentMs={currentSpeedMs} baseMs={baseSpeedMs} />}
 
       {doorRows.map((row) => (
-        <DoorRow key={`row-${currentStep}-${row.doorIndex}`}
+        <DoorRow key={`row-${row.doorIndex}`}
           doorIndex={row.doorIndex} pathCount={pathCount} correctLane={row.correctLane}
           isCurrent={row.isCurrent} feedback={row.isCurrent ? feedback : null} onChoose={handleChoose} />
       ))}
