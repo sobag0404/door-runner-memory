@@ -2,13 +2,17 @@ import { useMemo, useCallback, useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useGameStore, getProgressiveSpeedMs } from '../store/gameStore';
 import { LANE_COLORS, LANE_LIGHT, getLanePercent } from '../lib/constants';
-import { ACHIEVEMENTS } from '../lib/achievements';
 import { t } from '../lib/i18n';
 import { prefersReducedMotion } from '../lib/a11y';
 import { getExpectedPath } from '../lib/season';
+import { SpeedLines, ParticleBurst, CoinEffect } from './game/VFX';
+import { HUD } from './game/HUD';
+import { LaneButtons } from './game/LaneButtons';
+import { AchievementToast } from './game/AchievementToast';
 
 // ─── Re-export for sub-components ──
 export { LANE_COLORS, LANE_LIGHT, getLanePercent };
+// Extracted components imported from ./game/
 
 // ─── Combo Badge ──────────────────────────────────────
 function ComboBadge({ combo, lang }: { combo: number; lang: string }) {
@@ -480,209 +484,6 @@ function RoadVisual({ pathCount }: { pathCount: number }) {
           style={{ background: 'linear-gradient(to bottom, transparent, #FF6B3560, #FF6B3580)', boxShadow: '-2px 0 10px #FF6B3540' }} />
         <div className="absolute left-1/2 -translate-x-1/2 w-24 h-24 rounded-full"
           style={{ top: '3%', background: 'radial-gradient(circle, #FFD23F40 0%, transparent 70%)' }} />
-      </div>
-    </div>
-  );
-}
-
-// ─── Speed Lines VFX ──────────────────────────────────
-function SpeedLines() {
-  const lines = useMemo(() =>
-    Array.from({ length: 8 }).map((_, i) => ({
-      id: i, left: 5 + Math.random() * 90, width: 1 + Math.random() * 2,
-      duration: 0.4 + Math.random() * 0.4, delay: Math.random() * 1, opacity: 0.15 + Math.random() * 0.2,
-    })), []
-  );
-  return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden z-10">
-      {lines.map(l => (
-        <div key={l.id} className="absolute top-0 rounded-full bg-white"
-          style={{ left: `${l.left}%`, width: l.width, height: '30%', opacity: l.opacity, animation: `speedLine ${l.duration}s linear ${l.delay}s infinite` }} />
-      ))}
-    </div>
-  );
-}
-
-// ─── Particle Burst VFX ──────────────────────────────
-function ParticleBurst({ type }: { type: 'correct' | 'wrong' }) {
-  const isCorrect = type === 'correct';
-  const particles = useMemo(() =>
-    Array.from({ length: 20 }).map((_, i) => ({
-      id: i, x: 25 + Math.random() * 50, delay: Math.random() * 0.25,
-      duration: 0.5 + Math.random() * 0.5, size: 4 + Math.random() * 8,
-      angle: -40 + Math.random() * 80,
-      color: isCorrect ? ['#FFD23F', '#FF6B35', '#06D6A0', '#FFF'][i % 4] : ['#EF476F', '#FF6B6B', '#FF9F43', '#FFF'][i % 4],
-      isStar: Math.random() > 0.5,
-    })), [isCorrect]
-  );
-
-  return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 25 }}>
-      {particles.map(p => (
-        <motion.div key={p.id} className="absolute"
-          style={{ left: `${p.x}%`, bottom: '30%', width: p.size, height: p.size }}
-          initial={{ opacity: 1, y: 0, x: 0, scale: 1, rotate: 0 }}
-          animate={{ opacity: 0, y: -120 - Math.random() * 80, x: p.angle * 2.5, scale: 0, rotate: 360 }}
-          transition={{ duration: p.duration, delay: p.delay, ease: 'easeOut' }}
-        >
-          {p.isStar ? (
-            <div style={{ color: p.color, fontSize: p.size, lineHeight: 1 }}>*</div>
-          ) : (
-            <div className="w-full h-full rounded-full" style={{ backgroundColor: p.color }} />
-          )}
-        </motion.div>
-      ))}
-    </div>
-  );
-}
-
-// ─── Coin effect ──────────────────────────────────────
-function CoinEffect({ laneX }: { laneX: number }) {
-  return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 26 }}>
-      <motion.div className="absolute font-black text-xl text-[#FFD23F]"
-        style={{ left: `${laneX}%`, bottom: '38%', textShadow: '0 2px 8px #FF6B3580' }}
-        initial={{ opacity: 1, y: 0, scale: 0.5 }}
-        animate={{ opacity: 0, y: -70, scale: 1.3 }}
-        transition={{ duration: 0.7, ease: 'easeOut' }}
-      >
-        +1
-      </motion.div>
-    </div>
-  );
-}
-
-// ─── HUD ──────────────────────────────────────────────
-function HUD({ combo, lang }: { combo: number; lang: string }) {
-  const score = useGameStore((s) => s.score);
-  const feedback = useGameStore((s) => s.feedback);
-
-  return (
-    <div className="absolute inset-0 pointer-events-none z-30"
-      style={feedback === 'wrong' ? { animation: 'screenShake 0.4s ease-out' } : undefined}
-    >
-      <div className="flex justify-between items-start p-3 pt-5">
-        <div className="flex items-center gap-2 bg-black/40 backdrop-blur-md rounded-2xl px-4 py-2 border border-white/15 shadow-lg">
-          <span className="text-[#FFD23F] text-sm">$</span>
-          <motion.span
-            key={score}
-            className="text-white font-black text-2xl tabular-nums"
-            initial={{ scale: 1.6, color: '#FFD23F' }}
-            animate={{ scale: 1, color: '#ffffff' }}
-            transition={{ duration: 0.3, type: 'spring', stiffness: 300 }}
-          >
-            {score}
-          </motion.span>
-        </div>
-        {combo >= 3 && (
-          <motion.div
-            className="flex items-center gap-1 bg-black/40 backdrop-blur-md rounded-2xl px-3 py-2 border border-[#FFD23F]/30"
-            initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
-            style={{ animation: 'comboGlow 0.6s ease-in-out infinite' }}
-          >
-            <span className="text-[#FFD23F] font-black text-lg">×{combo}</span>
-          </motion.div>
-        )}
-      </div>
-
-      <AnimatePresence>
-        {feedback && (
-          <motion.div className="absolute inset-0 flex items-center justify-center"
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <motion.div
-              className={`px-8 py-4 rounded-3xl font-black text-2xl backdrop-blur-md border-2 shadow-2xl ${
-                feedback === 'correct'
-                  ? 'bg-[#06D6A0]/80 text-white border-[#06D6A0] shadow-[#06D6A0]/30'
-                  : 'bg-[#EF476F]/80 text-white border-[#EF476F] shadow-[#EF476F]/30'
-              }`}
-              initial={{ scale: 0.2, opacity: 0, y: 20 }}
-              animate={{ scale: [0.2, 1.2, 1], opacity: 1, y: 0 }}
-              exit={{ scale: 1.4, opacity: 0, y: -20 }}
-              transition={{ duration: 0.35, type: 'spring', stiffness: 250 }}
-            >
-              {feedback === 'correct' ? t('game.correct', lang as 'ru' | 'en') : t('game.wrong', lang as 'ru' | 'en')}
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
-
-// ─── Achievement Toast ────────────────────────────────
-function AchievementToast() {
-  const newlyUnlockedIds = useGameStore((s) => s.newlyUnlockedIds);
-  const clearNewlyUnlocked = useGameStore((s) => s.clearNewlyUnlocked);
-
-  if (newlyUnlockedIds.length === 0) return null;
-
-  const achievement = ACHIEVEMENTS.find(a => a.id === newlyUnlockedIds[0]);
-  if (!achievement) return null;
-
-  return (
-    <motion.div
-      className="absolute top-3 left-1/2 z-[60] pointer-events-none"
-      style={{ x: '-50%' }}
-      initial={{ y: -60, opacity: 0, scale: 0.8 }}
-      animate={{ y: 0, opacity: 1, scale: 1 }}
-      exit={{ y: -40, opacity: 0, scale: 0.8 }}
-      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-      onAnimationComplete={() => {
-        setTimeout(clearNewlyUnlocked, 2500);
-      }}
-    >
-      <div className="flex items-center gap-2 bg-black/70 backdrop-blur-md rounded-2xl px-4 py-2.5 border border-[#FFD23F]/40 shadow-xl">
-        <span className="text-2xl">{achievement.icon}</span>
-        <div>
-          <div className="text-[#FFD23F] text-xs font-black uppercase tracking-wide">Achievement!</div>
-          <div className="text-white text-sm font-bold">{achievement.title}</div>
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-
-// ─── Lane Buttons ─────────────────────────────────────
-function LaneButtons() {
-  const pathCount = useGameStore((s) => s.settings.pathCount);
-  const chooseLane = useGameStore((s) => s.chooseLane);
-  const isRunning = useGameStore((s) => s.isRunning);
-  const feedback = useGameStore((s) => s.feedback);
-
-  const handleLane = useCallback(
-    (lane: number) => {
-      if (!isRunning || feedback !== null) return;
-      chooseLane(lane);
-    },
-    [isRunning, feedback, chooseLane]
-  );
-
-  return (
-    <div className="absolute bottom-0 left-0 right-0 z-40 p-3 pb-5">
-      <div className="grid gap-3 max-w-lg mx-auto"
-        style={{ gridTemplateColumns: `repeat(${pathCount}, 1fr)` }}>
-        {Array.from({ length: pathCount }).map((_, i) => {
-          const color = LANE_COLORS[i % LANE_COLORS.length];
-          const light = LANE_LIGHT[i % LANE_LIGHT.length];
-          return (
-            <motion.button key={i} onClick={() => handleLane(i)}
-              disabled={!isRunning || feedback !== null}
-              className="h-16 rounded-2xl font-black text-2xl text-white relative overflow-hidden disabled:opacity-40"
-              style={{
-                background: `linear-gradient(180deg, ${light} 0%, ${color} 100%)`,
-                boxShadow: `0 4px 15px ${color}50, inset 0 2px 0 rgba(255,255,255,0.35), inset 0 -2px 0 rgba(0,0,0,0.15)`,
-                textShadow: '0 2px 4px rgba(0,0,0,0.3)',
-              }}
-              whileHover={{ scale: 1.06, y: -2 }}
-              whileTap={{ scale: 0.9 }}
-              transition={{ type: 'spring', stiffness: 400, damping: 18 }}
-            >
-              <div className="absolute inset-x-0 top-0 h-2/5 bg-gradient-to-b from-white/25 to-transparent rounded-t-2xl" />
-              <div className="absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-black/15 to-transparent rounded-b-2xl" />
-              <span className="relative">{i + 1}</span>
-            </motion.button>
-          );
-        })}
       </div>
     </div>
   );
