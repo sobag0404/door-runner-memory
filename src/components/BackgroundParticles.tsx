@@ -11,6 +11,8 @@ interface Particle {
   size: number;
   opacity: number;
   hue: number;
+  pulse: number; // for neon glow pulsing
+  shape: 'circle' | 'square' | 'diamond' | 'triangle';
 }
 
 interface BackgroundParticlesProps {
@@ -49,10 +51,15 @@ export default function BackgroundParticles({ theme }: BackgroundParticlesProps)
     };
     document.addEventListener('visibilitychange', handleVisibility);
 
-    // Initialize particles
-    const COUNT = 30;
+    // Initialize particles — more variety per theme
+    const COUNT = theme.id === 'neon' ? 40 : 35;
     if (particlesRef.current.length === 0) {
       for (let i = 0; i < COUNT; i++) {
+        const shapes: Particle['shape'][] = theme.id === 'neon'
+          ? ['circle', 'diamond', 'triangle']
+          : theme.id === 'retro'
+            ? ['square', 'square', 'diamond']
+            : ['circle', 'circle', 'diamond'];
         particlesRef.current.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
@@ -60,12 +67,13 @@ export default function BackgroundParticles({ theme }: BackgroundParticlesProps)
           vy: -Math.random() * 0.4 - 0.1,
           size: Math.random() * 4 + 2,
           opacity: Math.random() * 0.3 + 0.05,
-          hue: Math.random() * 60 - 30, // offset from accent color
+          hue: Math.random() * 60 - 30,
+          pulse: Math.random() * Math.PI * 2,
+          shape: shapes[i % shapes.length],
         });
       }
     }
 
-    // Parse accent color to get base hue
     const isNeon = theme.id === 'neon';
     const isRetro = theme.id === 'retro';
 
@@ -78,44 +86,56 @@ export default function BackgroundParticles({ theme }: BackgroundParticlesProps)
       for (const p of particlesRef.current) {
         p.x += p.vx;
         p.y += p.vy;
+        p.pulse += 0.02;
 
         // Wrap around
         if (p.y < -10) { p.y = canvas.height + 10; p.x = Math.random() * canvas.width; }
         if (p.x < -10) p.x = canvas.width + 10;
         if (p.x > canvas.width + 10) p.x = -10;
 
+        // Dynamic opacity for neon pulsing
+        const pulseFactor = isNeon ? 0.5 + 0.5 * Math.sin(p.pulse) : 1;
+        const finalOpacity = p.opacity * pulseFactor;
+
         let color: string;
         if (isNeon) {
           const hue = (120 + p.hue + 360) % 360; // green-ish
-          color = `hsla(${hue}, 100%, 60%, ${p.opacity})`;
+          color = `hsla(${hue}, 100%, 60%, ${finalOpacity})`;
         } else if (isRetro) {
           const hue = (80 + p.hue + 360) % 360; // yellow-green
-          color = `hsla(${hue}, 60%, 50%, ${p.opacity})`;
+          color = `hsla(${hue}, 60%, 50%, ${finalOpacity})`;
         } else {
           const hue = (30 + p.hue + 360) % 360; // orange-ish
-          color = `hsla(${hue}, 80%, 60%, ${p.opacity})`;
+          color = `hsla(${hue}, 80%, 60%, ${finalOpacity})`;
         }
 
-        ctx.beginPath();
+        ctx.save();
+        ctx.translate(p.x, p.y);
+
+        // Draw shape based on theme
         if (isNeon) {
-          // Neon: glowing circles
-          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-          ctx.fillStyle = color;
-          ctx.shadowBlur = 15;
+          // Neon: glowing shapes with shadowBlur
+          ctx.shadowBlur = 15 + 5 * Math.sin(p.pulse);
           ctx.shadowColor = color;
-          ctx.fill();
-          ctx.shadowBlur = 0;
-        } else if (isRetro) {
-          // Retro: small squares (pixel feel)
-          ctx.rect(p.x - p.size / 2, p.y - p.size / 2, p.size, p.size);
           ctx.fillStyle = color;
+          drawShape(ctx, p.shape, p.size);
+          ctx.fill();
+        } else if (isRetro) {
+          // Retro: pixel-like shapes, no glow
+          ctx.fillStyle = color;
+          drawShape(ctx, p.shape, p.size);
           ctx.fill();
         } else {
-          // Classic: soft circles
-          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          // Classic: soft circles with gentle glow
+          ctx.shadowBlur = 8;
+          ctx.shadowColor = color;
           ctx.fillStyle = color;
+          ctx.beginPath();
+          ctx.arc(0, 0, p.size, 0, Math.PI * 2);
           ctx.fill();
         }
+
+        ctx.restore();
       }
 
       rafRef.current = requestAnimationFrame(animate);
@@ -137,4 +157,32 @@ export default function BackgroundParticles({ theme }: BackgroundParticlesProps)
       style={{ opacity: theme.particleOpacity }}
     />
   );
+}
+
+function drawShape(ctx: CanvasRenderingContext2D, shape: Particle['shape'], size: number) {
+  switch (shape) {
+    case 'circle':
+      ctx.beginPath();
+      ctx.arc(0, 0, size, 0, Math.PI * 2);
+      break;
+    case 'square':
+      ctx.beginPath();
+      ctx.rect(-size / 2, -size / 2, size, size);
+      break;
+    case 'diamond':
+      ctx.beginPath();
+      ctx.moveTo(0, -size);
+      ctx.lineTo(size, 0);
+      ctx.lineTo(0, size);
+      ctx.lineTo(-size, 0);
+      ctx.closePath();
+      break;
+    case 'triangle':
+      ctx.beginPath();
+      ctx.moveTo(0, -size);
+      ctx.lineTo(size, size * 0.7);
+      ctx.lineTo(-size, size * 0.7);
+      ctx.closePath();
+      break;
+  }
 }

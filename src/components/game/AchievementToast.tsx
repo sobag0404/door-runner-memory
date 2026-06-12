@@ -29,7 +29,8 @@ export function AchievementToast() {
       <div className="flex items-center gap-2 bg-black/70 backdrop-blur-md rounded-2xl px-4 py-2.5 border border-[#FFD23F]/40 shadow-xl">
         <span className="text-2xl">{achievement.icon}</span>
         <div>
-          <div className="text-[#FFD23F] text-xs font-black uppercase tracking-wide">Achievement!</div>
+          <div className="text-[#FFD23F] text-xs font-black uppercase tracking-wide"
+            style={{ textShadow: '0 0 8px #FFD23F40' }}>Achievement!</div>
           <div className="text-white text-sm font-bold">{achievement.title}</div>
         </div>
       </div>

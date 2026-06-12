@@ -1,16 +1,18 @@
 // ─── Lane Buttons Component ─────────────────────────────
-// Bottom lane selection buttons
+// Bottom lane selection buttons — fully theme-aware
 
 import { useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useGameStore } from '../../store/gameStore';
 import { LANE_COLORS, LANE_LIGHT } from '../../lib/constants';
+import type { GameTheme } from '../../lib/themes';
 
-export function LaneButtons() {
+export function LaneButtons({ theme }: { theme: GameTheme }) {
   const pathCount = useGameStore((s) => s.settings.pathCount);
   const chooseLane = useGameStore((s) => s.chooseLane);
   const isRunning = useGameStore((s) => s.isRunning);
   const feedback = useGameStore((s) => s.feedback);
+  const isNeon = theme.id === 'neon';
 
   const handleLane = useCallback(
     (lane: number) => {
@@ -33,8 +35,12 @@ export function LaneButtons() {
               className="h-16 rounded-2xl font-black text-2xl text-white relative overflow-hidden disabled:opacity-40"
               style={{
                 background: `linear-gradient(180deg, ${light} 0%, ${color} 100%)`,
-                boxShadow: `0 4px 15px ${color}50, inset 0 2px 0 rgba(255,255,255,0.35), inset 0 -2px 0 rgba(0,0,0,0.15)`,
-                textShadow: '0 2px 4px rgba(0,0,0,0.3)',
+                boxShadow: isNeon
+                  ? `0 0 15px ${color}50, inset 0 2px 0 rgba(255,255,255,0.35), inset 0 -2px 0 rgba(0,0,0,0.15)`
+                  : `0 4px 15px ${color}50, inset 0 2px 0 rgba(255,255,255,0.35), inset 0 -2px 0 rgba(0,0,0,0.15)`,
+                textShadow: isNeon
+                  ? `0 0 8px ${color}, 0 2px 4px rgba(0,0,0,0.3)`
+                  : '0 2px 4px rgba(0,0,0,0.3)',
               }}
               whileHover={{ scale: 1.06, y: -2 }}
               whileTap={{ scale: 0.9 }}
@@ -42,6 +48,15 @@ export function LaneButtons() {
             >
               <div className="absolute inset-x-0 top-0 h-2/5 bg-gradient-to-b from-white/25 to-transparent rounded-t-2xl" />
               <div className="absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-black/15 to-transparent rounded-b-2xl" />
+
+              {/* Neon: scanline overlay */}
+              {isNeon && (
+                <div className="absolute inset-0 pointer-events-none opacity-20"
+                  style={{
+                    backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 4px)',
+                  }} />
+              )}
+
               <span className="relative">{i + 1}</span>
             </motion.button>
           );

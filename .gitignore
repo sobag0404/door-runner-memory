@@ -32,3 +32,4 @@ skills/
 # Database (local only)
 *.db
 db/
+test-screenshots/
