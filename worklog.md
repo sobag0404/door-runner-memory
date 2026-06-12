@@ -151,3 +151,38 @@ Stage Summary:
 - Fixed speed levels to actually differ (Slow/Normal/Fast)
 - Smooth slide transitions between all screens (home/game/leaderboard)
 - All verified and pushed to GitHub
+
+---
+Task ID: 1
+Agent: main
+Task: Fix mobile rendering issues - doors not visible, garbled text, jerky character
+
+Work Log:
+- Analyzed user's screenshot with VLM - identified dark tunnel background, missing doors, garbled text, jerky character
+- Started dev server and tested game in browser
+- Identified root causes:
+  1. `rotateX` transform on DoorRow was distorting text on mobile browsers
+  2. `perspective(600px) rotateX(4deg)` on road was creating tunnel effect on some devices
+  3. DoorRow had no z-index, causing doors to be hidden behind road visual
+  4. Unicode symbols (✓✗⇨🪙★) not rendering correctly on some mobile devices
+  5. Fast CSS animations causing jerky character on mobile
+- Applied comprehensive fixes:
+  - Removed `rotateX` from DoorRow animate
+  - Removed `perspective + rotateX` from road
+  - Added `z-15` to DoorRow for proper stacking
+  - Redesigned Door component with arch shape, wood frame, panels, and handle
+  - Replaced all Unicode symbols with ASCII equivalents
+  - Slowed runner animations (bounce 0.35s→0.5s, legs 0.25s→0.35s)
+  - Added font smoothing CSS and willChange hints
+  - Updated i18n translations to remove emoji
+  - Updated TutorialOverlay, HomeScreen, ErrorBoundary, LeaderboardScreen
+- Verified game renders correctly in browser with mobile viewport
+- Pushed fixes to GitHub (auto-deploys to Netlify)
+
+Stage Summary:
+- Doors now visible with arch design, frame, panels, and handle
+- Text renders correctly on mobile (no more garbled characters)
+- Character animations are smoother
+- Road background renders without dark tunnel effect
+- All Unicode symbols replaced with mobile-safe ASCII
+- Game is playable and functional
