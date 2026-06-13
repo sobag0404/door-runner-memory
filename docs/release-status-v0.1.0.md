@@ -23,9 +23,19 @@ GitHub Actions on `main`: https://github.com/sobag0404/door-runner-memory/action
 
 ## Remaining Non-Blocking Risks
 
-- Zustand still owns many side effects.
-- Dedicated automated a11y audit is not yet a release gate.
+- Zustand still owns persistence, timer, stats, achievement, and leaderboard side effects.
 - Android/Capacitor APK and real-device performance are not verified in this checkout.
+- Netlify production deploy status is not verified from this environment.
+
+## Post-v0.1.0 Hardening Added Locally
+
+- Sound, haptics, and aria announcements are isolated behind `src/store/gameEffects.ts`.
+- Focused Playwright accessibility smoke was added in `tests/e2e/a11y.spec.ts`.
+- `bun run test:a11y` was added as a focused local/CI smoke check.
+- CI now includes an explicit `Accessibility smoke` step.
+- Android release assumptions are documented in `docs/android-release.md`.
+- Netlify deploy verification is documented in `docs/netlify-deploy-checklist.md`.
+- Next-release priorities are documented in `docs/roadmap-v0.2.0.md`.
 
 ## Netlify Deploy Check
 

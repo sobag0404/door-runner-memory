@@ -14,7 +14,7 @@ Door Runner Memory — аркадная игра, где нужно запоми
 - **Tailwind CSS 4** — styling
 - **Zustand** — state management
 - **Framer Motion** — animations
-- **Capacitor** — native APK build
+- **Capacitor** — native packaging configuration; Android project not generated yet
 - **Web Audio API** — synthesized sounds
 - **PWA** — installable web app
 
@@ -75,7 +75,9 @@ bun x cap open android
 cd android && ./gradlew assembleDebug
 ```
 
-APK will be at `android/app/build/outputs/apk/debug/app-debug.apk`
+After a successful Android platform generation and Gradle debug build, the APK is expected at `android/app/build/outputs/apk/debug/app-debug.apk`
+
+For the production-minded Android release checklist, see `docs/android-release.md`.
 
 ## Architecture
 
@@ -109,7 +111,7 @@ src/
 - 3 sound packs (Classic, 8-bit, Soft)
 - 3 visual themes (Classic, Neon, Retro)
 - Full RU/EN localization
-- Accessibility: reduced motion, screen reader, focus management
+- Accessibility smoke coverage: reduced motion, aria-live announcements, focus management
 - Keyboard controls (1-6, arrows, A/D)
 - Swipe gestures
 - Haptic feedback
@@ -120,14 +122,15 @@ src/
 bun run test        # Run all tests once
 bun run test:watch  # Watch mode
 bun run test:e2e    # Playwright smoke/e2e + PWA checks
+bun run test:a11y   # Focused Playwright accessibility smoke
 bun run security:audit # Dependency vulnerability audit
 bun run quality     # Build + lint + test
 ```
 
-112 unit tests covering:
+Unit tests cover:
 - Season sequence generation (determinism, boundaries, errors)
 - Validators (settings, scores, stats, leaderboard)
-- Game store (chooseLane, startGame, resetGame, speed calculations)
+- Game store and side-effect helpers (chooseLane, startGame, resetGame, speed calculations, combo feedback thresholds)
 - Pure game reducer transitions
 - Language detection fallback for test/non-browser environments
 
@@ -137,6 +140,7 @@ Playwright e2e covers:
 - Score save and local leaderboard visibility
 - Settings persistence after reload
 - PWA manifest, service worker registration, and warmed offline reload
+- Accessibility smoke: keyboard-only start/play, accessible button names, aria-live feedback, reduced-motion CSS, and mobile viewport reachability
 
 ## CI/CD
 
@@ -173,6 +177,7 @@ jobs:
       - run: node ./node_modules/@playwright/test/cli.js install chromium
         if: runner.os == 'Windows'
       - run: bun run test:e2e
+      - run: bun run test:a11y
 ```
 
 `actions/checkout@v6` and `actions/setup-node@v6` are used for Node 24 readiness in GitHub Actions. CI runs on both Ubuntu and Windows with Bun 1.3.14.
@@ -182,11 +187,16 @@ jobs:
 See `docs/gap-analysis.md` for full security review findings.
 
 - Game logic has a pure reducer, but the Zustand store still owns many side effects
+- Sound, haptics, and screen-reader announcements are now isolated behind `src/store/gameEffects.ts`; persistence, timers, stats, achievements, and leaderboard effects still need further extraction
 - Android device checks are not yet covered
 
 ## Deploy
 
 `netlify.toml` is configured for Netlify (`bun run build`, publish `dist`). Current production deploy status must be verified in Netlify after login; the old anonymous URL in `worklog.md` returns 404.
+
+Deployment verification checklist: `docs/netlify-deploy-checklist.md`.
+
+Next release plan: `docs/roadmap-v0.2.0.md`.
 
 ## License
 

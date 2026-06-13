@@ -30,6 +30,16 @@ Completed locally on `codex/production-hardening` on 2026-06-13:
 - [x] `bun run test` - 112 unit tests passing
 - [x] `bun run test:e2e` - 14 Playwright tests passing across desktop Chromium and mobile Chrome profiles
 
+## Post-v0.1.0 Hardening Gates
+
+Added after the published `v0.1.0` baseline:
+
+- [ ] Run `bun run test:a11y`.
+- [ ] Confirm CI includes the `Accessibility smoke` step.
+- [ ] Review `docs/android-release.md` before claiming APK readiness.
+- [ ] Review `docs/netlify-deploy-checklist.md` before claiming production deploy readiness.
+- [ ] Use `docs/roadmap-v0.2.0.md` for next-release priorities and non-goals.
+
 ## Manual Browser Smoke
 
 - [ ] Home screen renders.
@@ -49,6 +59,7 @@ Completed locally on `codex/production-hardening` on 2026-06-13:
 
 ## Mobile/Performance Checklist
 
+- [ ] Focused Playwright a11y smoke passes on desktop Chromium and mobile Chrome profiles.
 - [ ] BackgroundParticles does not dominate CPU on mobile viewport.
 - [ ] VFX effects remain readable and do not obscure doors/HUD.
 - [ ] Themes keep sufficient contrast for doors, HUD, and feedback.
