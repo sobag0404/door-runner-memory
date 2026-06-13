@@ -21,13 +21,16 @@ Door Runner Memory — аркадная игра, где нужно запоми
 ## Requirements
 
 - Bun 1.3.14, matching `packageManager`
-- Node.js 20.19+ or 22.12+ if using Node-based tooling with Vite 8
+- Node.js 22.12.0 via `.node-version` / `.nvmrc`
+- Vite 8 supports Node.js 20.19+ or 22.12+; do not use Node 18
 
 ## Install
 
 ```bash
 bun install
 ```
+
+`bun install --frozen-lockfile` is the release/CI install command.
 
 ## Run (development)
 
@@ -60,13 +63,13 @@ Capacitor config exists, but the Android project directory is not generated in t
 bun run build
 
 # Add Android platform once
-bunx cap add android
+bun x cap add android
 
 # Sync to Capacitor
-bunx cap sync android
+bun x cap sync android
 
 # Open in Android Studio
-bunx cap open android
+bun x cap open android
 
 # Or build APK from command line
 cd android && ./gradlew assembleDebug
@@ -116,6 +119,7 @@ src/
 ```bash
 bun run test        # Run all tests once
 bun run test:watch  # Watch mode
+bun run test:e2e    # Playwright smoke/e2e + PWA checks
 bun run quality     # Build + lint + test
 ```
 
@@ -125,6 +129,13 @@ bun run quality     # Build + lint + test
 - Game store (chooseLane, startGame, resetGame, speed calculations)
 - Pure game reducer transitions
 - Language detection fallback for test/non-browser environments
+
+Playwright e2e covers:
+- Home/start flow on desktop and mobile Chrome profiles
+- Tap/click and keyboard lane input
+- Score save and local leaderboard visibility
+- Settings persistence after reload
+- PWA manifest, service worker registration, and warmed offline reload
 
 ## CI/CD
 
@@ -140,21 +151,27 @@ jobs:
   quality:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
       - uses: oven-sh/setup-bun@v2
-      - run: bun install
+      - run: bun install --frozen-lockfile
       - run: bun run build
       - run: bun run lint
       - run: bun run test
+      - run: node ./node_modules/@playwright/test/cli.js install --with-deps chromium
+      - run: bun run test:e2e
 ```
+
+`actions/checkout@v5` and `actions/setup-node@v6` are used for Node 24 readiness in GitHub Actions.
 
 ## Known Issues
 
 See `docs/gap-analysis.md` for full security review findings.
 
-- DoorRunnerScene.tsx still needs further decomposition (>1000 lines)
 - Game logic has a pure reducer, but the Zustand store still owns many side effects
-- Browser e2e, PWA/offline, a11y, and Android device checks are not yet covered
+- Android device checks are not yet covered
 
 ## Deploy
 

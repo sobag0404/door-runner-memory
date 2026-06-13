@@ -212,6 +212,8 @@ export default function HomeScreen() {
 
         <button
           onClick={() => setScreen('leaderboard')}
+          data-testid="open-leaderboard"
+          aria-label={t('lb.title', lang)}
           className={`flex items-center gap-1.5 rounded-2xl ${bgButton} px-3 py-2 shadow-sm backdrop-blur-sm border active:scale-95 transition-all`}
         >
           <Trophy className="h-4 w-4" style={{ color: theme.accent2 }} />

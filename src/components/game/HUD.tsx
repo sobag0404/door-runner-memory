@@ -60,6 +60,7 @@ export function HUD({ combo, lang, theme }: { combo: number; lang: string; theme
           <motion.div className="absolute inset-0 flex items-center justify-center"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <motion.div
+              data-testid="feedback-toast"
               className="px-8 py-4 rounded-3xl font-black text-2xl backdrop-blur-md border-2 shadow-2xl"
               style={{
                 backgroundColor: feedback === 'correct' ? theme.feedbackCorrectBg : theme.feedbackWrongBg,
