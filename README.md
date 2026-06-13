@@ -20,14 +20,17 @@ Door Runner Memory — аркадная игра, где нужно запоми
 
 ## Requirements
 
-- Node.js 18+ / Bun
-- npm or bun
+- Bun 1.3.14, matching `packageManager`
+- Node.js 22.12.0 via `.node-version` / `.nvmrc`
+- Vite 8 supports Node.js 20.19+ or 22.12+; do not use Node 18
 
 ## Install
 
 ```bash
 bun install
 ```
+
+`bun install --frozen-lockfile` is the release/CI install command.
 
 ## Run (development)
 
@@ -43,7 +46,7 @@ Opens on http://localhost:3000
 bun run build
 ```
 
-Output in `dist/` (~365 KB, 114 KB gzipped)
+Current production build output: JS bundle ~439 KB (~133 KB gzip), CSS bundle ~46 KB (~9 KB gzip).
 
 ## Lint
 
@@ -53,15 +56,20 @@ bun run lint
 
 ## Android APK (via Capacitor)
 
+Capacitor config exists, but the Android project directory is not generated in this archive yet. Create it before syncing or building an APK.
+
 ```bash
 # Build web assets
 bun run build
 
+# Add Android platform once
+bun x cap add android
+
 # Sync to Capacitor
-npx cap sync android
+bun x cap sync android
 
 # Open in Android Studio
-npx cap open android
+bun x cap open android
 
 # Or build APK from command line
 cd android && ./gradlew assembleDebug
@@ -80,7 +88,6 @@ src/
 │   ├── GameScreen.tsx    # Game wrapper
 │   └── DoorRunnerScene.tsx  # Game scene (road, doors, runner, VFX)
 ├── lib/                  # Shared utilities
-│   ├── gameStore.ts      # Zustand store
 │   ├── i18n.ts           # Localization (RU/EN)
 │   ├── sounds.ts         # Web Audio API
 │   ├── themes.ts         # Theme system
@@ -96,7 +103,7 @@ src/
 - 4 speed levels: Slow, Normal, Fast, Custom (3-30s)
 - Progressive speed increase
 - Combo system (NICE → GREAT → SUPER → INSANE)
-- 19 achievements with progress bars
+- 20 achievements with progress bars
 - Local leaderboard (top 50)
 - PWA install + offline support
 - 3 sound packs (Classic, 8-bit, Soft)
@@ -112,17 +119,27 @@ src/
 ```bash
 bun run test        # Run all tests once
 bun run test:watch  # Watch mode
+bun run test:e2e    # Playwright smoke/e2e + PWA checks
 bun run quality     # Build + lint + test
 ```
 
-67 unit tests covering:
+112 unit tests covering:
 - Season sequence generation (determinism, boundaries, errors)
 - Validators (settings, scores, stats, leaderboard)
 - Game store (chooseLane, startGame, resetGame, speed calculations)
+- Pure game reducer transitions
+- Language detection fallback for test/non-browser environments
+
+Playwright e2e covers:
+- Home/start flow on desktop and mobile Chrome profiles
+- Tap/click and keyboard lane input
+- Score save and local leaderboard visibility
+- Settings persistence after reload
+- PWA manifest, service worker registration, and warmed offline reload
 
 ## CI/CD
 
-Add `.github/workflows/ci.yml` to enable GitHub Actions:
+GitHub Actions is configured in `.github/workflows/ci.yml`:
 
 ```yaml
 name: CI
@@ -134,20 +151,27 @@ jobs:
   quality:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
       - uses: oven-sh/setup-bun@v2
-      - run: bun install
+      - run: bun install --frozen-lockfile
       - run: bun run build
       - run: bun run lint
       - run: bun run test
+      - run: node ./node_modules/@playwright/test/cli.js install --with-deps chromium
+      - run: bun run test:e2e
 ```
+
+`actions/checkout@v6` and `actions/setup-node@v6` are used for Node 24 readiness in GitHub Actions.
 
 ## Known Issues
 
 See `docs/gap-analysis.md` for full security review findings.
 
-- DoorRunnerScene.tsx needs decomposition (~985 lines)
-- Game logic mixed with side effects in Zustand (need pure reducer)
+- Game logic has a pure reducer, but the Zustand store still owns many side effects
+- Android device checks are not yet covered
 
 ## Deploy
 

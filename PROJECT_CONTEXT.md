@@ -7,7 +7,7 @@
 - **Запуск:** `bun run dev` (порт 3000)
 - **Репозиторий:** https://github.com/sobag0404/door-runner-memory
 - **Деплой:** Netlify (auto-deploy from GitHub)
-- **Билд:** `bun run build` → dist/ (365 KB, gzipped: 114 KB)
+- **Билд:** `bun run build` → dist/
 
 ## Фичи
 ### Основные
@@ -20,7 +20,7 @@
 - **Combo:** NICE → GREAT → SUPER → INSANE (в store state)
 
 ### Спринт 3
-- **19 достижений** — счёт, комбо, всего ответов, игры, скорость, lanes, daily
+- **20 достижений** — счёт, комбо, всего ответов, игры, скорость, lanes, daily
 - **Daily Challenge** — одна последовательность на день (UTC), обратный отсчёт
 - **Leaderboard** — локальный, top 50, фильтр по режиму (all/regular/daily)
 - **Name Modal** — ввод имени при выходе с результатом
@@ -109,17 +109,20 @@ Netlify auto-deploy: push в GitHub → Netlify билдит → деплой з
 
 Подробнее: `docs/gap-analysis.md`
 
-### Критические (P0) — не исправлено
-- ❌ Нет README.md
-- ❌ Sequence overflow: `sequence[currentStep] ?? 0` — fallback к двери 0 после 100 шагов
-- ❌ Нет валидации localStorage (повреждённые данные могут сломать игру)
-- ❌ Лидерборд назван "Таблица лидеров", но он локальный — нужно "На этом устройстве"
+### Закрытые P0/P1 из ревью
+- ✅ README.md есть
+- ✅ Sequence overflow исправлен через `getExpectedPath()` без fallback к двери 0
+- ✅ localStorage валидируется через `src/lib/validators.ts`
+- ✅ Лидерборд честно обозначен как локальный: "Рекорды на устройстве"
+- ✅ Vitest подключён, unit-тесты есть
+- ✅ GitHub Actions config есть в `.github/workflows/ci.yml`
+- ✅ Pure gameReducer вынесен в `src/core/game`
 
-### Важные (P1) — не исправлено
-- ❌ Нет unit-тестов (нужен vitest)
-- ❌ Нет CI/CD (нужен GitHub Actions)
-- ❌ DoorRunnerScene.tsx = ~985 строк, нужно декомпозировать
-- ❌ Game logic смешана с side effects в Zustand store (нужен чистый reducer)
+### Оставшиеся важные риски
+- ⚠️ DoorRunnerScene.tsx всё ещё >1000 строк, нужна дальнейшая декомпозиция
+- ⚠️ Zustand store всё ещё содержит много side effects
+- ⚠️ Нет e2e/smoke/PWA/offline/a11y тестов
+- ⚠️ APK/Android pipeline не подтверждён на реальном устройстве
 
 ### Безопасность
 - ✅ Локальный leaderboard только — соответствует рекомендации безопасника
@@ -138,13 +141,9 @@ Netlify auto-deploy: push в GitHub → Netlify билдит → деплой з
 - ❌ Добавлять рекламу/IAP без отдельного ТЗ
 
 ## Что ещё можно добавить (по приоритету безопасности)
-1. README.md с инструкциями запуска/сборки
-2. Исправить sequence overflow (бесконечный детерминированный генератор)
-3. Валидация localStorage (normalizeSettings)
-4. Честное название лидерборда
-5. vitest + unit tests
-6. CI/CD (GitHub Actions)
-7. Чистый gameReducer (вынести из Zustand)
-8. Декомпозиция DoorRunnerScene.tsx
-9. Профилирование APK на реальных устройствах
-10. Архитектурная документация
+1. Декомпозиция DoorRunnerScene.tsx малыми PR
+2. Вынести side effects из Zustand store в тестируемый effects/service layer
+3. Минимальные e2e/smoke/PWA/offline/a11y проверки
+4. Профилирование APK на реальных устройствах
+5. Архитектурная документация
+6. Документация сборки APK через Capacitor
