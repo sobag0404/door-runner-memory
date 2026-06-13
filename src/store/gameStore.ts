@@ -1,17 +1,31 @@
 import { create } from 'zustand';
-import { localStore } from '../lib/localStore';
 import { getCurrentSeasonId, createSeasonSequence, getExpectedPath } from '../lib/season';
-import { normalizeSettings, normalizeBestScores, normalizeStats, normalizeAchievements, normalizeLeaderboard } from '../lib/validators';
 import { getDailyId } from '../lib/daily';
 import { ACHIEVEMENTS } from '../lib/achievements';
 import type { PlayerStats } from '../lib/achievements';
-import { setSoundPack, type SoundPack, detectSoundPack, saveSoundPack } from '../lib/sounds';
-import { type Lang, detectLang, saveLang } from '../lib/i18n';
-import { type ThemeId, detectTheme, saveTheme } from '../lib/themes';
+import type { SoundPack } from '../lib/sounds';
+import type { Lang } from '../lib/i18n';
+import type { ThemeId } from '../lib/themes';
 import { gameReducer } from '../core/game/gameReducer';
 import { INITIAL_GAME_STATE } from '../core/game/gameTypes';
 import { runCorrectChoiceEffects, runStartEffects, runTimeoutEffects, runWrongChoiceEffects } from './gameEffects';
 import { clearFeedbackTimers, scheduleFeedbackTimer } from './feedbackTimers';
+import {
+  bestScoreKey,
+  loadBestScores,
+  loadLeaderboard,
+  loadSettings,
+  loadStats,
+  loadUnlockedAchievements,
+  saveBestScore,
+  saveLangSettings,
+  saveLeaderboard,
+  saveSettings,
+  saveSoundPackSettings,
+  saveStats,
+  saveThemeSettings,
+  saveUnlockedAchievements,
+} from './gamePersistence';
 
 // ─── Types ─────────────────────────────────────────────
 export type GameScreen = 'home' | 'game' | 'leaderboard';
@@ -29,17 +43,6 @@ export interface GameSettings {
   soundPack: SoundPack;
   customTimerSec: number; // 3..30 seconds (only used when speed='custom')
 }
-
-// ─── Defaults ──────────────────────────────────────────
-const DEFAULT_SETTINGS: GameSettings = {
-  pathCount: 3,
-  speed: 'normal',
-  soundEnabled: true,
-  lang: detectLang(),
-  theme: detectTheme(),
-  soundPack: detectSoundPack(),
-  customTimerSec: 10,
-};
 
 /** Base speed in ms for each speed level */
 export function getSpeedMs(speed: SpeedLevel, customTimerSec?: number): number {
@@ -136,70 +139,6 @@ interface GameStore {
   correctLane: () => number;
 }
 
-// ─── Helpers ───────────────────────────────────────────
-function bestScoreKey(seasonId: string, pathCount: number): string {
-  return `${seasonId}_p${pathCount}`;
-}
-
-function loadBestScores(): Record<string, number> {
-  const raw = localStore.get<unknown>('bestScores', null);
-  return normalizeBestScores(raw, {});
-}
-
-/**
- * Save a best score. Returns updated scores object
- * (avoids redundant localStorage reads).
- */
-function saveBestScoreMut(scores: Record<string, number>, key: string, score: number): Record<string, number> {
-  if (!scores[key] || score > scores[key]) {
-    const updated = { ...scores, [key]: score };
-    localStore.set('bestScores', updated);
-    return updated;
-  }
-  return scores;
-}
-
-function loadSettings(): GameSettings {
-  const raw = localStore.get<unknown>('settings', null);
-  const saved = normalizeSettings(raw, DEFAULT_SETTINGS);
-  // Sync runtime sound pack
-  setSoundPack(saved.soundPack);
-  return saved;
-}
-
-const DEFAULT_STATS: PlayerStats = {
-  totalCorrect: 0,
-  bestScore: 0,
-  bestCombo: 0,
-  gamesPlayed: 0,
-  fastBestScore: 0,
-  dailyBestScore: 0,
-  totalDailyCompleted: 0,
-  lane3Best: 0,
-  lane4Best: 0,
-  lane5Best: 0,
-  lane6Best: 0,
-};
-
-function loadStats(): PlayerStats {
-  const raw = localStore.get<unknown>('stats', null);
-  return normalizeStats(raw, DEFAULT_STATS);
-}
-
-function saveStats(stats: PlayerStats): void {
-  localStore.set('stats', stats);
-}
-
-function loadUnlockedAchievements(): string[] {
-  const raw = localStore.get<unknown>('unlockedAchievements', null);
-  return normalizeAchievements(raw, []);
-}
-
-function loadLeaderboard(): LeaderboardEntry[] {
-  const raw = localStore.get<unknown>('leaderboard', null);
-  return normalizeLeaderboard(raw, []);
-}
-
 // ─── Store ─────────────────────────────────────────────
 export const useGameStore = create<GameStore>((set, get) => {
   // Expose store to window for DEV-only debugging
@@ -219,41 +158,34 @@ export const useGameStore = create<GameStore>((set, get) => {
   settings: loadSettings(),
   setPathCount: (n) => {
     const settings = { ...get().settings, pathCount: n };
-    localStore.set('settings', settings);
+    saveSettings(settings);
     set({ settings });
   },
   setSpeed: (s) => {
     const settings = { ...get().settings, speed: s };
-    localStore.set('settings', settings);
+    saveSettings(settings);
     set({ settings });
   },
   setSoundEnabled: (v) => {
     const settings = { ...get().settings, soundEnabled: v };
-    localStore.set('settings', settings);
+    saveSettings(settings);
     set({ settings });
   },
   setLang: (l) => {
-    const settings = { ...get().settings, lang: l };
-    saveLang(l);
-    localStore.set('settings', settings);
+    const settings = saveLangSettings(get().settings, l);
     set({ settings });
   },
   setTheme: (t) => {
-    const settings = { ...get().settings, theme: t };
-    saveTheme(t);
-    localStore.set('settings', settings);
+    const settings = saveThemeSettings(get().settings, t);
     set({ settings });
   },
   setSoundPack: (p) => {
-    const settings = { ...get().settings, soundPack: p };
-    saveSoundPack(p);
-    setSoundPack(p); // update runtime pack
-    localStore.set('settings', settings);
+    const settings = saveSoundPackSettings(get().settings, p);
     set({ settings });
   },
   setCustomTimerSec: (s) => {
     const settings = { ...get().settings, customTimerSec: s };
-    localStore.set('settings', settings);
+    saveSettings(settings);
     set({ settings });
   },
 
@@ -318,7 +250,7 @@ export const useGameStore = create<GameStore>((set, get) => {
 
     if (newlyUnlocked.length > 0) {
       const updated = [...unlocked, ...newlyUnlocked];
-      localStore.set('unlockedAchievements', updated);
+      saveUnlockedAchievements(updated);
       set({ unlockedAchievements: updated, newlyUnlockedIds: newlyUnlocked });
     }
 
@@ -341,7 +273,7 @@ export const useGameStore = create<GameStore>((set, get) => {
     const lb = [...state.leaderboard, entry]
       .sort((a, b) => b.score - a.score)
       .slice(0, 50); // top 50
-    localStore.set('leaderboard', lb);
+    saveLeaderboard(lb);
     set({ leaderboard: lb });
   },
 
@@ -384,7 +316,7 @@ export const useGameStore = create<GameStore>((set, get) => {
       const next = gameReducer(currentGameState, { type: 'CHOOSE_CORRECT' });
 
       const key = bestScoreKey(state.seasonId, state.settings.pathCount);
-      const updatedBestScores = saveBestScoreMut(state.bestScores, key, next.score);
+      const updatedBestScores = saveBestScore(state.bestScores, key, next.score);
 
       runCorrectChoiceEffects({ ...state.settings, soundEnabled: soundOn }, next.score, next.combo);
 
@@ -464,7 +396,7 @@ export const useGameStore = create<GameStore>((set, get) => {
 
     if (state.score > 0) {
       const key = bestScoreKey(state.seasonId, state.settings.pathCount);
-      const updatedBestScores = saveBestScoreMut(state.bestScores, key, state.score);
+      const updatedBestScores = saveBestScore(state.bestScores, key, state.score);
       set({
         screen: 'home',
         ...next,
