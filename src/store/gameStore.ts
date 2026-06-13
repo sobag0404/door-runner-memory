@@ -5,13 +5,12 @@ import { normalizeSettings, normalizeBestScores, normalizeStats, normalizeAchiev
 import { getDailyId } from '../lib/daily';
 import { ACHIEVEMENTS } from '../lib/achievements';
 import type { PlayerStats } from '../lib/achievements';
-import { playCorrect, playWrong, playTimeout, playCombo, playStart, playMilestone, setSoundPack, type SoundPack, detectSoundPack, saveSoundPack } from '../lib/sounds';
-import { hapticFeedback } from '../lib/constants';
-import { type Lang, detectLang, saveLang, t } from '../lib/i18n';
+import { setSoundPack, type SoundPack, detectSoundPack, saveSoundPack } from '../lib/sounds';
+import { type Lang, detectLang, saveLang } from '../lib/i18n';
 import { type ThemeId, detectTheme, saveTheme } from '../lib/themes';
-import { announce } from '../lib/a11y';
 import { gameReducer } from '../core/game/gameReducer';
 import { INITIAL_GAME_STATE } from '../core/game/gameTypes';
+import { runCorrectChoiceEffects, runStartEffects, runTimeoutEffects, runWrongChoiceEffects } from './gameEffects';
 
 // ─── Types ─────────────────────────────────────────────
 export type GameScreen = 'home' | 'game' | 'leaderboard';
@@ -366,8 +365,7 @@ export const useGameStore = create<GameStore>((set, get) => {
     const seasonId = gameMode === 'daily' ? getDailyId() : getCurrentSeasonId();
     const sequence = createSeasonSequence(seasonId, settings.pathCount);
     clearFeedbackTimers();
-    if (settings.soundEnabled) playStart();
-    announce(t('a11y.newGame', settings.lang));
+    runStartEffects(settings);
 
     // Delegate pure state transition to reducer
     const next = gameReducer(INITIAL_GAME_STATE, { type: 'START' });
@@ -402,21 +400,7 @@ export const useGameStore = create<GameStore>((set, get) => {
       const key = bestScoreKey(state.seasonId, state.settings.pathCount);
       const updatedBestScores = saveBestScoreMut(state.bestScores, key, next.score);
 
-      if (soundOn) {
-        playCorrect();
-        if (next.combo >= 3 && (next.combo === 3 || next.combo === 5 || next.combo === 7 || next.combo === 10 || next.combo % 10 === 0)) {
-          playCombo(next.combo);
-        }
-        if (next.score % 10 === 0) {
-          playMilestone();
-        }
-      }
-      hapticFeedback('light');
-
-      announce(t('a11y.correct', state.settings.lang, { score: String(next.score) }));
-      if (next.combo >= 3 && (next.combo === 3 || next.combo === 5 || next.combo === 7 || next.combo === 10 || next.combo % 10 === 0)) {
-        announce(t('a11y.combo', state.settings.lang, { combo: String(next.combo) }));
-      }
+      runCorrectChoiceEffects({ ...state.settings, soundEnabled: soundOn }, next.score, next.combo);
 
       set({
         ...next,
@@ -434,10 +418,7 @@ export const useGameStore = create<GameStore>((set, get) => {
       const next = gameReducer(currentGameState, { type: 'CHOOSE_WRONG' });
       const seasonId = state.gameMode === 'daily' ? getDailyId() : getCurrentSeasonId();
       const sequence = createSeasonSequence(seasonId, state.settings.pathCount);
-      if (soundOn) playWrong();
-      hapticFeedback('heavy');
-
-      announce(t('a11y.wrong', state.settings.lang));
+      runWrongChoiceEffects({ ...state.settings, soundEnabled: soundOn });
 
       set({
         ...next,
@@ -470,8 +451,7 @@ export const useGameStore = create<GameStore>((set, get) => {
     const next = gameReducer(currentGameState, { type: 'TIMEOUT' });
     const seasonId = state.gameMode === 'daily' ? getDailyId() : getCurrentSeasonId();
     const sequence = createSeasonSequence(seasonId, state.settings.pathCount);
-    if (state.settings.soundEnabled) playTimeout();
-    hapticFeedback('medium');
+    runTimeoutEffects(state.settings);
 
     set({
       ...next,

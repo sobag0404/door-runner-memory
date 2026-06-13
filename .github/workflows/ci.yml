@@ -54,3 +54,6 @@ jobs:
 
       - name: Smoke / e2e
         run: bun run test:e2e
+
+      - name: Accessibility smoke
+        run: bun run test:a11y
