@@ -14,6 +14,8 @@ GitHub Actions on `main`: https://github.com/sobag0404/door-runner-memory/action
 - `bun install --frozen-lockfile` passes.
 - `bun run build`, `bun run lint`, and `bun run test` pass through `bun run quality`.
 - `bun run test:e2e` passes with 14 Playwright tests across desktop Chromium and mobile Chrome profiles.
+- `bun run security:audit` passes with no vulnerabilities.
+- CI runs on `ubuntu-latest` and `windows-latest` with Bun `1.3.14`.
 - `DoorRunnerScene.tsx` is now 133 lines.
 - Timer, input, background, runner, doors, and swipe hint were extracted into `src/components/game/`.
 - Browser smoke/e2e and PWA/offline checks live in `tests/e2e/`.

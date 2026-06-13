@@ -120,6 +120,7 @@ src/
 bun run test        # Run all tests once
 bun run test:watch  # Watch mode
 bun run test:e2e    # Playwright smoke/e2e + PWA checks
+bun run security:audit # Dependency vulnerability audit
 bun run quality     # Build + lint + test
 ```
 
@@ -149,22 +150,32 @@ on:
     branches: [main]
 jobs:
   quality:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
           node-version-file: .node-version
       - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
       - run: bun install --frozen-lockfile
+      - run: bun run security:audit
       - run: bun run build
       - run: bun run lint
       - run: bun run test
       - run: node ./node_modules/@playwright/test/cli.js install --with-deps chromium
+        if: runner.os == 'Linux'
+      - run: node ./node_modules/@playwright/test/cli.js install chromium
+        if: runner.os == 'Windows'
       - run: bun run test:e2e
 ```
 
-`actions/checkout@v6` and `actions/setup-node@v6` are used for Node 24 readiness in GitHub Actions.
+`actions/checkout@v6` and `actions/setup-node@v6` are used for Node 24 readiness in GitHub Actions. CI runs on both Ubuntu and Windows with Bun 1.3.14.
 
 ## Known Issues
 

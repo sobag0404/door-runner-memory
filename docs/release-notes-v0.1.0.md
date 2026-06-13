@@ -21,6 +21,8 @@ Door Runner Memory is a mobile-first PWA memory arcade game: remember the highli
   - Node.js `22.12.0` via `.node-version` / `.nvmrc`
   - Supported Node range: `>=20.19.0 <21 || >=22.12.0`
 - CI uses `actions/checkout@v6` and `actions/setup-node@v6` for Node 24 readiness.
+- CI runs on Ubuntu and Windows with Bun `1.3.14`.
+- `bun audit` is part of the release gate.
 - Language detection is resilient when `navigator.language` is unavailable in non-browser test environments.
 - Render-phase state setters were removed from the game scene's coin feedback path.
 - `DoorRunnerScene.tsx` was decomposed into focused scene, runner, door, timer, background, swipe, and input modules.
@@ -39,12 +41,14 @@ bun run build
 bun run lint
 bun run test
 bun run test:e2e
+bun run security:audit
 ```
 
 Current automated result:
 
 - 112 unit tests passing.
 - 14 Playwright tests passing across desktop Chromium and mobile Chrome profiles.
+- `bun audit` reports no vulnerabilities.
 - Production build output: JS ~439.5 KB / ~133.1 KB gzip, CSS ~46.0 KB / ~8.6 KB gzip.
 
 ## Known Issues / Not Yet Release-Blocking For Web Prototype
