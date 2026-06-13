@@ -4,19 +4,21 @@ Target release: `v0.1.0`
 Base commit reviewed: `16df0dcb1433a266bdae9b773f34accd83f31f23`
 Release branch: `codex/production-hardening`
 
+Current release status: `docs/release-status-v0.1.0.md`
+
 ## Required Before Tagging
 
-- [ ] Merge release hardening changes to `main`.
-- [ ] Confirm GitHub Actions is green on the release commit.
-- [ ] Run `bun install --frozen-lockfile`.
-- [ ] Run `bun run build`.
-- [ ] Run `bun run lint`.
-- [ ] Run `bun run test`.
-- [ ] Run browser smoke/e2e tests.
-- [ ] Run PWA/offline smoke tests.
-- [ ] Review `docs/release-notes-v0.1.0.md`.
-- [ ] Confirm no secrets are present in source, docs, `.env`, or build output.
-- [ ] Confirm no scoring, daily sequence, UX copy, or persisted localStorage schema changes were introduced without a separate decision.
+- [x] Merge release hardening changes to `main`.
+- [x] Confirm GitHub Actions is green on the release commit.
+- [x] Run `bun install --frozen-lockfile`.
+- [x] Run `bun run build`.
+- [x] Run `bun run lint`.
+- [x] Run `bun run test`.
+- [x] Run browser smoke/e2e tests.
+- [x] Run PWA/offline smoke tests.
+- [x] Review `docs/release-notes-v0.1.0.md`.
+- [x] Confirm no secrets are present in source, docs, `.env`, or build output.
+- [x] Confirm no scoring, daily sequence, UX copy, or persisted localStorage schema changes were introduced without a separate decision.
 
 ## Current Branch Verification
 
@@ -64,3 +66,5 @@ Completed locally on `codex/production-hardening` on 2026-06-13:
 2. Create the GitHub Release from `v0.1.0`.
 3. Use `docs/release-notes-v0.1.0.md` as release notes.
 4. Attach web build artifacts only if the release process decides to publish static assets from `dist/`.
+
+Status: completed for `v0.1.0`.
