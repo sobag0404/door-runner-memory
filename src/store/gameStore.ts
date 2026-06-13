@@ -11,6 +11,7 @@ import { type ThemeId, detectTheme, saveTheme } from '../lib/themes';
 import { gameReducer } from '../core/game/gameReducer';
 import { INITIAL_GAME_STATE } from '../core/game/gameTypes';
 import { runCorrectChoiceEffects, runStartEffects, runTimeoutEffects, runWrongChoiceEffects } from './gameEffects';
+import { clearFeedbackTimers, scheduleFeedbackTimer } from './feedbackTimers';
 
 // ─── Types ─────────────────────────────────────────────
 export type GameScreen = 'home' | 'game' | 'leaderboard';
@@ -71,21 +72,6 @@ export interface LeaderboardEntry {
   pathCount: number;
   speed: SpeedLevel;
   date: string; // ISO
-}
-
-// ─── Feedback timeout IDs for cleanup ───
-let _correctTimeoutId: ReturnType<typeof setTimeout> | null = null;
-let _wrongTimeoutId: ReturnType<typeof setTimeout> | null = null;
-
-function clearFeedbackTimers() {
-  if (_correctTimeoutId !== null) {
-    clearTimeout(_correctTimeoutId);
-    _correctTimeoutId = null;
-  }
-  if (_wrongTimeoutId !== null) {
-    clearTimeout(_wrongTimeoutId);
-    _wrongTimeoutId = null;
-  }
 }
 
 // ─── Store Interface ───────────────────────────────────
@@ -407,13 +393,11 @@ export const useGameStore = create<GameStore>((set, get) => {
         bestScores: updatedBestScores,
       });
 
-      clearFeedbackTimers();
-      _correctTimeoutId = setTimeout(() => {
-        _correctTimeoutId = null;
+      scheduleFeedbackTimer('correct', () => {
         const s = get();
         const cleared = gameReducer({ currentStep: s.currentStep, score: s.score, combo: s.combo, isRunning: s.isRunning, feedback: s.feedback, timeLeft: s.timeLeft }, { type: 'CLEAR_FEEDBACK' });
         set({ feedback: cleared.feedback });
-      }, 350);
+      });
     } else {
       const next = gameReducer(currentGameState, { type: 'CHOOSE_WRONG' });
       const seasonId = state.gameMode === 'daily' ? getDailyId() : getCurrentSeasonId();
@@ -425,13 +409,11 @@ export const useGameStore = create<GameStore>((set, get) => {
         sequence,
       });
 
-      clearFeedbackTimers();
-      _wrongTimeoutId = setTimeout(() => {
-        _wrongTimeoutId = null;
+      scheduleFeedbackTimer('wrong', () => {
         const s = get();
         const cleared = gameReducer({ currentStep: s.currentStep, score: s.score, combo: s.combo, isRunning: s.isRunning, feedback: s.feedback, timeLeft: s.timeLeft }, { type: 'CLEAR_FEEDBACK' });
         set({ feedback: cleared.feedback });
-      }, 600);
+      });
     }
   },
 
@@ -458,13 +440,11 @@ export const useGameStore = create<GameStore>((set, get) => {
       sequence,
     });
 
-    clearFeedbackTimers();
-    _wrongTimeoutId = setTimeout(() => {
-      _wrongTimeoutId = null;
+    scheduleFeedbackTimer('wrong', () => {
       const s = get();
       const cleared = gameReducer({ currentStep: s.currentStep, score: s.score, combo: s.combo, isRunning: s.isRunning, feedback: s.feedback, timeLeft: s.timeLeft }, { type: 'CLEAR_FEEDBACK' });
       set({ feedback: cleared.feedback });
-    }, 600);
+    });
   },
 
   resetGame: () => {
