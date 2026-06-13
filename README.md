@@ -151,7 +151,7 @@ jobs:
   quality:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
           node-version-file: .node-version
@@ -164,7 +164,7 @@ jobs:
       - run: bun run test:e2e
 ```
 
-`actions/checkout@v5` and `actions/setup-node@v6` are used for Node 24 readiness in GitHub Actions.
+`actions/checkout@v6` and `actions/setup-node@v6` are used for Node 24 readiness in GitHub Actions.
 
 ## Known Issues
 

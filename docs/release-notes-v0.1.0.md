@@ -20,7 +20,7 @@ Door Runner Memory is a mobile-first PWA memory arcade game: remember the highli
   - Bun `1.3.14`
   - Node.js `22.12.0` via `.node-version` / `.nvmrc`
   - Supported Node range: `>=20.19.0 <21 || >=22.12.0`
-- CI uses `actions/checkout@v5` and `actions/setup-node@v6` for Node 24 readiness.
+- CI uses `actions/checkout@v6` and `actions/setup-node@v6` for Node 24 readiness.
 - Language detection is resilient when `navigator.language` is unavailable in non-browser test environments.
 - Render-phase state setters were removed from the game scene's coin feedback path.
 - `DoorRunnerScene.tsx` was decomposed into focused scene, runner, door, timer, background, swipe, and input modules.
