@@ -52,6 +52,7 @@ Current automated result:
 - Zustand store still owns many side effects.
 - A11y audit is not yet a dedicated automated release gate.
 - Android/Capacitor APK project directory is not generated in this checkout; APK/device performance is not yet verified.
+- Netlify deploy status is not verified from this environment; the old anonymous Netlify URL returns 404 and Netlify dashboard/CLI requires login.
 - Online leaderboard is intentionally absent. Do not add one without server-side verification and replay protection.
 
 ## Upgrade Notes

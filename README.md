@@ -175,7 +175,7 @@ See `docs/gap-analysis.md` for full security review findings.
 
 ## Deploy
 
-Netlify auto-deploys from GitHub `main` branch.
+`netlify.toml` is configured for Netlify (`bun run build`, publish `dist`). Current production deploy status must be verified in Netlify after login; the old anonymous URL in `worklog.md` returns 404.
 
 ## License
 

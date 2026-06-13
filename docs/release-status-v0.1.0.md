@@ -24,3 +24,11 @@ GitHub Actions on `main`: https://github.com/sobag0404/door-runner-memory/action
 - Zustand still owns many side effects.
 - Dedicated automated a11y audit is not yet a release gate.
 - Android/Capacitor APK and real-device performance are not verified in this checkout.
+
+## Netlify Deploy Check
+
+- `netlify.toml` exists and is configured with `bun run build` and `dist`.
+- GitHub shows the Netlify GitHub App installed for the repository.
+- The old URL recorded in `worklog.md` (`https://cute-salamander-2682c7.netlify.app`) returns 404.
+- The latest GitHub commit status shows only the GitHub Actions CI check; no Netlify deploy status is attached to the commit.
+- Netlify dashboard and CLI status require Netlify login in this environment, so production deploy status is not verified yet.
