@@ -23,7 +23,8 @@ GitHub Actions on `main`: https://github.com/sobag0404/door-runner-memory/action
 
 ## Remaining Non-Blocking Risks
 
-- Zustand still owns persistence, timer, stats, achievement, and leaderboard side effects.
+- Zustand still orchestrates game actions, stats calculations, achievement unlock checks, and leaderboard entry construction. Sound/haptic/aria effects, feedback timers, and persistence are now isolated behind focused helpers.
+- Focused Playwright accessibility smoke exists, but a full accessibility audit is still not complete.
 - Android/Capacitor APK and real-device performance are not verified in this checkout.
 - Netlify production deploy status is not verified from this environment.
 
@@ -36,6 +37,10 @@ GitHub Actions on `main`: https://github.com/sobag0404/door-runner-memory/action
 - Android release assumptions are documented in `docs/android-release.md`.
 - Netlify deploy verification is documented in `docs/netlify-deploy-checklist.md`.
 - Next-release priorities are documented in `docs/roadmap-v0.2.0.md`.
+- Persistence/localStorage characterization tests were added in `src/__tests__/persistence.test.ts`.
+- Game persistence was extracted to `src/store/gamePersistence.ts` without claiming gameplay, scoring, daily sequence, or localStorage schema/key changes.
+- Current post-hardening `main` is `409f6b5b1679f4f36b72e2e8cd207be8046563e4`.
+- Post-merge `main` CI is green on Ubuntu and Windows: https://github.com/sobag0404/door-runner-memory/actions/runs/27479012083
 
 ## Netlify Deploy Check
 

@@ -34,11 +34,13 @@ Completed locally on `codex/production-hardening` on 2026-06-13:
 
 Added after the published `v0.1.0` baseline:
 
-- [ ] Run `bun run test:a11y`.
-- [ ] Confirm CI includes the `Accessibility smoke` step.
-- [ ] Review `docs/android-release.md` before claiming APK readiness.
-- [ ] Review `docs/netlify-deploy-checklist.md` before claiming production deploy readiness.
-- [ ] Use `docs/roadmap-v0.2.0.md` for next-release priorities and non-goals.
+- [x] Run `bun run test:a11y` in CI as a focused Playwright a11y smoke gate.
+- [x] Confirm CI includes the `Accessibility smoke` step.
+- [x] Confirm post-hardening `main` CI passed on Ubuntu and Windows: https://github.com/sobag0404/door-runner-memory/actions/runs/27479012083
+- [x] Review `docs/android-release.md` before claiming APK readiness.
+- [x] Review `docs/netlify-deploy-checklist.md` before claiming production deploy readiness.
+- [x] Use `docs/roadmap-v0.2.0.md` for next-release priorities and non-goals.
+- [x] Confirm post-v0.1 hardening did not claim gameplay, scoring, daily sequence, or localStorage schema/key changes.
 
 ## Manual Browser Smoke
 

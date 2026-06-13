@@ -4,6 +4,8 @@ Status: draft next-release plan
 Baseline: `v0.1.0` published release and current release docs
 Scope: web/PWA hardening, release governance, and verified readiness gates
 
+Current post-v0.1 hardening baseline: PR #2, PR #3, and PR #4 are merged into `main` at `409f6b5b1679f4f36b72e2e8cd207be8046563e4`. The post-merge CI run passed on Ubuntu and Windows with dependency audit, build/type-check, lint, unit tests, e2e/smoke, and focused a11y smoke.
+
 ## Release Intent
 
 v0.2.0 should move Door Runner Memory from a hardened web prototype toward a more repeatable release train. The release should prioritize verification quality, honest deployment status, and controlled technical debt reduction before adding broad gameplay or distribution commitments.
@@ -22,13 +24,14 @@ Verified in the v0.1.0 release docs:
 - `bun audit` reports no vulnerabilities.
 - The app is a local-score, mobile-first PWA prototype with RU/EN localization, themes, sound packs, achievements, local leaderboard, PWA manifest, service worker, and offline-oriented checks.
 
-Known unverified areas carried into v0.2.0:
+Known unverified or incomplete areas carried into v0.2.0:
 
 - Android/Capacitor APK project directory is not generated in this checkout.
 - APK build, Android device smoke, and real-device performance are not verified.
 - Netlify production deploy status is not verified from the current environment.
-- Dedicated automated accessibility auditing is not yet a release gate.
-- Zustand still owns many side effects.
+- Focused Playwright accessibility smoke is now a release gate, but a full accessibility audit is not complete.
+- Sound/haptic/aria effects, feedback timers, and persistence have been extracted from the Zustand store. The store still orchestrates game actions, stats calculations, achievement unlock checks, and leaderboard entry construction.
+- Leaderboard remains local-only; no online leaderboard/backend/server verification exists.
 
 ## P0 - Release Gates And Verified Distribution Status
 
@@ -87,9 +90,9 @@ Acceptance criteria:
 
 P1 work should be targeted for v0.2.0 if it does not endanger the P0 release gates.
 
-### P1.1 Automated Accessibility Gate
+### P1.1 Expanded Accessibility Audit
 
-Add a dedicated accessibility check that covers the main game flow.
+Expand the existing focused Playwright accessibility smoke into a broader accessibility audit.
 
 Acceptance criteria:
 
@@ -106,7 +109,7 @@ Acceptance criteria:
 
 - Any extracted logic has focused unit tests.
 - Scoring, daily challenge generation, sequence behavior, and persisted localStorage schema remain unchanged unless the release explicitly approves and tests the change.
-- Zustand side effects are reduced or isolated behind small helpers.
+- Current extracted helpers include `gameEffects`, `feedbackTimers`, and `gamePersistence`; remaining work should target store orchestration seams such as stats, achievements, and leaderboard entry construction.
 - Regression tests cover any migrated behavior.
 
 ### P1.3 Mobile Performance Budget For Web/PWA
