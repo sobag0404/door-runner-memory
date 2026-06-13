@@ -2,7 +2,7 @@
 
 Published release: https://github.com/sobag0404/door-runner-memory/releases/tag/v0.1.0
 
-Release commit: `926352b46e3b6436a83a293aff7d17e7b0d22908`
+Release commit: the commit pointed to by tag `v0.1.0`
 
 GitHub Actions on `main`: https://github.com/sobag0404/door-runner-memory/actions/runs/27470770885
 

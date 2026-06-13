@@ -29,7 +29,7 @@ Door Runner Memory is a mobile-first PWA memory arcade game: remember the highli
 
 ## Verification Results
 
-GitHub Actions is green on `main` for release commit `926352b46e3b6436a83a293aff7d17e7b0d22908`.
+GitHub Actions is green on `main` for the release commit pointed to by tag `v0.1.0`.
 
 Latest local verification on `codex/production-hardening` on 2026-06-13:
 
