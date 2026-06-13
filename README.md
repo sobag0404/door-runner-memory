@@ -20,8 +20,8 @@ Door Runner Memory — аркадная игра, где нужно запоми
 
 ## Requirements
 
-- Node.js 18+ / Bun
-- npm or bun
+- Bun 1.3.14, matching `packageManager`
+- Node.js 20.19+ or 22.12+ if using Node-based tooling with Vite 8
 
 ## Install
 
@@ -43,7 +43,7 @@ Opens on http://localhost:3000
 bun run build
 ```
 
-Output in `dist/` (~365 KB, 114 KB gzipped)
+Current production build output: JS bundle ~439 KB (~133 KB gzip), CSS bundle ~46 KB (~9 KB gzip).
 
 ## Lint
 
@@ -53,15 +53,20 @@ bun run lint
 
 ## Android APK (via Capacitor)
 
+Capacitor config exists, but the Android project directory is not generated in this archive yet. Create it before syncing or building an APK.
+
 ```bash
 # Build web assets
 bun run build
 
+# Add Android platform once
+bunx cap add android
+
 # Sync to Capacitor
-npx cap sync android
+bunx cap sync android
 
 # Open in Android Studio
-npx cap open android
+bunx cap open android
 
 # Or build APK from command line
 cd android && ./gradlew assembleDebug
@@ -80,7 +85,6 @@ src/
 │   ├── GameScreen.tsx    # Game wrapper
 │   └── DoorRunnerScene.tsx  # Game scene (road, doors, runner, VFX)
 ├── lib/                  # Shared utilities
-│   ├── gameStore.ts      # Zustand store
 │   ├── i18n.ts           # Localization (RU/EN)
 │   ├── sounds.ts         # Web Audio API
 │   ├── themes.ts         # Theme system
@@ -96,7 +100,7 @@ src/
 - 4 speed levels: Slow, Normal, Fast, Custom (3-30s)
 - Progressive speed increase
 - Combo system (NICE → GREAT → SUPER → INSANE)
-- 19 achievements with progress bars
+- 20 achievements with progress bars
 - Local leaderboard (top 50)
 - PWA install + offline support
 - 3 sound packs (Classic, 8-bit, Soft)
@@ -115,14 +119,16 @@ bun run test:watch  # Watch mode
 bun run quality     # Build + lint + test
 ```
 
-67 unit tests covering:
+112 unit tests covering:
 - Season sequence generation (determinism, boundaries, errors)
 - Validators (settings, scores, stats, leaderboard)
 - Game store (chooseLane, startGame, resetGame, speed calculations)
+- Pure game reducer transitions
+- Language detection fallback for test/non-browser environments
 
 ## CI/CD
 
-Add `.github/workflows/ci.yml` to enable GitHub Actions:
+GitHub Actions is configured in `.github/workflows/ci.yml`:
 
 ```yaml
 name: CI
@@ -146,8 +152,9 @@ jobs:
 
 See `docs/gap-analysis.md` for full security review findings.
 
-- DoorRunnerScene.tsx needs decomposition (~985 lines)
-- Game logic mixed with side effects in Zustand (need pure reducer)
+- DoorRunnerScene.tsx still needs further decomposition (>1000 lines)
+- Game logic has a pure reducer, but the Zustand store still owns many side effects
+- Browser e2e, PWA/offline, a11y, and Android device checks are not yet covered
 
 ## Deploy
 

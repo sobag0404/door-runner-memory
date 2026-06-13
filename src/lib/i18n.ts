@@ -365,7 +365,9 @@ export function detectLang(): Lang {
     ? localStorage.getItem('drm_lang')
     : null;
   if (saved === 'ru' || saved === 'en') return saved;
-  const nav = typeof navigator !== 'undefined' ? navigator.language : 'en';
+  const nav = typeof navigator !== 'undefined' && typeof navigator.language === 'string'
+    ? navigator.language
+    : 'en';
   return nav.startsWith('ru') ? 'ru' : 'en';
 }
 

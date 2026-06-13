@@ -27,7 +27,7 @@
 | ID | Замечание безопасника | Статус в Vite-проекте | Комментарий |
 |---:|---|---|---|
 | P0-1 | Mojibake в GameScreen.tsx (РЎС‡С‚ и т.д.) | ✅ ИСПРАВЛЕНО | Полная миграция на Vite + i18n с корректным UTF-8. Все строки в `src/lib/i18n.ts` — нормальный русский/английский. |
-| P0-2 | Нет README.md | ❌ НЕ ИСПРАВЛЕНО | README.md отсутствует. Нужно добавить. |
+| P0-2 | Нет README.md | ✅ ИСПРАВЛЕНО | README.md есть и содержит запуск, сборку, тесты и ограничения APK pipeline. |
 | P0-3 | Нет eas.json для APK | ⚠️ АДАПТИРОВАТЬ | Используем Capacitor вместо EAS. Конфиг уже есть: `capacitor.config.json`. Нужна документация по сборке APK через Capacitor. |
 | P0-4 | npm ci не проходит | ✅ ИСПРАВЛЕНО | `bun install` работает. `bun run lint` проходит (с pre-existing warnings). `bun run dev` стартует без ошибок. |
 
@@ -36,12 +36,12 @@
 | ID | Замечание безопасника | Статус в Vite-проекте | Комментарий |
 |---:|---|---|---|
 | P1-1 | Вынести pure game reducer | ✅ СДЕЛАНО | Создан `src/core/game/gameReducer.ts` — чистый reducer без side effects. Zustand пока не использует его, но reducer готов к интеграции.
-| P1-2 | Тесты reducer | ✅ СДЕЛАНО | 101 unit-тест: seasonSequence (15), validators (30), gameStore (22), gameReducer (34). vitest настроен.
+| P1-2 | Тесты reducer | ✅ СДЕЛАНО | 112 unit-тестов: seasonSequence, validators, gameStore, gameReducer, i18n fallback. vitest настроен.
 | P1-3 | Timers cleanup | ✅ ИСПРАВЛЕНО | `clearFeedbackTimers()` в gameStore.ts + `useRef` + cleanup в useEffect. |
 | P1-4 | Sequence overflow (`?? 0`) | ✅ ИСПРАВЛЕНО | Добавлен `getExpectedPath()` — бесконечный детерминированный генератор. Нет fallback к 0.
 | P1-5 | Validation localStorage | ✅ ИСПРАВЛЕНО | Добавлен `src/lib/validators.ts` — normalizeSettings, normalizeBestScores, normalizeStats и т.д.
-| P1-6 | CI/CD | ⚠️ ИНСТРУКЦИЯ | GitHub Actions config в README (token lacks workflow scope для прямого push .github/)
-| P1-7 | Декомпозиция DoorRunnerScene | ⚠️ ПРОГРЕСС | 985→784 строк. Вынесены VFX, HUD, LaneButtons, AchievementToast в src/components/game/. Нужно продолжить.
+| P1-6 | CI/CD | ✅ СДЕЛАНО | GitHub Actions config есть в `.github/workflows/ci.yml`; выполнение на GitHub нужно проверить после восстановления auth/remote.
+| P1-7 | Декомпозиция DoorRunnerScene | ⚠️ ПРОГРЕСС | Вынесены VFX, HUD, LaneButtons, AchievementToast в src/components/game/, но файл сцены всё ещё >1000 строк. Нужно продолжить малыми PR.
 
 ### P2 — Улучшения
 
@@ -92,27 +92,23 @@
 
 | Приоритет | Задача | Файлы |
 |---:|---|---|
-| P0 | Добавить README.md | `README.md` |
-| P0 | Исправить sequence overflow | `src/lib/season.ts`, `src/store/gameStore.ts` |
-| P0 | Добавить validation localStorage | `src/lib/localStore.ts` + `src/lib/validators.ts` |
-| P0 | Честное название лидерборда | `src/lib/i18n.ts`, `src/components/LeaderboardScreen.tsx` |
+| P0 | Подтвердить clean quality gates | `bun install --frozen-lockfile`, `bun run build`, `bun run lint`, `bun run test` |
+| P0 | Восстановить GitHub auth/remote workflow | git checkout + GitHub Actions run |
 
 ### Sprint 2: Качество и тесты
 
 | Приоритет | Задача | Файлы |
 |---:|---|---|
-| P1 | Добавить vitest + unit tests | `vitest.config.ts`, `src/__tests__/` |
-| P1 | Тесты для season sequence | `src/__tests__/season.test.ts` |
-| P1 | Тесты для game logic | `src/__tests__/gameStore.test.ts` |
-| P1 | Тесты для validators | `src/__tests__/validators.test.ts` |
-| P1 | CI/CD (GitHub Actions) | `.github/workflows/ci.yml` |
+| P1 | Добавить browser smoke/e2e tests | Playwright/Vitest browser |
+| P1 | Покрыть PWA/offline smoke | service worker + manifest checks |
+| P1 | Покрыть a11y/focus smoke | keyboard/focus flows |
 
 ### Sprint 3: Архитектура
 
 | Приоритет | Задача | Файлы |
 |---:|---|---|
-| P1 | Вынести чистый gameReducer из Zustand | `src/core/game/gameReducer.ts` |
-| P1 | Декомпозиция DoorRunnerScene.tsx | `src/components/game/` |
+| P1 | Вынести side effects из Zustand store | `src/store/gameStore.ts`, `src/core/game/*` |
+| P1 | Продолжить декомпозицию DoorRunnerScene.tsx | `src/components/game/` |
 | P2 | Документация архитектуры | `docs/architecture.md` |
 | P2 | Capacitor APK build документация | `docs/build-apk.md` |
 

@@ -886,20 +886,7 @@ export default function DoorRunnerScene() {
   const currentSpeedMs = getProgressiveSpeedMs(settings.speed, currentStep, settings.customTimerSec);
   const baseSpeedMs = getProgressiveSpeedMs(settings.speed, 0, settings.customTimerSec);
 
-  // ─── Track last correct lane for coin effect ───
-  const [lastCorrectLane, setLastCorrectLane] = useState<number | null>(null);
-  if (feedback === 'correct') {
-    // Derive state during render instead of using useEffect + setState
-    if (lastCorrectLane !== correctLane) {
-      setLastCorrectLane(correctLane);
-    }
-  }
-
-  // ─── Track last feedback type for screen flash ───
-  const [lastFeedback, setLastFeedback] = useState<'correct' | 'wrong' | null>(null);
-  if (feedback !== lastFeedback) {
-    setLastFeedback(feedback);
-  }
+  const coinLane = feedback === 'correct' ? correctLane : null;
 
   // ─── Keyboard support (1-6, arrows, A/D, Space/Enter) ───
   const activeLaneRef = useRef(0);
@@ -1054,8 +1041,8 @@ export default function DoorRunnerScene() {
       </AnimatePresence>
 
       <AnimatePresence>
-        {feedback === 'correct' && lastCorrectLane !== null && (
-          <CoinEffect key={`coin-${score}`} laneX={getLanePercent(lastCorrectLane, pathCount)} theme={theme} />
+        {coinLane !== null && (
+          <CoinEffect key={`coin-${score}`} laneX={getLanePercent(coinLane, pathCount)} theme={theme} />
         )}
       </AnimatePresence>
 
