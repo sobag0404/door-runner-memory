@@ -1,4 +1,25 @@
 # Door Runner Memory — Project Context
+## Current Verified Status (post-v0.1 hardening, 2026-06-14)
+
+- Current `main`: `409f6b5b1679f4f36b72e2e8cd207be8046563e4` (`Merge pull request #4 from sobag0404/codex/game-persistence-extraction`).
+- Merged hardening PRs:
+  - PR #2 hardened CI/release gates, added Ubuntu + Windows CI matrix, audit gate, a11y smoke gate, Android/Netlify/roadmap docs, and extracted `gameEffects` / `feedbackTimers`.
+  - PR #3 added tests-only persistence/localStorage characterization.
+  - PR #4 extracted `src/store/gamePersistence.ts` from `src/store/gameStore.ts`.
+- Post-merge `main` CI is green: audit, build/type-check, lint, unit tests, e2e/smoke, and focused a11y smoke passed on Ubuntu and Windows.
+- The automated a11y gate is a focused Playwright smoke check. A full accessibility audit is still not complete.
+- Gameplay rules, scoring, daily sequence behavior, and persisted localStorage schema/keys are not claimed to have changed in PR #2/#3/#4.
+- Leaderboard remains local-only. There is no online leaderboard, backend, server-side score verification, replay protection, or account system.
+- Android/Capacitor APK build, real-device smoke, real-device performance, and Netlify production deploy remain unverified unless a later doc records evidence.
+
+### Current Architecture Boundary Notes
+
+- `src/core/game/gameReducer.ts` owns pure game state transitions.
+- `src/store/gameEffects.ts` owns sound, haptic, and aria-live announcement effects for start/correct/wrong/timeout flows.
+- `src/store/feedbackTimers.ts` owns feedback timeout scheduling and cleanup.
+- `src/store/gamePersistence.ts` owns persisted settings, best scores, stats, achievements, and local leaderboard reads/writes through the existing localStorage keys.
+- `src/store/gameStore.ts` still orchestrates game start/choice/timeout/reset flows, computes stats updates, checks achievements, constructs leaderboard entries, and calls the extracted effects/timers/persistence helpers.
+- Scalar setting keys `drm_lang`, `drm_theme`, and `drm_soundPack` still live in their existing i18n/theme/sound helpers and are mirrored through `gamePersistence` settings helpers.
 
 ## Общее
 - **Тип:** Мобильная игра-аркада на память (Subway Surfers × Simon Says)

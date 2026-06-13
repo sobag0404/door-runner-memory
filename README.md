@@ -95,7 +95,10 @@ src/
 │   ├── themes.ts         # Theme system
 │   └── ...
 └── store/
-    └── gameStore.ts      # Game state + actions
+    ├── gameStore.ts       # Zustand state + game action orchestration
+    ├── gameEffects.ts     # Sound, haptic, and aria-live effects
+    ├── feedbackTimers.ts  # Feedback timeout scheduling/cleanup
+    └── gamePersistence.ts # localStorage-backed settings/scores/stats/leaderboard persistence
 ```
 
 ## Features
@@ -132,6 +135,8 @@ Unit tests cover:
 - Validators (settings, scores, stats, leaderboard)
 - Game store and side-effect helpers (chooseLane, startGame, resetGame, speed calculations, combo feedback thresholds)
 - Pure game reducer transitions
+- Persistence characterization for localStore behavior, scalar setting keys, and game store initialization
+- Feedback timer scheduling and cleanup
 - Language detection fallback for test/non-browser environments
 
 Playwright e2e covers:
@@ -182,12 +187,15 @@ jobs:
 
 `actions/checkout@v6` and `actions/setup-node@v6` are used for Node 24 readiness in GitHub Actions. CI runs on both Ubuntu and Windows with Bun 1.3.14.
 
+Current post-v0.1 hardening status: `main` commit `409f6b5b1679f4f36b72e2e8cd207be8046563e4` passed CI on Ubuntu and Windows with dependency audit, build/type-check, lint, unit tests, e2e/smoke, and focused a11y smoke.
+
 ## Known Issues
 
 See `docs/gap-analysis.md` for full security review findings.
 
-- Game logic has a pure reducer, but the Zustand store still owns many side effects
-- Sound, haptics, and screen-reader announcements are now isolated behind `src/store/gameEffects.ts`; persistence, timers, stats, achievements, and leaderboard effects still need further extraction
+- Game logic has a pure reducer, and the Zustand store now delegates sound/haptics/aria effects, feedback timers, and persistence to focused helpers
+- The Zustand store still orchestrates game actions and owns stats calculations, achievement unlock checks, and leaderboard entry construction before calling persistence helpers
+- Accessibility smoke is automated, but a full accessibility audit is not complete
 - Android device checks are not yet covered
 
 ## Deploy

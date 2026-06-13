@@ -53,8 +53,8 @@ Current automated result:
 
 ## Known Issues / Not Yet Release-Blocking For Web Prototype
 
-- Zustand store still owns many side effects.
-- Post-v0.1.0 local hardening adds focused Playwright accessibility smoke; a broader axe/manual a11y audit is still not complete.
+- Post-v0.1.0 hardening extracts sound/haptic/aria effects, feedback timers, and persistence from the Zustand store. The store still orchestrates game actions, stats calculations, achievement unlock checks, and leaderboard entry construction.
+- Post-v0.1.0 local hardening adds focused Playwright accessibility smoke; a broader accessibility audit is still not complete.
 - Android/Capacitor APK project directory is not generated in this checkout; APK/device performance is not yet verified.
 - Netlify deploy status is not verified from this environment; the old anonymous Netlify URL returns 404 and Netlify dashboard/CLI requires login.
 - Online leaderboard is intentionally absent. Do not add one without server-side verification and replay protection.
