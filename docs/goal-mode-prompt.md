@@ -3,16 +3,18 @@
 
 Use this section as the current source of truth when older bullets below conflict with it.
 
-- PR #2, PR #3, and PR #4 are merged into `main`.
-- Current `main`: `409f6b5b1679f4f36b72e2e8cd207be8046563e4`.
-- Post-merge `main` CI is green: https://github.com/sobag0404/door-runner-memory/actions/runs/27479012083
+- PR #2 through PR #7 are merged into `main`.
+- Current `main`: `b4832b03adcd12f6ef8a3f31d0bbca21335e7a48`.
+- Post-merge `main` CI is green: https://github.com/sobag0404/door-runner-memory/actions/runs/27495057484
 - CI runs on Ubuntu and Windows with dependency audit, build/type-check, lint, unit tests, e2e/smoke, and focused a11y smoke.
 - Focused a11y smoke exists; a full accessibility audit is still incomplete.
 - `gameEffects`, `feedbackTimers`, and `gamePersistence` are extracted from `gameStore`.
 - `gameStore` still orchestrates game actions, stats calculations, achievement unlock checks, and leaderboard entry construction.
 - Android APK/device smoke/performance and Netlify production deploy remain unverified.
+- Netlify no-login verification found no GitHub Netlify deployment/status and no credible public production URL.
 - Leaderboard remains local-only. There is no online leaderboard/backend/server verification.
-- Do not claim gameplay rules, scoring, daily sequence, or persisted localStorage schema/key changes from PR #2/#3/#4.
+- Visual direction is queued as an original mobile-runner polish lane: colorful runner energy roughly inspired by Subway Surfers, without copying characters, logos, exact UI, proprietary assets, or recognizable level art.
+- Do not claim gameplay rules, scoring, daily sequence, or persisted localStorage schema/key changes from PR #2 through PR #7.
 
 Дата: 2026-06-13  
 Источник: `AI_DEVELOPER_REVIEW.md`, `worklog.md`, прошлый Codex-диалог `тестировщик runner`, текущая локальная проверка.

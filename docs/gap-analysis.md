@@ -3,14 +3,15 @@
 
 This document contains older review notes and some mojibake inherited from earlier docs. The current hardening state is:
 
-- PR #2, PR #3, and PR #4 are merged into `main` at `409f6b5b1679f4f36b72e2e8cd207be8046563e4`.
-- GitHub Actions passed on Ubuntu and Windows with dependency audit, build/type-check, lint, unit tests, e2e/smoke, and focused a11y smoke.
+- PR #2 through PR #7 are merged into `main` at `b4832b03adcd12f6ef8a3f31d0bbca21335e7a48`.
+- GitHub Actions passed on Ubuntu and Windows with dependency audit, build/type-check, lint, unit tests, e2e/smoke, and focused a11y smoke: https://github.com/sobag0404/door-runner-memory/actions/runs/27495057484.
 - Browser e2e/PWA smoke and focused a11y smoke now exist; a full accessibility audit remains incomplete.
 - `DoorRunnerScene.tsx` has already been decomposed significantly; continue decomposition only as small scoped PRs.
 - Sound/haptic/aria effects, feedback timers, and persistence are extracted from `gameStore`.
 - Remaining store work is orchestration-level: game action flow, stats calculations, achievement unlock checks, and leaderboard entry construction.
 - Android APK/device performance and Netlify production deploy remain unverified.
 - Leaderboard remains local-only; do not add online leaderboard/backend/server verification without a separate design.
+- Visual direction is queued as an original mobile-runner polish lane: colorful runner energy roughly inspired by Subway Surfers, but no copied characters, logos, exact UI, proprietary assets, or recognizable level art.
 
 **Дата:** 2026-03-05  
 **Ревьюер:** безопасник (внешний аудит)  
