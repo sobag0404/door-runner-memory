@@ -187,7 +187,7 @@ jobs:
 
 `actions/checkout@v6` and `actions/setup-node@v6` are used for Node 24 readiness in GitHub Actions. CI runs on both Ubuntu and Windows with Bun 1.3.14.
 
-Current post-v0.1 hardening status: `main` commit `16e30bf0a5e15a25b93fd93a6de1fdc74c79c968` passed CI on Ubuntu and Windows with dependency audit, build/type-check, lint, unit tests, e2e/smoke, and focused a11y smoke: https://github.com/sobag0404/door-runner-memory/actions/runs/27505254848.
+Current post-v0.1 hardening status: the `v0.2.0` release target is the commit that receives the tag after final release-owner approval. Latest verified release-candidate CI evidence passed on Ubuntu and Windows with dependency audit, build/type-check, lint, unit tests, e2e/smoke, and focused a11y smoke: https://github.com/sobag0404/door-runner-memory/actions/runs/27505679971.
 
 ## Known Issues
 

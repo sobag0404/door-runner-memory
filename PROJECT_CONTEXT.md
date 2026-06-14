@@ -1,7 +1,7 @@
 # Door Runner Memory — Project Context
 ## Current Verified Status (post-v0.1 hardening, 2026-06-14)
 
-- Current `main`: `16e30bf0a5e15a25b93fd93a6de1fdc74c79c968` (`Merge pull request #19 from sobag0404/codex/release-notes-v0.2`).
+- Current release target: the commit that receives the `v0.2.0` tag after final release-owner approval.
 - Merged hardening PRs:
   - PR #2 hardened CI/release gates, added Ubuntu + Windows CI matrix, audit gate, a11y smoke gate, Android/Netlify/roadmap docs, and extracted `gameEffects` / `feedbackTimers`.
   - PR #3 added tests-only persistence/localStorage characterization.
@@ -22,7 +22,7 @@
   - PR #18 drafted v0.2 release status.
   - PR #19 drafted v0.2 release notes.
   - PR #20 serialized Windows Playwright e2e workers to reduce hosted-runner teardown flakes.
-- Post-merge `main` CI is green: audit, build/type-check, lint, unit tests, e2e/smoke, and focused a11y smoke passed on Ubuntu and Windows in https://github.com/sobag0404/door-runner-memory/actions/runs/27505254848.
+- Latest verified release-candidate CI evidence before final tag approval: audit, build/type-check, lint, unit tests, e2e/smoke, and focused a11y smoke passed on Ubuntu and Windows in https://github.com/sobag0404/door-runner-memory/actions/runs/27505679971.
 - The automated a11y gate is a focused Playwright smoke check. A full accessibility audit is still not complete.
 - Gameplay rules, scoring, daily sequence behavior, and persisted localStorage schema/keys are not claimed to have changed in post-v0.1 hardening work.
 - Leaderboard remains local-only. There is no online leaderboard, backend, server-side score verification, replay protection, or account system.
