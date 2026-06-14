@@ -4,7 +4,7 @@ Status: draft next-release plan
 Baseline: `v0.1.0` published release and current release docs
 Scope: web/PWA hardening, release governance, and verified readiness gates
 
-Current post-v0.1 hardening baseline: PR #2 through PR #11 are merged into `main` at `38ec84071e0a504328418a0711d0cb8cac1bc284`. The post-merge CI run passed on Ubuntu and Windows with dependency audit, build/type-check, lint, unit tests, e2e/smoke, and focused a11y smoke: https://github.com/sobag0404/door-runner-memory/actions/runs/27501163941.
+Current post-v0.1 hardening baseline: PR #2 through PR #12 are merged into `main` at `6c7a501dfc898ff39682bd9238a435b2043fee98`. The post-merge CI run passed on Ubuntu and Windows with dependency audit, build/type-check, lint, unit tests, e2e/smoke, and focused a11y smoke: https://github.com/sobag0404/door-runner-memory/actions/runs/27501463256.
 
 ## Release Intent
 
@@ -43,7 +43,7 @@ Update the release process for v0.2.0 so it can be followed without relying on s
 
 Acceptance criteria:
 
-- A v0.2.0 release checklist exists or the current checklist is updated to target v0.2.0.
+- A v0.2.0 release checklist exists or the current checklist is updated to target v0.2.0. The current draft section lives in `docs/release-checklist.md`.
 - Required commands are explicit: `bun install --frozen-lockfile`, `bun run build`, `bun run lint`, `bun run test`, `bun run test:e2e`, and `bun run security:audit`.
 - The checklist separates automated checks, manual browser smoke, PWA smoke, Android checks, and deploy checks.
 - Any skipped check has an owner-visible reason and is reflected in release notes/status.

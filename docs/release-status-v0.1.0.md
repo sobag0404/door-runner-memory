@@ -39,14 +39,14 @@ GitHub Actions on `main`: https://github.com/sobag0404/door-runner-memory/action
 - Next-release priorities are documented in `docs/roadmap-v0.2.0.md`.
 - Persistence/localStorage characterization tests were added in `src/__tests__/persistence.test.ts`.
 - Game persistence was extracted to `src/store/gamePersistence.ts` without claiming gameplay, scoring, daily sequence, or localStorage schema/key changes.
-- Current post-hardening `main` is `38ec84071e0a504328418a0711d0cb8cac1bc284`.
-- Post-merge `main` CI is green on Ubuntu and Windows: https://github.com/sobag0404/door-runner-memory/actions/runs/27501163941
+- Current post-hardening `main` is `6c7a501dfc898ff39682bd9238a435b2043fee98`.
+- Post-merge `main` CI is green on Ubuntu and Windows: https://github.com/sobag0404/door-runner-memory/actions/runs/27501463256
 
 ## Netlify Deploy Check
 
 - `netlify.toml` exists and is configured with `bun run build` and `dist`.
 - The old URL recorded in `worklog.md` (`https://cute-salamander-2682c7.netlify.app`) returns 404.
-- GitHub commit status API for `38ec84071e0a504328418a0711d0cb8cac1bc284` returned no commit statuses.
+- GitHub commit status API for `38ec84071e0a504328418a0711d0cb8cac1bc284` returned no commit statuses in the latest no-login Netlify verification lane.
 - GitHub check runs for that commit show only GitHub Actions CI jobs; no Netlify check run is attached.
 - GitHub deployments API returned no deployments for the latest commit and no repository deployments.
 - Netlify dashboard and CLI status require Netlify login or a public deploy URL in this environment, so production deploy status is not verified yet.

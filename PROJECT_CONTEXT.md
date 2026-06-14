@@ -1,7 +1,7 @@
 # Door Runner Memory — Project Context
 ## Current Verified Status (post-v0.1 hardening, 2026-06-14)
 
-- Current `main`: `38ec84071e0a504328418a0711d0cb8cac1bc284` (`Merge pull request #11 from sobag0404/codex/visual-polish-prototype`).
+- Current `main`: `6c7a501dfc898ff39682bd9238a435b2043fee98` (`Merge pull request #12 from sobag0404/codex/netlify-status-after-visual`).
 - Merged hardening PRs:
   - PR #2 hardened CI/release gates, added Ubuntu + Windows CI matrix, audit gate, a11y smoke gate, Android/Netlify/roadmap docs, and extracted `gameEffects` / `feedbackTimers`.
   - PR #3 added tests-only persistence/localStorage characterization.
@@ -13,7 +13,8 @@
   - PR #9 mitigated the Windows Playwright teardown flake with Windows-CI-only timeout headroom.
   - PR #10 added `docs/visual-direction.md`.
   - PR #11 added the first scoped runner scene visual polish prototype.
-- Post-merge `main` CI is green: audit, build/type-check, lint, unit tests, e2e/smoke, and focused a11y smoke passed on Ubuntu and Windows in https://github.com/sobag0404/door-runner-memory/actions/runs/27501163941.
+  - PR #12 refreshed Netlify verification evidence against the current post-visual baseline.
+- Post-merge `main` CI is green: audit, build/type-check, lint, unit tests, e2e/smoke, and focused a11y smoke passed on Ubuntu and Windows in https://github.com/sobag0404/door-runner-memory/actions/runs/27501463256.
 - The automated a11y gate is a focused Playwright smoke check. A full accessibility audit is still not complete.
 - Gameplay rules, scoring, daily sequence behavior, and persisted localStorage schema/keys are not claimed to have changed in PR #2/#3/#4.
 - Leaderboard remains local-only. There is no online leaderboard, backend, server-side score verification, replay protection, or account system.
