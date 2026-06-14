@@ -4,10 +4,10 @@ Status: draft release-readiness snapshot, not a published release.
 
 Baseline checked:
 
-- Current `main`: `a8aac11f0e23ff4b3a403a189cca418aea928a66`
-- Latest `main` CI: https://github.com/sobag0404/door-runner-memory/actions/runs/27504089011
+- Current `main`: `1727bdcddc8c6870340fdbc6afb577c86a7e1645`
+- Latest `main` CI: https://github.com/sobag0404/door-runner-memory/actions/runs/27505026490
 - CI result: green on Ubuntu and Windows with dependency audit, build/type-check, lint, unit tests, e2e/smoke, and focused accessibility smoke.
-- Merged post-v0.1 hardening scope: PR #2 through PR #17.
+- Merged post-v0.1 hardening scope: PR #2 through PR #20.
 
 ## Completed Since v0.1.0
 
@@ -22,6 +22,7 @@ Baseline checked:
 - Persistence/localStorage characterization tests were added before persistence extraction.
 - Windows Playwright teardown flake was mitigated with Windows-CI-only timeout headroom.
 - v0.2 planning and release checklist docs were refreshed.
+- Draft v0.2 release notes were added in `docs/release-notes-v0.2.0.md`.
 
 ## Verified For This Draft
 
