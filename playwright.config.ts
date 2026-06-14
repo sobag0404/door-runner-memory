@@ -1,8 +1,12 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const isWindowsCi = process.env.CI && process.platform === 'win32';
+
 export default defineConfig({
   testDir: './tests/e2e',
-  timeout: 30_000,
+  // Windows GitHub runners occasionally spend >30s closing Chromium contexts.
+  // Keep local/Linux timeout tight, but give Windows CI teardown enough headroom.
+  timeout: isWindowsCi ? 90_000 : 30_000,
   expect: {
     timeout: 5_000,
   },
