@@ -4,8 +4,8 @@ Status: draft notes for a future `v0.2.0` tag. This document does not publish th
 
 Baseline for these notes:
 
-- Current `main`: `16e30bf0a5e15a25b93fd93a6de1fdc74c79c968`
-- Latest `main` CI: https://github.com/sobag0404/door-runner-memory/actions/runs/27505254848
+- Release tag target: the commit that receives the `v0.2.0` tag after final release-owner approval.
+- Latest verified release-candidate CI: https://github.com/sobag0404/door-runner-memory/actions/runs/27505679971
 - Draft release status: `docs/release-status-v0.2.0.md`
 
 ## Highlights
@@ -43,7 +43,7 @@ Current automated verification on `main`:
 - `bun run test:e2e`
 - `bun run test:a11y`
 
-GitHub Actions result: green on Ubuntu and Windows for the baseline commit linked above.
+GitHub Actions result: green on Ubuntu and Windows for the latest verified release-candidate run linked above. The release tag should point at the final approved commit after any docs-only cleanup merges.
 
 Additional recorded evidence:
 

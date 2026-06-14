@@ -12,9 +12,9 @@ Draft v0.2 notes: `docs/release-notes-v0.2.0.md`
 
 Current baseline for v0.2 planning:
 
-- `main` commit under checklist review: `16e30bf0a5e15a25b93fd93a6de1fdc74c79c968`.
-- Latest `main` CI is green on Ubuntu and Windows: https://github.com/sobag0404/door-runner-memory/actions/runs/27505254848
-- PR #2 through PR #20 are merged.
+- Release tag target: the commit that receives the `v0.2.0` tag after final release-owner approval.
+- Latest verified release-candidate CI is green on Ubuntu and Windows: https://github.com/sobag0404/door-runner-memory/actions/runs/27505679971
+- Post-v0.1 hardening PRs through release-readiness docs cleanup are merged before tagging.
 - Netlify production deploy remains unverified: no GitHub Netlify commit status, no GitHub deployments, and the old Netlify URL returns 404.
 - Android APK build, Android device smoke, and real-device performance remain unverified.
 - Focused Playwright a11y smoke is automated, but a full accessibility audit remains incomplete.

@@ -4,10 +4,10 @@ Status: draft release-readiness snapshot, not a published release.
 
 Baseline checked:
 
-- Current `main`: `16e30bf0a5e15a25b93fd93a6de1fdc74c79c968`
-- Latest `main` CI: https://github.com/sobag0404/door-runner-memory/actions/runs/27505254848
+- Release tag target: the commit that receives the `v0.2.0` tag after final release-owner approval.
+- Latest verified release-candidate CI: https://github.com/sobag0404/door-runner-memory/actions/runs/27505679971
 - CI result: green on Ubuntu and Windows with dependency audit, build/type-check, lint, unit tests, e2e/smoke, and focused accessibility smoke.
-- Merged post-v0.1 hardening scope: PR #2 through PR #20.
+- Merged post-v0.1 hardening scope: release-readiness PRs through the final docs cleanup before tagging.
 
 ## Completed Since v0.1.0
 
@@ -26,7 +26,7 @@ Baseline checked:
 
 ## Verified For This Draft
 
-- `main` CI is green on the exact baseline commit.
+- Release-candidate CI is green, and the release tag should point at the final approved commit after any docs-only cleanup merges.
 - Local browser/PWA smoke evidence covers desktop home, regular game start, tap/click lane input, keyboard lane input, score save, local leaderboard, settings reload persistence, mobile viewport, `/manifest.json`, `/sw.js`, and SPA fallback endpoint availability.
 - Android config evidence covers Capacitor config parsing, `dist` build output, Capacitor CLI availability, absent `android/` project, and the expected `cap sync android` blocker before platform generation.
 - No release doc claims gameplay, scoring, daily sequence, or persisted localStorage schema/key changes.
