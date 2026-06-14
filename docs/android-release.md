@@ -12,6 +12,28 @@ This checkout has Capacitor configured for Android, but it does not currently co
 - Capacitor packages present: `@capacitor/core`, `@capacitor/cli`, `@capacitor/android`, `@capacitor/ios`
 - Current scripts: `cap:sync` runs `cap sync`; `cap:open:android` runs `cap open android`
 
+## v0.2 Local Readiness Evidence
+
+Checked on 2026-06-14 against `main` commit `94c0b9114eb7b007bb3bbdab99f86f1624d1a1e5`.
+
+Commands and results:
+
+| Check | Result |
+| --- | --- |
+| `bun run build` | Pass; fresh `dist/index.html` and hashed JS/CSS assets were produced |
+| Capacitor config JSON parse | Pass; `appId`, `appName`, `webDir`, Android scheme, and plugin keys were readable |
+| `bun x cap --version` | Pass; Capacitor CLI reported `8.4.0` |
+| `bun x cap sync android` | Expected blocker; failed because the Android platform has not been added yet |
+| Repository tree check | `android/` is absent from the checkout |
+| `.gitignore` check | No `android/` ignore rule is currently present |
+
+Interpretation:
+
+- Web assets can be built locally and are ready to be synced once the Android platform policy is decided.
+- APK/device/performance readiness is still unverified.
+- Do not claim Android release readiness until `android/` is generated or intentionally committed, Gradle builds an artifact, and device/emulator smoke is recorded.
+- If `android/` remains a generated release artifact, add an ignore rule before running `bun x cap add android` in a working tree that should stay source-only.
+
 ## Prerequisites
 
 - Bun `1.3.14`
