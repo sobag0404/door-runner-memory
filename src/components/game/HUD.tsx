@@ -15,8 +15,8 @@ export function HUD({ combo, lang, theme }: { combo: number; lang: string; theme
     <div className="absolute inset-0 pointer-events-none z-30"
       style={feedback === 'wrong' ? { animation: 'screenShake 0.4s ease-out' } : undefined}
     >
-      <div className="flex justify-between items-start p-3 pt-5">
-        <div className="flex items-center gap-2 backdrop-blur-md rounded-2xl px-4 py-2 border shadow-lg"
+      <div className="flex justify-between items-start gap-2 p-3 pt-5">
+        <div className="hud-pill flex min-w-[76px] items-center gap-2 rounded-lg border px-3 py-2 shadow-lg backdrop-blur-md"
           style={{
             background: theme.hudBg,
             borderColor: 'rgba(255,255,255,0.15)',
@@ -35,7 +35,7 @@ export function HUD({ combo, lang, theme }: { combo: number; lang: string; theme
         </div>
         {combo >= 3 && (
           <motion.div
-            className="flex items-center gap-1 backdrop-blur-md rounded-2xl px-3 py-2 border"
+            className="hud-pill flex items-center gap-1 rounded-lg border px-3 py-2 backdrop-blur-md"
             style={{
               background: theme.hudBg,
               borderColor: theme.hudComboBorder,
@@ -61,7 +61,7 @@ export function HUD({ combo, lang, theme }: { combo: number; lang: string; theme
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <motion.div
               data-testid="feedback-toast"
-              className="px-8 py-4 rounded-3xl font-black text-2xl backdrop-blur-md border-2 shadow-2xl"
+              className="px-6 py-3 rounded-xl font-black text-2xl backdrop-blur-md border-2 shadow-2xl"
               style={{
                 backgroundColor: feedback === 'correct' ? theme.feedbackCorrectBg : theme.feedbackWrongBg,
                 color: theme.textLight,

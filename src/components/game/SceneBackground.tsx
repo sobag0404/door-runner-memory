@@ -181,7 +181,7 @@ export function RoadVisual({ pathCount, theme }: { pathCount: number; theme: Gam
   return (
     <div className="absolute inset-0 overflow-hidden">
       <SkyBackground theme={theme} />
-      <div className="absolute left-[4%] right-[4%] bottom-0"
+      <div className="runner-road absolute left-[4%] right-[4%] bottom-0"
         style={{
           height: '78%',
           background: `linear-gradient(to bottom, ${theme.roadLine} 0%, ${theme.road} 20%, ${theme.gameBg} 50%, ${theme.road} 100%)`,
@@ -189,6 +189,20 @@ export function RoadVisual({ pathCount, theme }: { pathCount: number; theme: Gam
           borderRight: `3px solid ${theme.roadBorderGlow}`,
         }}
       >
+        {/* Perspective shoulder bands */}
+        <div className="absolute inset-0 pointer-events-none opacity-70"
+          style={{
+            background: `
+              linear-gradient(102deg, ${theme.roadEdgeGlow}90 0%, transparent 12%, transparent 88%, ${theme.roadEdgeGlow}90 100%),
+              radial-gradient(ellipse at 50% 0%, ${theme.hudScoreAccent}26 0%, transparent 42%)
+            `,
+          }} />
+        <div className="absolute inset-x-[10%] top-0 h-[42%] pointer-events-none"
+          style={{
+            background: `linear-gradient(to bottom, ${theme.hudScoreAccent}22, transparent)`,
+            clipPath: 'polygon(38% 0, 62% 0, 100% 100%, 0 100%)',
+          }} />
+
         {/* Lane dividers */}
         {Array.from({ length: pathCount + 1 }).map((_, i) => (
           <div key={i} className="absolute top-0 bottom-0"
@@ -197,6 +211,8 @@ export function RoadVisual({ pathCount, theme }: { pathCount: number; theme: Gam
               width: isNeon ? '1px' : '2px',
               background: `linear-gradient(to bottom, transparent 0%, ${theme.roadDashColor} 30%, ${theme.laneEdgeGlow}60 100%)`,
               boxShadow: isNeon ? `0 0 4px ${theme.laneEdgeGlow}30` : undefined,
+              transform: `perspective(260px) rotateX(18deg) skewX(${(i - pathCount / 2) * -1.4}deg)`,
+              transformOrigin: 'top center',
             }} />
         ))}
 
@@ -213,7 +229,7 @@ export function RoadVisual({ pathCount, theme }: { pathCount: number; theme: Gam
 
         {/* Center dashes */}
         <div className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-1 overflow-hidden">
-          <div className="w-full h-[200%] flex flex-col gap-3 pt-0"
+          <div className="road-dashes w-full h-[200%] flex flex-col gap-3 pt-0"
             style={{ animation: 'dashScroll 0.6s linear infinite' }}>
             {Array.from({ length: 30 }).map((_, i) => (
               <div key={i} className="w-full h-3 rounded-full shrink-0"
