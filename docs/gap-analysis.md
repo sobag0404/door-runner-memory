@@ -9,7 +9,7 @@ This document contains older review notes and some mojibake inherited from earli
 - `DoorRunnerScene.tsx` has already been decomposed significantly; continue decomposition only as small scoped PRs.
 - Sound/haptic/aria effects, feedback timers, and persistence are extracted from `gameStore`.
 - Remaining store work is orchestration-level: game action flow, stats calculations, achievement unlock checks, and leaderboard entry construction.
-- Android APK/device performance and Netlify production deploy remain unverified.
+- Android debug APK build/install/launch is verified on an emulator. Release signing, real-device performance, and Netlify production deploy remain unverified.
 - Leaderboard remains local-only; do not add online leaderboard/backend/server verification without a separate design.
 - Visual direction is queued as an original mobile-runner polish lane in `docs/visual-direction.md`: colorful runner energy roughly inspired by Subway Surfers, but no copied characters, logos, exact UI, proprietary assets, or recognizable level art.
 

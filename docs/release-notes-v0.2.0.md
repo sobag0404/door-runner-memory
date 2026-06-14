@@ -2,6 +2,8 @@
 
 Status: draft notes for a future `v0.2.0` tag. This document does not publish the release.
 
+Post-v0.2.0 note: the published `v0.2.0` tag did not include the later Android project commit. Current `main` now contains a committed Capacitor Android project and emulator-verified debug APK evidence; release signing, real-device smoke, and performance profiling remain open.
+
 Baseline for these notes:
 
 - Release tag target: the commit that receives the `v0.2.0` tag after final release-owner approval.
@@ -54,7 +56,7 @@ Additional recorded evidence:
 
 ## Not Included / Not Verified
 
-- Android release readiness is not verified: no generated `android/` project is present, no APK/AAB was built, no device/emulator smoke was run, and real-device performance is not measured.
+- Android release readiness is not verified: post-v0.2.0 work added a committed Android project and emulator-verified debug APK, but release signing, real-device smoke, and real-device performance remain unverified.
 - Netlify production readiness is not verified: no confirmed production URL, GitHub deployment, or Netlify status evidence is available from the current environment.
 - Full accessibility audit is not complete: focused Playwright smoke is automated, but manual assistive-technology, contrast, focus-order, touch-target, and long-session checks remain open.
 - Online leaderboard/backend/server verification is not included.

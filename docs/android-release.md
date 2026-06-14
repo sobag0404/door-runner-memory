@@ -1,6 +1,6 @@
 # Android Release
 
-This checkout has Capacitor configured for Android, but it does not currently contain a generated `android/` project. Treat `android/` as a release-preparation artifact for now: generate it when preparing an Android build, sync the current `dist/` output into it, and do not require Android Studio automation.
+This checkout now contains the Capacitor Android project in `android/`. Android is the primary native app path; the web/PWA build remains the source bundle that Capacitor packages into the APK.
 
 ## Current Capacitor State
 
@@ -11,28 +11,31 @@ This checkout has Capacitor configured for Android, but it does not currently co
 - Native plugins configured: `SplashScreen`, `StatusBar`
 - Capacitor packages present: `@capacitor/core`, `@capacitor/cli`, `@capacitor/android`, `@capacitor/ios`
 - Current scripts: `cap:sync` runs `cap sync`; `cap:open:android` runs `cap open android`
+- Vite Android target: `es2020`, to avoid unsupported modern JS syntax in older Android System WebView versions
 
-## v0.2 Local Readiness Evidence
+## Local Android Debug Evidence
 
-Checked on 2026-06-14 against `main` commit `94c0b9114eb7b007bb3bbdab99f86f1624d1a1e5`.
-
-Commands and results:
+Checked on 2026-06-14 on branch `codex/android-debug-app`.
 
 | Check | Result |
 | --- | --- |
+| `bun install --frozen-lockfile` | Pass; no lockfile changes |
 | `bun run build` | Pass; fresh `dist/index.html` and hashed JS/CSS assets were produced |
-| Capacitor config JSON parse | Pass; `appId`, `appName`, `webDir`, Android scheme, and plugin keys were readable |
-| `bun x cap --version` | Pass; Capacitor CLI reported `8.4.0` |
-| `bun x cap sync android` | Expected blocker; failed because the Android platform has not been added yet |
-| Repository tree check | `android/` is absent from the checkout |
-| `.gitignore` check | No `android/` ignore rule is currently present |
+| `bun x cap add android` | Pass; generated native project with package `com.doorrunner.memory` |
+| `bun x cap sync android` | Pass; copied the current web build into `android/app/src/main/assets/public` |
+| `android\gradlew.bat assembleDebug` | Pass |
+| Debug APK path | `android/app/build/outputs/apk/debug/app-debug.apk` |
+| `adb -s emulator-5554 install -r ...\app-debug.apk` | Pass |
+| `adb shell monkey -p com.doorrunner.memory -c android.intent.category.LAUNCHER 1` | Pass |
+| Foreground activity | `com.doorrunner.memory/.MainActivity` |
+| WebView render evidence | DevTools DOM reported title `Door Runner Memory`, URL `https://localhost/`, and rendered home-screen text |
 
 Interpretation:
 
-- Web assets can be built locally and are ready to be synced once the Android platform policy is decided.
-- APK/device/performance readiness is still unverified.
-- Do not claim Android release readiness until `android/` is generated or intentionally committed, Gradle builds an artifact, and device/emulator smoke is recorded.
-- If `android/` remains a generated release artifact, add an ignore rule before running `bun x cap add android` in a working tree that should stay source-only.
+- A local debug APK can be built, installed, and launched on the `DoorRunner_API30_ATD` emulator.
+- The API 30 emulator uses an older Android System WebView; `build.target = 'es2020'` is required so the bundle does not emit unsupported logical assignment syntax.
+- Android release readiness is still not claimed: release signing, real-device smoke, and performance checks remain open.
+- `adb screencap` produced a black image on this ATD emulator, so render evidence was taken from the attached WebView DevTools DOM instead.
 
 ## Prerequisites
 
@@ -43,56 +46,69 @@ Interpretation:
 - `ANDROID_HOME` or `ANDROID_SDK_ROOT` set for command-line Gradle builds
 - Release keystore and signing credentials before producing a store-ready artifact
 
-## Release Build Commands
+Windows local toolchain used for the first debug build:
+
+```powershell
+$env:JAVA_HOME = 'C:\Program Files\Android\Android Studio\jbr'
+$env:ANDROID_HOME = "$env:LOCALAPPDATA\Android\Sdk"
+$env:ANDROID_SDK_ROOT = $env:ANDROID_HOME
+$env:Path = "$env:JAVA_HOME\bin;$env:ANDROID_HOME\platform-tools;$env:ANDROID_HOME\emulator;$env:ANDROID_HOME\cmdline-tools\latest\bin;$env:Path"
+```
+
+Verified emulator:
+
+- AVD: `DoorRunner_API30_ATD`
+- Device: `emulator-5554`
+- Android: API 30
+- WebView observed during smoke: `83.0.4103.120`
+
+## Debug Build Commands
 
 Run from the repository root.
 
 ```powershell
 bun install --frozen-lockfile
-bun run quality
-bun run test:e2e
 bun run build
-```
-
-Generate the Android platform only when `android/` is absent:
-
-```powershell
-bun x cap add android
-```
-
-Sync the current web build into the native project:
-
-```powershell
 bun x cap sync android
+Push-Location android
+.\gradlew.bat assembleDebug
+Pop-Location
 ```
 
-Build from the command line:
+Expected debug APK:
+
+- `android/app/build/outputs/apk/debug/app-debug.apk`
+
+Install and launch on the verified emulator:
+
+```powershell
+adb -s emulator-5554 install -r android/app/build/outputs/apk/debug/app-debug.apk
+adb -s emulator-5554 shell monkey -p com.doorrunner.memory -c android.intent.category.LAUNCHER 1
+adb -s emulator-5554 shell dumpsys window | Select-String 'mCurrentFocus|mFocusedApp'
+```
+
+Release bundle builds require signing policy and versioning decisions first:
 
 ```powershell
 Push-Location android
-.\gradlew.bat assembleDebug
 .\gradlew.bat bundleRelease
 Pop-Location
 ```
 
-Expected outputs after successful Gradle builds:
+Expected release output after signing/versioning work:
 
-- Debug APK: `android/app/build/outputs/apk/debug/app-debug.apk`
 - Release AAB: `android/app/build/outputs/bundle/release/app-release.aab`
 
 Use `bundleRelease` for Play Console-style distribution after signing is configured. Use `assembleDebug` only for local smoke testing.
 
 ## Verification Checklist
 
-- [ ] `bun install --frozen-lockfile` completes without lockfile changes.
-- [ ] `bun run quality` passes.
-- [ ] `bun run test:e2e` passes.
-- [ ] `bun run build` produces fresh `dist/` assets.
-- [ ] `bun x cap sync android` copies the current `dist/` output without Capacitor errors.
-- [ ] Debug APK installs on a real Android device or emulator.
-- [ ] Home screen renders after a cold start.
+- [x] `bun install --frozen-lockfile` completes without lockfile changes.
+- [x] `bun run build` produces fresh `dist/` assets.
+- [x] `bun x cap sync android` copies the current `dist/` output without Capacitor errors.
+- [x] Debug APK installs on an Android emulator.
+- [x] Home screen renders after a cold start, verified through WebView DevTools DOM on the API 30 ATD emulator.
 - [ ] Regular game starts and accepts tap/swipe input.
-- [ ] Keyboard-only assumptions do not block mobile play.
 - [ ] Audio, haptics, local storage, and offline behavior are smoke-tested on device.
 - [ ] App icon, app label, splash color, and status bar color match release expectations.
 - [ ] Version code/version name are set for the release being shipped.
@@ -100,10 +116,9 @@ Use `bundleRelease` for Play Console-style distribution after signing is configu
 
 ## Current Gaps
 
-- `android/` is not present in this checkout, so no native Gradle files, manifests, signing config, or generated wrapper are under review here.
-- `.gitignore` does not currently ignore `android/`; if the project keeps treating it as a generated release artifact, add an ignore rule or avoid committing the generated directory.
 - Release signing is not configured in the repository.
 - Android version code/version name policy is not documented in project metadata.
 - Android device/emulator smoke testing is not automated in CI.
+- Real-device smoke and performance profiling are not verified.
 - No Play Console packaging, track, or rollout process is documented yet.
-- The README has a basic APK recipe; this document is the production release checklist until the native project policy changes.
+- The first debug APK was verified on an emulator only; do not treat it as a production release artifact.
