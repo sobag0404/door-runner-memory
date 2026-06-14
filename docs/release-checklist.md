@@ -6,6 +6,53 @@ Release branch: `codex/production-hardening`
 
 Current release status: `docs/release-status-v0.1.0.md`
 
+## v0.2.0 Draft Release Checklist
+
+Current baseline for v0.2 planning:
+
+- `main` commit under checklist review: `6c7a501dfc898ff39682bd9238a435b2043fee98`.
+- Latest `main` CI is green on Ubuntu and Windows: https://github.com/sobag0404/door-runner-memory/actions/runs/27501463256
+- PR #2 through PR #12 are merged.
+- Netlify production deploy remains unverified: no GitHub Netlify commit status, no GitHub deployments, and the old Netlify URL returns 404.
+- Android APK build, Android device smoke, and real-device performance remain unverified.
+- Focused Playwright a11y smoke is automated, but a full accessibility audit remains incomplete.
+- Leaderboard remains local-only; there is no online leaderboard, backend, account system, or server-side score verification.
+
+Required automated checks before tagging `v0.2.0`:
+
+- [ ] `bun install --frozen-lockfile`
+- [ ] `bun run security:audit`
+- [ ] `bun run build`
+- [ ] `bun run lint`
+- [ ] `bun run test`
+- [ ] `bun run test:e2e`
+- [ ] `bun run test:a11y`
+- [ ] Confirm GitHub Actions is green on the exact release commit for Ubuntu and Windows.
+
+Manual browser/PWA smoke before tagging `v0.2.0`:
+
+- [ ] Home screen renders in desktop browser.
+- [ ] Regular game starts.
+- [ ] Tap/click lane input works.
+- [ ] Keyboard lane input works.
+- [ ] Score can be saved and appears in the local leaderboard.
+- [ ] Language, theme, and sound settings persist after reload.
+- [ ] `/manifest.json` returns 200 with expected app metadata.
+- [ ] `/sw.js` returns 200.
+- [ ] Service worker registration does not break first load.
+- [ ] Warmed offline reload or fallback behavior is checked in a browser.
+- [ ] Mobile viewport smoke confirms doors, HUD, lane buttons, and feedback remain readable.
+- [ ] Reduced-motion mode preserves clear feedback without nonessential motion.
+
+Distribution and readiness gates for `v0.2.0`:
+
+- [ ] If a Netlify production URL exists, verify `/`, `/manifest.json`, `/sw.js`, SPA fallback, generated static assets, HTTPS, HSTS, and configured headers. If no credible URL/evidence exists, record Netlify as unverified.
+- [ ] If Android release readiness is claimed, generate or verify the Android project, build an APK, run device smoke, and record device/performance notes. Otherwise record Android as unverified.
+- [ ] If full accessibility readiness is claimed, complete and record a broader accessibility audit. Otherwise state that only focused a11y smoke is automated.
+- [ ] Confirm no gameplay rules, scoring, daily sequence, or persisted localStorage schema/key changes are included without explicit release approval and regression tests.
+- [ ] Confirm no secrets, tokens, `.env` values, or deployment credentials are committed.
+- [ ] Confirm release notes/status do not claim Netlify production readiness, Android readiness, full a11y audit completion, or online leaderboard/backend support without evidence.
+
 ## Required Before Tagging
 
 - [x] Merge release hardening changes to `main`.
