@@ -4,7 +4,7 @@ Audit date: 2026-06-14
 
 ## Current Verification Snapshot
 
-Checked from `main` commit `b4832b03adcd12f6ef8a3f31d0bbca21335e7a48` without Netlify login, dashboard access, tokens, or secret changes.
+Checked from `main` commit `38ec84071e0a504328418a0711d0cb8cac1bc284` without Netlify login, dashboard access, tokens, or secret changes.
 
 Evidence gathered:
 
@@ -16,7 +16,7 @@ Evidence gathered:
 - `.node-version` and `.nvmrc` are `22.12.0`.
 - `package.json` allows Node `>=20.19.0 <21 || >=22.12.0` and pins Bun `1.3.14`.
 - `dist/index.html`, `dist/assets/`, `dist/manifest.json`, `dist/sw.js`, `dist/icon-192.png`, and `dist/icon-512.png` are present in this checkout.
-- GitHub commit status API for `b4832b03adcd12f6ef8a3f31d0bbca21335e7a48` returned `total_count: 0`; no Netlify commit status is attached.
+- GitHub commit status API for `38ec84071e0a504328418a0711d0cb8cac1bc284` returned `total_count: 0`; no Netlify commit status is attached.
 - GitHub check runs for that commit are only GitHub Actions `build-and-test (ubuntu-latest)` and `build-and-test (windows-latest)`.
 - GitHub deployments API returned no deployments for the latest commit and no repository deployments.
 - The old URL recorded in `worklog.md`, `https://cute-salamander-2682c7.netlify.app/`, returns HTTP `404 Not Found`.
@@ -97,7 +97,7 @@ Current conclusion:
 ## Current Gaps
 
 - Netlify site ID, production URL, production branch, deploy logs, and dashboard settings were not verified because they require Netlify access or a public deploy URL.
-- GitHub commit statuses and deployments did not provide Netlify evidence for `b4832b03adcd12f6ef8a3f31d0bbca21335e7a48`.
+- GitHub commit statuses and deployments did not provide Netlify evidence for `38ec84071e0a504328418a0711d0cb8cac1bc284`.
 - The old public Netlify URL in `worklog.md` returns 404 and is not evidence of a live production deploy.
 - Live app load, static asset responses, SPA fallback, response headers, HTTPS status, HSTS behavior, and custom domain status were not verified because no deployed URL was available in this lane.
 - Environment variables and secrets were not inspected or changed; that requires dashboard access and is intentionally out of scope.
