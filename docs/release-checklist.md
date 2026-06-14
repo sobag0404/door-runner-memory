@@ -6,14 +6,15 @@ Release branch: `codex/production-hardening`
 
 Current release status: `docs/release-status-v0.1.0.md`
 Draft v0.2 status: `docs/release-status-v0.2.0.md`
+Draft v0.2 notes: `docs/release-notes-v0.2.0.md`
 
 ## v0.2.0 Draft Release Checklist
 
 Current baseline for v0.2 planning:
 
-- `main` commit under checklist review: `a8aac11f0e23ff4b3a403a189cca418aea928a66`.
-- Latest `main` CI is green on Ubuntu and Windows: https://github.com/sobag0404/door-runner-memory/actions/runs/27504089011
-- PR #2 through PR #17 are merged.
+- `main` commit under checklist review: `1727bdcddc8c6870340fdbc6afb577c86a7e1645`.
+- Latest `main` CI is green on Ubuntu and Windows: https://github.com/sobag0404/door-runner-memory/actions/runs/27505026490
+- PR #2 through PR #20 are merged.
 - Netlify production deploy remains unverified: no GitHub Netlify commit status, no GitHub deployments, and the old Netlify URL returns 404.
 - Android APK build, Android device smoke, and real-device performance remain unverified.
 - Focused Playwright a11y smoke is automated, but a full accessibility audit remains incomplete.
