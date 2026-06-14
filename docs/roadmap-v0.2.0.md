@@ -12,7 +12,7 @@ v0.2.0 should move Door Runner Memory from a hardened web prototype toward a mor
 
 This plan intentionally does not claim Android APK, real-device performance, or Netlify production readiness until those checks are completed and recorded.
 
-Post-v0.2.0 update: GitHub Pages production web deploy is verified at https://sobag0404.github.io/door-runner-memory/. This is post-release evidence, not part of the original `v0.2.0` tag contents.
+Post-v0.2.0 update: GitHub Pages production web deploy is verified at https://sobag0404.github.io/door-runner-memory/. The Capacitor Android project is now committed and a debug APK has been built, installed, launched, and checked on the `DoorRunner_API30_ATD` emulator. This is post-release evidence, not part of the original `v0.2.0` tag contents.
 
 ## Baseline From v0.1.0
 
@@ -28,9 +28,9 @@ Verified in the v0.1.0 release docs:
 
 Known unverified or incomplete areas carried into v0.2.0:
 
-- Android/Capacitor APK project directory is not generated in this checkout.
-- APK build, Android device smoke, and real-device performance are not verified.
-- Local Android readiness evidence is recorded in `docs/android-release.md`: Capacitor config parses, web build output exists, Capacitor CLI is available, and `cap sync android` is blocked until the Android platform is added.
+- Android/Capacitor project directory is committed in this checkout after `v0.2.0`.
+- Debug APK build/install/launch is verified on an emulator; release signing, real-device smoke, and real-device performance are not verified.
+- Local Android readiness evidence is recorded in `docs/android-release.md`.
 - Netlify production deploy status is not verified from the current environment.
 - Focused Playwright accessibility smoke is now a release gate, and current coverage is documented in `docs/accessibility-audit.md`, but a full accessibility audit is not complete.
 - Sound/haptic/aria effects, feedback timers, and persistence have been extracted from the Zustand store. The store still orchestrates game actions, stats calculations, achievement unlock checks, and leaderboard entry construction.
@@ -90,7 +90,7 @@ Acceptance criteria:
 
 - Release notes describe only completed changes.
 - Release status names the exact commit/tag under verification.
-- Android/APK, real-device, and Netlify production status are each marked verified or unverified with supporting notes.
+- Android debug APK, real-device, and Netlify production status are each marked verified or unverified with supporting notes.
 - No doc claims online leaderboard, server-side anti-cheat, Android release readiness, device performance readiness, or Netlify production readiness without evidence.
 
 ## P1 - Quality, Accessibility, And Maintainability
@@ -178,7 +178,7 @@ Acceptance criteria:
 
 ## Non-Goals For v0.2.0
 
-- Do not claim Android release readiness unless the Android platform is generated, APK build is completed, and device smoke/performance checks are recorded.
+- Do not claim Android release readiness unless release signing/versioning, real-device smoke, and device performance checks are recorded.
 - Do not claim Netlify production readiness unless the production deploy is verified and documented.
 - Do not add an online leaderboard without server-side verification, replay protection, and abuse controls.
 - Do not introduce server accounts, cloud saves, or monetization.

@@ -27,7 +27,7 @@
 - Gameplay rules, scoring, daily sequence behavior, and persisted localStorage schema/keys are not claimed to have changed in post-v0.1 hardening work.
 - Leaderboard remains local-only. There is no online leaderboard, backend, server-side score verification, replay protection, or account system.
 - GitHub Pages production deploy is verified post-v0.2.0 at https://sobag0404.github.io/door-runner-memory/.
-- Android/Capacitor APK build, real-device smoke, real-device performance, and Netlify production deploy remain unverified unless a later doc records evidence.
+- Android/Capacitor debug APK build/install/launch is verified on the `DoorRunner_API30_ATD` emulator; release signing, real-device smoke, real-device performance, and Netlify production deploy remain unverified unless a later doc records evidence.
 - Netlify no-login verification found no GitHub Netlify deployment/status and no credible public production URL; production deploy remains unverified.
 
 ### Current Architecture Boundary Notes
@@ -170,7 +170,7 @@ GitHub Pages production deploy is verified: https://sobag0404.github.io/door-run
 - DoorRunnerScene.tsx has been decomposed; continue keeping scene changes scoped and reviewed.
 - Zustand store still orchestrates game actions, stats, achievements, and leaderboard entry construction.
 - e2e/smoke/PWA/focused a11y tests exist and run in CI; full accessibility audit remains incomplete.
-- APK/Android pipeline is not verified on a real device or emulator.
+- Android debug APK build/install/launch is verified on an emulator; real-device smoke, release signing, and performance profiling remain open.
 
 ### Безопасность
 - ✅ Локальный leaderboard только — соответствует рекомендации безопасника

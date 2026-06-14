@@ -14,7 +14,7 @@ Door Runner Memory — аркадная игра, где нужно запоми
 - **Tailwind CSS 4** — styling
 - **Zustand** — state management
 - **Framer Motion** — animations
-- **Capacitor** — native packaging configuration; Android project not generated yet
+- **Capacitor** — native Android packaging via the committed `android/` project
 - **Web Audio API** — synthesized sounds
 - **PWA** — installable web app
 
@@ -56,14 +56,11 @@ bun run lint
 
 ## Android APK (via Capacitor)
 
-Capacitor config exists, but the Android project directory is not generated in this archive yet. Create it before syncing or building an APK.
+Capacitor Android is present in `android/`. Build web assets first, sync them into the native project, then use Gradle for a debug APK.
 
 ```bash
 # Build web assets
 bun run build
-
-# Add Android platform once
-bun x cap add android
 
 # Sync to Capacitor
 bun x cap sync android
@@ -75,7 +72,9 @@ bun x cap open android
 cd android && ./gradlew assembleDebug
 ```
 
-After a successful Android platform generation and Gradle debug build, the APK is expected at `android/app/build/outputs/apk/debug/app-debug.apk`
+After a successful Gradle debug build, the APK is expected at `android/app/build/outputs/apk/debug/app-debug.apk`.
+
+Local debug APK evidence has been recorded for the `DoorRunner_API30_ATD` emulator. Release signing, real-device smoke, and performance profiling remain open.
 
 For the production-minded Android release checklist, see `docs/android-release.md`.
 
@@ -196,7 +195,7 @@ See `docs/gap-analysis.md` for full security review findings.
 - Game logic has a pure reducer, and the Zustand store now delegates sound/haptics/aria effects, feedback timers, and persistence to focused helpers
 - The Zustand store still orchestrates game actions and owns stats calculations, achievement unlock checks, and leaderboard entry construction before calling persistence helpers
 - Accessibility smoke is automated, but a full accessibility audit is not complete
-- Android APK/device/performance checks are not yet verified
+- Android debug APK build/install/launch has been verified on an emulator; release signing, real-device smoke, and performance checks are not yet verified
 - Netlify production deploy remains unverified
 - Online leaderboard/backend/server verification is not implemented
 

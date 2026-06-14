@@ -2,7 +2,7 @@
 
 Status: historical release-readiness snapshot for the published `v0.2.0` release.
 
-Post-v0.2.0 note: the `v0.2.0` GitHub Release was published from an earlier commit. GitHub Pages production deploy was verified afterward on current `main`, so it should be treated as post-v0.2.0 evidence unless a patch release is cut.
+Post-v0.2.0 note: the `v0.2.0` GitHub Release was published from an earlier commit. GitHub Pages production deploy and the first Android debug APK build/install/launch evidence were verified afterward on current `main` work, so they should be treated as post-v0.2.0 evidence unless a patch release is cut.
 
 Baseline checked:
 
@@ -37,7 +37,7 @@ Baseline checked:
 ## Not Verified / Not Ready To Claim
 
 - Netlify production deploy is not verified. No credible public production URL, GitHub deployment, or Netlify status evidence is available from the current environment.
-- Android release readiness is not verified. `android/` is absent, no APK/AAB was built, no device/emulator smoke was run, and real-device performance is not measured.
+- Android release readiness is not verified. Post-v0.2.0 work added a committed Android project and emulator-verified debug APK, but release signing, real-device smoke, and real-device performance remain unverified.
 - Full accessibility audit is not complete. Focused Playwright smoke is automated, but manual assistive-technology, contrast, focus-order, touch-target, and long-session checks remain open.
 - No online leaderboard, backend, account system, server-side score verification, anti-cheat, or replay protection exists.
 - Extended mobile performance is not verified beyond current CI, visual checks, and local smoke evidence.
@@ -46,7 +46,7 @@ Baseline checked:
 
 - A v0.2.0 tag should only be cut after release owner review of this status, `docs/release-checklist.md`, and the current `main` CI result.
 - If Android, Netlify, or full accessibility readiness is mentioned in release notes, it must be explicitly marked unverified unless new evidence is added before tagging.
-- If `android/` remains generated-only, decide whether to add it to `.gitignore` before running `bun x cap add android` in a source-clean branch.
+- Post-v0.2.0, `android/` is committed as the native app project; do not treat it as generated-only release scratch space.
 
 ## Post-v0.2.0 Production Web Deploy Evidence
 
@@ -56,3 +56,11 @@ Baseline checked:
 - Pages deploy: https://github.com/sobag0404/door-runner-memory/actions/runs/27508384794
 - Public checks returned 200 for `/`, `/manifest.json`, `/sw.js`, and generated JS/CSS assets.
 - Browser smoke confirmed the app shell loads, service worker registration uses `/door-runner-memory/sw.js`, and GitHub Pages deep-link 404 redirects back to the app base path.
+
+## Post-v0.2.0 Android Debug Evidence
+
+- Capacitor Android project is committed in `android/`.
+- Debug APK builds at `android/app/build/outputs/apk/debug/app-debug.apk`.
+- The APK installs and launches on the `DoorRunner_API30_ATD` emulator.
+- WebView DevTools DOM confirmed the home screen renders at `https://localhost/`.
+- Android release signing, real-device smoke, and performance profiling remain unverified.
