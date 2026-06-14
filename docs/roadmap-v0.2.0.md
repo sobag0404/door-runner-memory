@@ -4,7 +4,7 @@ Status: draft next-release plan
 Baseline: `v0.1.0` published release and current release docs
 Scope: web/PWA hardening, release governance, and verified readiness gates
 
-Current post-v0.1 hardening baseline: PR #2 through PR #16 are merged into `main` at `94c0b9114eb7b007bb3bbdab99f86f1624d1a1e5`. The post-merge CI run passed on Ubuntu and Windows with dependency audit, build/type-check, lint, unit tests, e2e/smoke, and focused a11y smoke: https://github.com/sobag0404/door-runner-memory/actions/runs/27503642353.
+Current post-v0.1 hardening baseline: PR #2 through PR #17 are merged into `main` at `a8aac11f0e23ff4b3a403a189cca418aea928a66`. The post-merge CI run passed on Ubuntu and Windows with dependency audit, build/type-check, lint, unit tests, e2e/smoke, and focused a11y smoke: https://github.com/sobag0404/door-runner-memory/actions/runs/27504089011. The draft v0.2 release-readiness snapshot lives in `docs/release-status-v0.2.0.md`.
 
 ## Release Intent
 
