@@ -12,11 +12,11 @@ test('manifest exposes installable app metadata', async ({ request }) => {
   const manifest = await response.json();
   expect(manifest.name).toBe('Door Runner Memory');
   expect(manifest.display).toBe('standalone');
-  expect(manifest.start_url).toBe('/');
+  expect(manifest.start_url).toBe('.');
   expect(manifest.icons).toEqual(
     expect.arrayContaining([
-      expect.objectContaining({ sizes: '192x192', type: 'image/png' }),
-      expect.objectContaining({ sizes: '512x512', type: 'image/png' }),
+      expect.objectContaining({ src: 'icon-192.png', sizes: '192x192', type: 'image/png' }),
+      expect.objectContaining({ src: 'icon-512.png', sizes: '512x512', type: 'image/png' }),
     ])
   );
 });
