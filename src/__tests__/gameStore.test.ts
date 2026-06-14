@@ -82,15 +82,10 @@ describe('gameStore — chooseLane', () => {
     // Answer correctly once
     store.chooseLane(correctLane);
     expect(useGameStore.getState().currentStep).toBe(1);
-    // Now answer wrong
-    const wrongLane = (correctLane + 1) % useGameStore.getState().settings.pathCount;
-    // Clear feedback first
-    const state = useGameStore.getState();
-    if (state.feedback) {
-      // Wait for feedback to clear - in test we simulate it
-    }
-    // Force clear feedback to allow next choice
+
     useGameStore.setState({ feedback: null });
+    const currentState = useGameStore.getState();
+    const wrongLane = (currentState.correctLane() + 1) % currentState.settings.pathCount;
     useGameStore.getState().chooseLane(wrongLane);
     expect(useGameStore.getState().currentStep).toBe(0);
   });
