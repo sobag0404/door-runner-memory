@@ -16,6 +16,7 @@ Current baseline for v0.2 planning:
 - Netlify production deploy remains unverified: no GitHub Netlify commit status, no GitHub deployments, and the old Netlify URL returns 404.
 - Android APK build, Android device smoke, and real-device performance remain unverified.
 - Focused Playwright a11y smoke is automated, but a full accessibility audit remains incomplete.
+- Current accessibility coverage and manual gaps are documented in `docs/accessibility-audit.md`.
 - Leaderboard remains local-only; there is no online leaderboard, backend, account system, or server-side score verification.
 
 Required automated checks before tagging `v0.2.0`:
@@ -49,6 +50,7 @@ Distribution and readiness gates for `v0.2.0`:
 - [ ] If a Netlify production URL exists, verify `/`, `/manifest.json`, `/sw.js`, SPA fallback, generated static assets, HTTPS, HSTS, and configured headers. If no credible URL/evidence exists, record Netlify as unverified.
 - [ ] If Android release readiness is claimed, generate or verify the Android project, build an APK, run device smoke, and record device/performance notes. Otherwise record Android as unverified.
 - [ ] If full accessibility readiness is claimed, complete and record a broader accessibility audit. Otherwise state that only focused a11y smoke is automated.
+- [ ] Review `docs/accessibility-audit.md` before writing v0.2 accessibility claims.
 - [ ] Confirm no gameplay rules, scoring, daily sequence, or persisted localStorage schema/key changes are included without explicit release approval and regression tests.
 - [ ] Confirm no secrets, tokens, `.env` values, or deployment credentials are committed.
 - [ ] Confirm release notes/status do not claim Netlify production readiness, Android readiness, full a11y audit completion, or online leaderboard/backend support without evidence.
