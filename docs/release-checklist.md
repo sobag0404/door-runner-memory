@@ -10,13 +10,14 @@ Current release status: `docs/release-status-v0.1.0.md`
 
 Current baseline for v0.2 planning:
 
-- `main` commit under checklist review: `6c7a501dfc898ff39682bd9238a435b2043fee98`.
-- Latest `main` CI is green on Ubuntu and Windows: https://github.com/sobag0404/door-runner-memory/actions/runs/27501463256
-- PR #2 through PR #12 are merged.
+- `main` commit under checklist review: `d70f1a88a5698e63cab1d21d27587ff59e96fafa`.
+- Latest `main` CI is green on Ubuntu and Windows: https://github.com/sobag0404/door-runner-memory/actions/runs/27502998753
+- PR #2 through PR #15 are merged.
 - Netlify production deploy remains unverified: no GitHub Netlify commit status, no GitHub deployments, and the old Netlify URL returns 404.
 - Android APK build, Android device smoke, and real-device performance remain unverified.
 - Focused Playwright a11y smoke is automated, but a full accessibility audit remains incomplete.
 - Current accessibility coverage and manual gaps are documented in `docs/accessibility-audit.md`.
+- Current local browser/PWA smoke evidence is documented in `docs/manual-smoke-v0.2.md`.
 - Leaderboard remains local-only; there is no online leaderboard, backend, account system, or server-side score verification.
 
 Required automated checks before tagging `v0.2.0`:
