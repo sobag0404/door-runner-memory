@@ -4,7 +4,7 @@ Status: draft next-release plan
 Baseline: `v0.1.0` published release and current release docs
 Scope: web/PWA hardening, release governance, and verified readiness gates
 
-Current post-v0.1 hardening baseline: PR #2 through PR #12 are merged into `main` at `6c7a501dfc898ff39682bd9238a435b2043fee98`. The post-merge CI run passed on Ubuntu and Windows with dependency audit, build/type-check, lint, unit tests, e2e/smoke, and focused a11y smoke: https://github.com/sobag0404/door-runner-memory/actions/runs/27501463256.
+Current post-v0.1 hardening baseline: PR #2 through PR #16 are merged into `main` at `94c0b9114eb7b007bb3bbdab99f86f1624d1a1e5`. The post-merge CI run passed on Ubuntu and Windows with dependency audit, build/type-check, lint, unit tests, e2e/smoke, and focused a11y smoke: https://github.com/sobag0404/door-runner-memory/actions/runs/27503642353.
 
 ## Release Intent
 
@@ -28,6 +28,7 @@ Known unverified or incomplete areas carried into v0.2.0:
 
 - Android/Capacitor APK project directory is not generated in this checkout.
 - APK build, Android device smoke, and real-device performance are not verified.
+- Local Android readiness evidence is recorded in `docs/android-release.md`: Capacitor config parses, web build output exists, Capacitor CLI is available, and `cap sync android` is blocked until the Android platform is added.
 - Netlify production deploy status is not verified from the current environment.
 - Focused Playwright accessibility smoke is now a release gate, and current coverage is documented in `docs/accessibility-audit.md`, but a full accessibility audit is not complete.
 - Sound/haptic/aria effects, feedback timers, and persistence have been extracted from the Zustand store. The store still orchestrates game actions, stats calculations, achievement unlock checks, and leaderboard entry construction.
