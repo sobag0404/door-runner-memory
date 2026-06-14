@@ -1,6 +1,8 @@
 # Release Status v0.2.0 Draft
 
-Status: draft release-readiness snapshot, not a published release.
+Status: historical release-readiness snapshot for the published `v0.2.0` release.
+
+Post-v0.2.0 note: the `v0.2.0` GitHub Release was published from an earlier commit. GitHub Pages production deploy was verified afterward on current `main`, so it should be treated as post-v0.2.0 evidence unless a patch release is cut.
 
 Baseline checked:
 
@@ -45,3 +47,12 @@ Baseline checked:
 - A v0.2.0 tag should only be cut after release owner review of this status, `docs/release-checklist.md`, and the current `main` CI result.
 - If Android, Netlify, or full accessibility readiness is mentioned in release notes, it must be explicitly marked unverified unless new evidence is added before tagging.
 - If `android/` remains generated-only, decide whether to add it to `.gitignore` before running `bun x cap add android` in a source-clean branch.
+
+## Post-v0.2.0 Production Web Deploy Evidence
+
+- GitHub Pages URL: https://sobag0404.github.io/door-runner-memory/
+- Verified on `main`: `d301d8c90e0f6dd161e66310b23570f773e0c391`
+- Main CI: https://github.com/sobag0404/door-runner-memory/actions/runs/27508384809
+- Pages deploy: https://github.com/sobag0404/door-runner-memory/actions/runs/27508384794
+- Public checks returned 200 for `/`, `/manifest.json`, `/sw.js`, and generated JS/CSS assets.
+- Browser smoke confirmed the app shell loads, service worker registration uses `/door-runner-memory/sw.js`, and GitHub Pages deep-link 404 redirects back to the app base path.

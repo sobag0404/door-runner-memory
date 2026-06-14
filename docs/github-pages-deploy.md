@@ -1,8 +1,18 @@
 # GitHub Pages Deploy
 
-Status: proposed production web deploy path.
+Status: verified production web deploy path, added after the published `v0.2.0` tag.
 
 Target URL: `https://sobag0404.github.io/door-runner-memory/`
+
+Verified evidence:
+
+- Production URL: `https://sobag0404.github.io/door-runner-memory/`
+- Current `main` after Pages enablement: `d301d8c90e0f6dd161e66310b23570f773e0c391`
+- Main CI passed on Ubuntu and Windows: https://github.com/sobag0404/door-runner-memory/actions/runs/27508384809
+- Pages deploy passed: https://github.com/sobag0404/door-runner-memory/actions/runs/27508384794
+- Public checks returned 200 for `/`, `/manifest.json`, `/sw.js`, and generated JS/CSS assets.
+- Browser smoke loaded the `Door Runner` heading and registered `sw.js` from `/door-runner-memory/sw.js`.
+- A deep link under `/door-runner-memory/` returned GitHub Pages 404 at HTTP level, then `404.html` redirected the browser to the app base path.
 
 ## Source Configuration
 
@@ -24,7 +34,7 @@ Target URL: `https://sobag0404.github.io/door-runner-memory/`
 
 ## First-Run Requirement
 
-At the time this deploy lane was prepared, the GitHub Pages API returned `404` for this repository's Pages site, which means Pages was not configured yet or was not visible to the current token. The workflow uses `actions/configure-pages` with enablement turned on so the first successful run can create the Pages site when repository permissions allow it.
+At first, the GitHub Pages API returned `404` for this repository's Pages site, so the first workflow run could not deploy. Pages was then enabled for GitHub Actions deployment, and the rerun succeeded.
 
 If the workflow still fails before deployment, enable Pages in the repository settings:
 

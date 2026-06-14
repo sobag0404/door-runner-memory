@@ -12,6 +12,8 @@ v0.2.0 should move Door Runner Memory from a hardened web prototype toward a mor
 
 This plan intentionally does not claim Android APK, real-device performance, or Netlify production readiness until those checks are completed and recorded.
 
+Post-v0.2.0 update: GitHub Pages production web deploy is verified at https://sobag0404.github.io/door-runner-memory/. This is post-release evidence, not part of the original `v0.2.0` tag contents.
+
 ## Baseline From v0.1.0
 
 Verified in the v0.1.0 release docs:
@@ -52,6 +54,8 @@ Acceptance criteria:
 ### P0.2 Netlify Status Verification
 
 Establish the real production deploy state without assuming the old anonymous URL is valid.
+
+Current distribution note: GitHub Pages is now the verified free production web path. Netlify remains a separate unverified deploy target.
 
 Acceptance criteria:
 
