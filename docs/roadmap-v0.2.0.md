@@ -4,7 +4,7 @@ Status: draft next-release plan
 Baseline: `v0.1.0` published release and current release docs
 Scope: web/PWA hardening, release governance, and verified readiness gates
 
-Current post-v0.1 hardening baseline: PR #2, PR #3, and PR #4 are merged into `main` at `409f6b5b1679f4f36b72e2e8cd207be8046563e4`. The post-merge CI run passed on Ubuntu and Windows with dependency audit, build/type-check, lint, unit tests, e2e/smoke, and focused a11y smoke.
+Current post-v0.1 hardening baseline: PR #2, PR #3, PR #4, and PR #5 are merged into `main` at `faaa82f2df4cd3663243c3db29b1fc394ee973cf`. The post-merge CI run passed on Ubuntu and Windows with dependency audit, build/type-check, lint, unit tests, e2e/smoke, and focused a11y smoke.
 
 ## Release Intent
 
@@ -58,6 +58,8 @@ Acceptance criteria:
 - Record the verified production URL only after dashboard, CLI, or commit status confirms it.
 - If Netlify cannot be verified, document it as unverified and avoid release wording that implies production deployment.
 - If a deploy is created, verify the deployed app loads, static assets return 200, and the app version/status is traceable to the v0.2.0 release commit.
+
+Latest evidence note: the 2026-06-14 no-login verification found no GitHub Netlify commit status, no GitHub deployments, and no credible live Netlify URL. `docs/netlify-deploy-checklist.md` records the checked evidence; Netlify production status remains unverified.
 
 ### P0.3 Browser And PWA Release Smoke
 
