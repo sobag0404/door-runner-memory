@@ -29,7 +29,7 @@ Known unverified or incomplete areas carried into v0.2.0:
 - Android/Capacitor APK project directory is not generated in this checkout.
 - APK build, Android device smoke, and real-device performance are not verified.
 - Netlify production deploy status is not verified from the current environment.
-- Focused Playwright accessibility smoke is now a release gate, but a full accessibility audit is not complete.
+- Focused Playwright accessibility smoke is now a release gate, and current coverage is documented in `docs/accessibility-audit.md`, but a full accessibility audit is not complete.
 - Sound/haptic/aria effects, feedback timers, and persistence have been extracted from the Zustand store. The store still orchestrates game actions, stats calculations, achievement unlock checks, and leaderboard entry construction.
 - Leaderboard remains local-only; no online leaderboard/backend/server verification exists.
 
@@ -102,6 +102,7 @@ Acceptance criteria:
 - Keyboard-only navigation is checked for the main start/play/save loop.
 - Reduced-motion behavior is covered by either automated or documented manual verification.
 - Known false positives or deferred issues are documented with rationale.
+- Manual assistive-technology, contrast, focus-order, and touch-target gaps are tracked until completed.
 
 ### P1.2 Side-Effect Reduction In Game State
 
