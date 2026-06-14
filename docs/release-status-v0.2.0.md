@@ -4,8 +4,8 @@ Status: draft release-readiness snapshot, not a published release.
 
 Baseline checked:
 
-- Current `main`: `1727bdcddc8c6870340fdbc6afb577c86a7e1645`
-- Latest `main` CI: https://github.com/sobag0404/door-runner-memory/actions/runs/27505026490
+- Current `main`: `16e30bf0a5e15a25b93fd93a6de1fdc74c79c968`
+- Latest `main` CI: https://github.com/sobag0404/door-runner-memory/actions/runs/27505254848
 - CI result: green on Ubuntu and Windows with dependency audit, build/type-check, lint, unit tests, e2e/smoke, and focused accessibility smoke.
 - Merged post-v0.1 hardening scope: PR #2 through PR #20.
 
