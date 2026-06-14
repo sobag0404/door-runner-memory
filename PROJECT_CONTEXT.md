@@ -1,7 +1,7 @@
 # Door Runner Memory — Project Context
 ## Current Verified Status (post-v0.1 hardening, 2026-06-14)
 
-- Current `main`: `6c7a501dfc898ff39682bd9238a435b2043fee98` (`Merge pull request #12 from sobag0404/codex/netlify-status-after-visual`).
+- Current `main`: `16e30bf0a5e15a25b93fd93a6de1fdc74c79c968` (`Merge pull request #19 from sobag0404/codex/release-notes-v0.2`).
 - Merged hardening PRs:
   - PR #2 hardened CI/release gates, added Ubuntu + Windows CI matrix, audit gate, a11y smoke gate, Android/Netlify/roadmap docs, and extracted `gameEffects` / `feedbackTimers`.
   - PR #3 added tests-only persistence/localStorage characterization.
@@ -14,9 +14,17 @@
   - PR #10 added `docs/visual-direction.md`.
   - PR #11 added the first scoped runner scene visual polish prototype.
   - PR #12 refreshed Netlify verification evidence against the current post-visual baseline.
-- Post-merge `main` CI is green: audit, build/type-check, lint, unit tests, e2e/smoke, and focused a11y smoke passed on Ubuntu and Windows in https://github.com/sobag0404/door-runner-memory/actions/runs/27501463256.
+  - PR #13 added the v0.2 release checklist draft.
+  - PR #14 expanded focused accessibility smoke coverage.
+  - PR #15 documented the accessibility coverage matrix and manual gaps.
+  - PR #16 recorded local manual browser/PWA smoke evidence.
+  - PR #17 recorded Android readiness evidence and blockers.
+  - PR #18 drafted v0.2 release status.
+  - PR #19 drafted v0.2 release notes.
+  - PR #20 serialized Windows Playwright e2e workers to reduce hosted-runner teardown flakes.
+- Post-merge `main` CI is green: audit, build/type-check, lint, unit tests, e2e/smoke, and focused a11y smoke passed on Ubuntu and Windows in https://github.com/sobag0404/door-runner-memory/actions/runs/27505254848.
 - The automated a11y gate is a focused Playwright smoke check. A full accessibility audit is still not complete.
-- Gameplay rules, scoring, daily sequence behavior, and persisted localStorage schema/keys are not claimed to have changed in PR #2/#3/#4.
+- Gameplay rules, scoring, daily sequence behavior, and persisted localStorage schema/keys are not claimed to have changed in post-v0.1 hardening work.
 - Leaderboard remains local-only. There is no online leaderboard, backend, server-side score verification, replay protection, or account system.
 - Android/Capacitor APK build, real-device smoke, real-device performance, and Netlify production deploy remain unverified unless a later doc records evidence.
 - Netlify no-login verification found no GitHub Netlify deployment/status and no credible public production URL; production deploy remains unverified.
@@ -142,7 +150,7 @@ docs/
 ```
 
 ## Деплой
-Netlify auto-deploy: push в GitHub → Netlify билдит → деплой за ~30сек
+Netlify production deploy remains unverified: no credible public production URL, GitHub deployment, or Netlify status evidence is recorded yet.
 
 ## Security Review — известные проблемы
 
@@ -158,10 +166,10 @@ Netlify auto-deploy: push в GitHub → Netlify билдит → деплой з
 - ✅ Pure gameReducer вынесен в `src/core/game`
 
 ### Оставшиеся важные риски
-- ⚠️ DoorRunnerScene.tsx всё ещё >1000 строк, нужна дальнейшая декомпозиция
-- ⚠️ Zustand store всё ещё содержит много side effects
-- ⚠️ Нет e2e/smoke/PWA/offline/a11y тестов
-- ⚠️ APK/Android pipeline не подтверждён на реальном устройстве
+- DoorRunnerScene.tsx has been decomposed; continue keeping scene changes scoped and reviewed.
+- Zustand store still orchestrates game actions, stats, achievements, and leaderboard entry construction.
+- e2e/smoke/PWA/focused a11y tests exist and run in CI; full accessibility audit remains incomplete.
+- APK/Android pipeline is not verified on a real device or emulator.
 
 ### Безопасность
 - ✅ Локальный leaderboard только — соответствует рекомендации безопасника
@@ -182,7 +190,7 @@ Netlify auto-deploy: push в GitHub → Netlify билдит → деплой з
 ## Что ещё можно добавить (по приоритету безопасности)
 1. Декомпозиция DoorRunnerScene.tsx малыми PR
 2. Вынести side effects из Zustand store в тестируемый effects/service layer
-3. Минимальные e2e/smoke/PWA/offline/a11y проверки
+3. Maintain and expand e2e/smoke/PWA/offline/focused a11y checks without weakening release gates.
 4. Профилирование APK на реальных устройствах
 5. Архитектурная документация
 6. Документация сборки APK через Capacitor
