@@ -1,7 +1,7 @@
 # Door Runner Memory — Project Context
 ## Current Verified Status (post-v0.1 hardening, 2026-06-14)
 
-- Current `main`: `c0642fc9dd06f4a87154d20945395bc93afd794e` (`Merge pull request #9 from sobag0404/codex/stabilize-windows-playwright-teardown`).
+- Current `main`: `38ec84071e0a504328418a0711d0cb8cac1bc284` (`Merge pull request #11 from sobag0404/codex/visual-polish-prototype`).
 - Merged hardening PRs:
   - PR #2 hardened CI/release gates, added Ubuntu + Windows CI matrix, audit gate, a11y smoke gate, Android/Netlify/roadmap docs, and extracted `gameEffects` / `feedbackTimers`.
   - PR #3 added tests-only persistence/localStorage characterization.
@@ -11,7 +11,9 @@
   - PR #6 recorded Netlify verification status as docs-only evidence.
   - PR #8 documented the high-level original mobile-runner visual direction.
   - PR #9 mitigated the Windows Playwright teardown flake with Windows-CI-only timeout headroom.
-- Post-merge `main` CI is green: audit, build/type-check, lint, unit tests, e2e/smoke, and focused a11y smoke passed on Ubuntu and Windows in https://github.com/sobag0404/door-runner-memory/actions/runs/27496035021.
+  - PR #10 added `docs/visual-direction.md`.
+  - PR #11 added the first scoped runner scene visual polish prototype.
+- Post-merge `main` CI is green: audit, build/type-check, lint, unit tests, e2e/smoke, and focused a11y smoke passed on Ubuntu and Windows in https://github.com/sobag0404/door-runner-memory/actions/runs/27501163941.
 - The automated a11y gate is a focused Playwright smoke check. A full accessibility audit is still not complete.
 - Gameplay rules, scoring, daily sequence behavior, and persisted localStorage schema/keys are not claimed to have changed in PR #2/#3/#4.
 - Leaderboard remains local-only. There is no online leaderboard, backend, server-side score verification, replay protection, or account system.
@@ -34,7 +36,7 @@
 - Use this as direction, not imitation: bright readable lanes, playful urban-runner momentum, expressive door/runner feedback, and mobile-first clarity.
 - Do not copy Subway Surfers characters, logos, exact UI, proprietary assets, or recognizable level art.
 - Visual upgrades must preserve gameplay rules, scoring, daily sequence behavior, localStorage schema/keys, accessibility smoke coverage, and reduced-motion support.
-- Treat the visual refresh as a scoped future product/design lane after release gates stay green; do not combine it with architecture or deploy changes.
+- Keep visual refresh work scoped and screenshot-reviewed; do not combine it with architecture or deploy changes.
 
 ## Общее
 - **Тип:** Мобильная игра-аркада на память (Subway Surfers × Simon Says)

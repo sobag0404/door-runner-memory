@@ -4,7 +4,7 @@ Status: draft next-release plan
 Baseline: `v0.1.0` published release and current release docs
 Scope: web/PWA hardening, release governance, and verified readiness gates
 
-Current post-v0.1 hardening baseline: PR #2 through PR #9 are merged into `main` at `c0642fc9dd06f4a87154d20945395bc93afd794e`. The post-merge CI run passed on Ubuntu and Windows with dependency audit, build/type-check, lint, unit tests, e2e/smoke, and focused a11y smoke: https://github.com/sobag0404/door-runner-memory/actions/runs/27496035021.
+Current post-v0.1 hardening baseline: PR #2 through PR #11 are merged into `main` at `38ec84071e0a504328418a0711d0cb8cac1bc284`. The post-merge CI run passed on Ubuntu and Windows with dependency audit, build/type-check, lint, unit tests, e2e/smoke, and focused a11y smoke: https://github.com/sobag0404/door-runner-memory/actions/runs/27501163941.
 
 ## Release Intent
 
@@ -59,7 +59,7 @@ Acceptance criteria:
 - If Netlify cannot be verified, document it as unverified and avoid release wording that implies production deployment.
 - If a deploy is created, verify the deployed app loads, static assets return 200, and the app version/status is traceable to the v0.2.0 release commit.
 
-Latest evidence note: the 2026-06-14 no-login verification found no GitHub Netlify commit status, no GitHub deployments, and no credible live Netlify URL. `docs/netlify-deploy-checklist.md` records the checked evidence; Netlify production status remains unverified.
+Latest evidence note: the 2026-06-14 no-login verification against `38ec84071e0a504328418a0711d0cb8cac1bc284` found no GitHub Netlify commit status, no GitHub deployments, and no credible live Netlify URL. `docs/netlify-deploy-checklist.md` records the checked evidence; Netlify production status remains unverified.
 
 ### P0.3 Browser And PWA Release Smoke
 
