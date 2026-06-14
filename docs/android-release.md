@@ -8,10 +8,11 @@ This checkout now contains the Capacitor Android project in `android/`. Android 
 - App name: `Door Runner Memory`
 - Web output: `dist`
 - Android scheme: `https`
-- Native plugins configured: `SplashScreen`, `StatusBar`
+- Native plugins configured: `SplashScreen`, `StatusBar`, `SystemBars`
 - Capacitor packages present: `@capacitor/core`, `@capacitor/cli`, `@capacitor/android`, `@capacitor/ios`
 - Current scripts: `cap:sync` runs `cap sync`; `cap:open:android` runs `cap open android`
 - Vite Android target: `es2020`, to avoid unsupported modern JS syntax in older Android System WebView versions
+- System bar insets handling: disabled in Capacitor config to avoid early Android WebView safe-area CSS injection errors; layout still uses app-level safe-area CSS where supported
 
 ## Local Android Debug Evidence
 
@@ -36,6 +37,7 @@ Interpretation:
 - The API 30 emulator uses an older Android System WebView; `build.target = 'es2020'` is required so the bundle does not emit unsupported logical assignment syntax.
 - Android release readiness is still not claimed: release signing, real-device smoke, and performance checks remain open.
 - `adb screencap` produced a black image on this ATD emulator, so render evidence was taken from the attached WebView DevTools DOM instead.
+- Follow-up gameplay smoke evidence is recorded in `docs/android-smoke-v0.3.md`.
 
 ## Prerequisites
 
@@ -108,10 +110,11 @@ Use `bundleRelease` for Play Console-style distribution after signing is configu
 - [x] `bun x cap sync android` copies the current `dist/` output without Capacitor errors.
 - [x] Debug APK installs on an Android emulator.
 - [x] Home screen renders after a cold start, verified through WebView DevTools DOM on the API 30 ATD emulator.
-- [ ] Regular game starts and accepts tap/swipe input.
-- [ ] Audio, haptics, local storage, and offline behavior are smoke-tested on device.
-- [ ] App icon, app label, splash color, and status bar color match release expectations.
-- [ ] Version code/version name are set for the release being shipped.
+- [x] Regular game starts and accepts tap/click input on the emulator.
+- [x] Settings and local leaderboard persistence are smoke-tested on the emulator.
+- [ ] Swipe input, audio, haptics, and offline behavior are smoke-tested on device.
+- [ ] App icon, app label, splash color, and status bar color match final release expectations.
+- [ ] Version code/version name are set for the release being shipped; current generated defaults are `versionCode 1` and `versionName "1.0"`.
 - [ ] Release artifact is signed with the intended keystore.
 
 ## Current Gaps
@@ -119,6 +122,7 @@ Use `bundleRelease` for Play Console-style distribution after signing is configu
 - Release signing is not configured in the repository.
 - Android version code/version name policy is not documented in project metadata.
 - Android device/emulator smoke testing is not automated in CI.
+- App icon and splash assets are generated defaults, not final branded Android release art.
 - Real-device smoke and performance profiling are not verified.
 - No Play Console packaging, track, or rollout process is documented yet.
 - The first debug APK was verified on an emulator only; do not treat it as a production release artifact.
