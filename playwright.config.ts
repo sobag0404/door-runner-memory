@@ -11,6 +11,9 @@ export default defineConfig({
     timeout: 5_000,
   },
   fullyParallel: true,
+  // Windows hosted runners have shown Chromium context teardown stalls under
+  // parallel e2e load. Keep test coverage unchanged while avoiding contention.
+  workers: isWindowsCi ? 1 : undefined,
   reporter: process.env.CI ? [['list'], ['html', { open: 'never' }]] : 'list',
   use: {
     baseURL: 'http://127.0.0.1:4173',
