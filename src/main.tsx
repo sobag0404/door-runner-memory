@@ -6,7 +6,9 @@ import AppContent from './components/AppContent'
 // ─── Register Service Worker (PWA) ──────────────────────
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch((err) => {
+    const swUrl = new URL('sw.js', window.location.origin + import.meta.env.BASE_URL);
+
+    navigator.serviceWorker.register(swUrl.pathname).catch((err) => {
       console.warn('SW registration failed:', err);
     });
   });

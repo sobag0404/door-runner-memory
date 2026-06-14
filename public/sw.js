@@ -1,9 +1,11 @@
 // ─── Door Runner Memory — Service Worker ────────────────
 const CACHE_NAME = 'door-runner-v3';
+const SCOPE_URL = new URL(self.registration.scope);
+const toScopePath = (path) => new URL(path.replace(/^\/+/, ''), SCOPE_URL).pathname;
 const STATIC_ASSETS = [
-  '/',
-  '/index.html',
-  '/manifest.json',
+  SCOPE_URL.pathname,
+  toScopePath('index.html'),
+  toScopePath('manifest.json'),
 ];
 
 // Install: cache static assets
@@ -55,7 +57,7 @@ self.addEventListener('fetch', (event) => {
           if (cached) return cached;
           // For navigation requests, return index.html
           if (event.request.mode === 'navigate') {
-            return caches.match('/index.html');
+            return caches.match(toScopePath('index.html'));
           }
           return new Response('Offline', { status: 503 });
         });

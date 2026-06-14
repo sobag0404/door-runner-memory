@@ -206,9 +206,11 @@ Future art/UI polish should follow `docs/visual-direction.md`: colorful mobile-r
 
 ## Deploy
 
+GitHub Pages is the preferred free production web path. The workflow in `.github/workflows/pages.yml` builds with `GITHUB_PAGES=true` so Vite emits assets for `https://sobag0404.github.io/door-runner-memory/`.
+
 `netlify.toml` is configured for Netlify (`bun run build`, publish `dist`). Current production deploy status must be verified in Netlify after login; the old anonymous URL in `worklog.md` returns 404.
 
-Deployment verification checklist: `docs/netlify-deploy-checklist.md`.
+Deployment verification checklists: `docs/github-pages-deploy.md` and `docs/netlify-deploy-checklist.md`.
 
 Next release plan: `docs/roadmap-v0.2.0.md`. Draft v0.2 release gates live in `docs/release-checklist.md`.
 
