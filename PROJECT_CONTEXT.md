@@ -1,7 +1,7 @@
 # Door Runner Memory — Project Context
 ## Current Verified Status (post-v0.1 hardening, 2026-06-14)
 
-- Current `main`: `b4832b03adcd12f6ef8a3f31d0bbca21335e7a48` (`Merge pull request #6 from sobag0404/codex/netlify-status-verification`).
+- Current `main`: `c0642fc9dd06f4a87154d20945395bc93afd794e` (`Merge pull request #9 from sobag0404/codex/stabilize-windows-playwright-teardown`).
 - Merged hardening PRs:
   - PR #2 hardened CI/release gates, added Ubuntu + Windows CI matrix, audit gate, a11y smoke gate, Android/Netlify/roadmap docs, and extracted `gameEffects` / `feedbackTimers`.
   - PR #3 added tests-only persistence/localStorage characterization.
@@ -9,7 +9,9 @@
   - PR #5 refreshed project context/docs after hardening.
   - PR #7 fixed a flaky wrong-lane unit test expectation without production code changes.
   - PR #6 recorded Netlify verification status as docs-only evidence.
-- Post-merge `main` CI is green: audit, build/type-check, lint, unit tests, e2e/smoke, and focused a11y smoke passed on Ubuntu and Windows in https://github.com/sobag0404/door-runner-memory/actions/runs/27495057484.
+  - PR #8 documented the high-level original mobile-runner visual direction.
+  - PR #9 mitigated the Windows Playwright teardown flake with Windows-CI-only timeout headroom.
+- Post-merge `main` CI is green: audit, build/type-check, lint, unit tests, e2e/smoke, and focused a11y smoke passed on Ubuntu and Windows in https://github.com/sobag0404/door-runner-memory/actions/runs/27496035021.
 - The automated a11y gate is a focused Playwright smoke check. A full accessibility audit is still not complete.
 - Gameplay rules, scoring, daily sequence behavior, and persisted localStorage schema/keys are not claimed to have changed in PR #2/#3/#4.
 - Leaderboard remains local-only. There is no online leaderboard, backend, server-side score verification, replay protection, or account system.
@@ -27,6 +29,7 @@
 
 ### Visual Direction Notes
 
+- Detailed brief: `docs/visual-direction.md`.
 - Target feel: colorful mobile runner energy roughly inspired by Subway Surfers, adapted to the current door-memory mechanic.
 - Use this as direction, not imitation: bright readable lanes, playful urban-runner momentum, expressive door/runner feedback, and mobile-first clarity.
 - Do not copy Subway Surfers characters, logos, exact UI, proprietary assets, or recognizable level art.
