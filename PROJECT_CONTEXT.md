@@ -26,6 +26,7 @@
 - The automated a11y gate is a focused Playwright smoke check. A full accessibility audit is still not complete.
 - Gameplay rules, scoring, daily sequence behavior, and persisted localStorage schema/keys are not claimed to have changed in post-v0.1 hardening work.
 - Leaderboard remains local-only. There is no online leaderboard, backend, server-side score verification, replay protection, or account system.
+- GitHub Pages production deploy is verified post-v0.2.0 at https://sobag0404.github.io/door-runner-memory/.
 - Android/Capacitor APK build, real-device smoke, real-device performance, and Netlify production deploy remain unverified unless a later doc records evidence.
 - Netlify no-login verification found no GitHub Netlify deployment/status and no credible public production URL; production deploy remains unverified.
 
@@ -150,7 +151,7 @@ docs/
 ```
 
 ## Деплой
-Netlify production deploy remains unverified: no credible public production URL, GitHub deployment, or Netlify status evidence is recorded yet.
+GitHub Pages production deploy is verified: https://sobag0404.github.io/door-runner-memory/. Netlify production deploy remains unverified: no credible public Netlify URL, GitHub deployment, or Netlify status evidence is recorded yet.
 
 ## Security Review — известные проблемы
 

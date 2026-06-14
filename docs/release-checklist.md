@@ -8,6 +8,8 @@ Current release status: `docs/release-status-v0.1.0.md`
 Draft v0.2 status: `docs/release-status-v0.2.0.md`
 Draft v0.2 notes: `docs/release-notes-v0.2.0.md`
 
+Post-v0.2.0 production web deploy: GitHub Pages is verified at https://sobag0404.github.io/door-runner-memory/. This happened after the published `v0.2.0` tag and should be treated as post-release evidence unless a patch release is cut.
+
 ## v0.2.0 Draft Release Checklist
 
 Current baseline for v0.2 planning:
@@ -51,6 +53,7 @@ Manual browser/PWA smoke before tagging `v0.2.0`:
 
 Distribution and readiness gates for `v0.2.0`:
 
+- [x] GitHub Pages production web deploy is verified post-v0.2.0; see `docs/github-pages-deploy.md`.
 - [ ] If a Netlify production URL exists, verify `/`, `/manifest.json`, `/sw.js`, SPA fallback, generated static assets, HTTPS, HSTS, and configured headers. If no credible URL/evidence exists, record Netlify as unverified.
 - [ ] If Android release readiness is claimed, generate or verify the Android project, build an APK, run device smoke, and record device/performance notes. Otherwise record Android as unverified.
 - [ ] If full accessibility readiness is claimed, complete and record a broader accessibility audit. Otherwise state that only focused a11y smoke is automated.
