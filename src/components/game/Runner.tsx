@@ -37,7 +37,7 @@ export function RunnerDust({ pathCount, currentLane, feedback, theme }: {
   );
 }
 
-// ─── Runner (Subway Surfers style character) ──────────
+// Original arcade runner character.
 export function Runner({ pathCount, currentLane, feedback, theme }: {
   pathCount: number;
   currentLane: number;

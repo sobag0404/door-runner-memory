@@ -57,10 +57,10 @@ function Door({
     <motion.button
       onClick={() => isCurrent && onChoose(laneIdx)}
       disabled={!isCurrent || feedback !== null}
-      className="relative flex-1 flex items-center justify-center"
+      className="door-hit-target relative flex-1 flex items-center justify-center"
       style={{
         maxWidth: `${85 / pathCount}%`,
-        height: '80px',
+        height: 'clamp(68px, 9.5vh, 88px)',
       }}
       whileHover={!prefersReducedMotion() && isCurrent ? { scale: 1.06, y: -2 } : undefined}
       whileTap={isCurrent ? { scale: 0.93 } : undefined}
@@ -77,6 +77,12 @@ function Door({
       aria-label={`Door ${laneIdx + 1}${isCurrent ? ' (choose this lane)' : ''}`}
       aria-pressed={isCurrent}
     >
+      <div className="absolute -bottom-3 left-[12%] right-[12%] h-4 rounded-full blur-sm"
+        style={{
+          background: isCurrent ? `${color}80` : 'rgba(0,0,0,0.22)',
+          opacity: isCurrent ? 0.75 : 0.35,
+        }} />
+
       {/* Door frame (outer) - themed frame */}
       <div className="absolute inset-0 rounded-t-[40%] rounded-b-lg"
         style={{
@@ -106,6 +112,7 @@ function Door({
         <div className="absolute inset-x-[3px] top-[30%] bottom-[3px] rounded-b-md"
           style={doorBg}
         >
+          <div className="absolute inset-x-1 top-1 h-1/4 rounded-md bg-white/20" />
           {/* Panel inset top */}
           <div className="absolute inset-x-1 top-1 bottom-[45%] border-2 rounded-md"
             style={{ borderColor: theme.doorPanelBorder }} />
@@ -148,7 +155,7 @@ function Door({
         style={{
           textShadow: isNeon
             ? `0 0 8px ${theme.accent}, 0 2px 4px rgba(0,0,0,0.4)`
-            : '0 2px 4px rgba(0,0,0,0.4)',
+            : '0 2px 4px rgba(0,0,0,0.55), 0 0 10px rgba(0,0,0,0.22)',
         }}>
         {laneIdx + 1}
       </span>
