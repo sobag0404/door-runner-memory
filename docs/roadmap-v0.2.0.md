@@ -4,7 +4,7 @@ Status: draft next-release plan
 Baseline: `v0.1.0` published release and current release docs
 Scope: web/PWA hardening, release governance, and verified readiness gates
 
-Current post-v0.1 hardening baseline: PR #2, PR #3, PR #4, and PR #5 are merged into `main` at `faaa82f2df4cd3663243c3db29b1fc394ee973cf`. The post-merge CI run passed on Ubuntu and Windows with dependency audit, build/type-check, lint, unit tests, e2e/smoke, and focused a11y smoke.
+Current post-v0.1 hardening baseline: PR #2, PR #3, PR #4, PR #5, PR #6, and PR #7 are merged into `main` at `b4832b03adcd12f6ef8a3f31d0bbca21335e7a48`. The post-merge CI run passed on Ubuntu and Windows with dependency audit, build/type-check, lint, unit tests, e2e/smoke, and focused a11y smoke: https://github.com/sobag0404/door-runner-memory/actions/runs/27495057484.
 
 ## Release Intent
 
@@ -158,6 +158,17 @@ Acceptance criteria:
 - Changes are small, documented, and covered by unit or e2e tests as appropriate.
 - No scoring, sequence generation, daily challenge, or localStorage schema change ships without explicit release approval.
 - Visible copy changes remain consistent across RU/EN localization.
+
+### P2.4 Visual Direction Spike
+
+Define an original art direction for a brighter mobile runner presentation, using Subway Surfers only as a broad energy reference.
+
+Acceptance criteria:
+
+- A short visual brief defines color, camera/road feel, door readability, runner feedback, HUD density, and reduced-motion behavior.
+- Reference language avoids copying Subway Surfers characters, logos, exact UI, proprietary assets, or recognizable level art.
+- Any implementation plan starts with low-risk CSS/component prototypes and screenshot checks across desktop and mobile.
+- Door readability, keyboard/touch input clarity, a11y smoke coverage, and performance budget remain release constraints.
 
 ## Non-Goals For v0.2.0
 

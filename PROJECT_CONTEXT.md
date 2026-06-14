@@ -1,16 +1,20 @@
 # Door Runner Memory — Project Context
 ## Current Verified Status (post-v0.1 hardening, 2026-06-14)
 
-- Current `main`: `409f6b5b1679f4f36b72e2e8cd207be8046563e4` (`Merge pull request #4 from sobag0404/codex/game-persistence-extraction`).
+- Current `main`: `b4832b03adcd12f6ef8a3f31d0bbca21335e7a48` (`Merge pull request #6 from sobag0404/codex/netlify-status-verification`).
 - Merged hardening PRs:
   - PR #2 hardened CI/release gates, added Ubuntu + Windows CI matrix, audit gate, a11y smoke gate, Android/Netlify/roadmap docs, and extracted `gameEffects` / `feedbackTimers`.
   - PR #3 added tests-only persistence/localStorage characterization.
   - PR #4 extracted `src/store/gamePersistence.ts` from `src/store/gameStore.ts`.
-- Post-merge `main` CI is green: audit, build/type-check, lint, unit tests, e2e/smoke, and focused a11y smoke passed on Ubuntu and Windows.
+  - PR #5 refreshed project context/docs after hardening.
+  - PR #7 fixed a flaky wrong-lane unit test expectation without production code changes.
+  - PR #6 recorded Netlify verification status as docs-only evidence.
+- Post-merge `main` CI is green: audit, build/type-check, lint, unit tests, e2e/smoke, and focused a11y smoke passed on Ubuntu and Windows in https://github.com/sobag0404/door-runner-memory/actions/runs/27495057484.
 - The automated a11y gate is a focused Playwright smoke check. A full accessibility audit is still not complete.
 - Gameplay rules, scoring, daily sequence behavior, and persisted localStorage schema/keys are not claimed to have changed in PR #2/#3/#4.
 - Leaderboard remains local-only. There is no online leaderboard, backend, server-side score verification, replay protection, or account system.
 - Android/Capacitor APK build, real-device smoke, real-device performance, and Netlify production deploy remain unverified unless a later doc records evidence.
+- Netlify no-login verification found no GitHub Netlify deployment/status and no credible public production URL; production deploy remains unverified.
 
 ### Current Architecture Boundary Notes
 
@@ -20,6 +24,14 @@
 - `src/store/gamePersistence.ts` owns persisted settings, best scores, stats, achievements, and local leaderboard reads/writes through the existing localStorage keys.
 - `src/store/gameStore.ts` still orchestrates game start/choice/timeout/reset flows, computes stats updates, checks achievements, constructs leaderboard entries, and calls the extracted effects/timers/persistence helpers.
 - Scalar setting keys `drm_lang`, `drm_theme`, and `drm_soundPack` still live in their existing i18n/theme/sound helpers and are mirrored through `gamePersistence` settings helpers.
+
+### Visual Direction Notes
+
+- Target feel: colorful mobile runner energy roughly inspired by Subway Surfers, adapted to the current door-memory mechanic.
+- Use this as direction, not imitation: bright readable lanes, playful urban-runner momentum, expressive door/runner feedback, and mobile-first clarity.
+- Do not copy Subway Surfers characters, logos, exact UI, proprietary assets, or recognizable level art.
+- Visual upgrades must preserve gameplay rules, scoring, daily sequence behavior, localStorage schema/keys, accessibility smoke coverage, and reduced-motion support.
+- Treat the visual refresh as a scoped future product/design lane after release gates stay green; do not combine it with architecture or deploy changes.
 
 ## Общее
 - **Тип:** Мобильная игра-аркада на память (Subway Surfers × Simon Says)
