@@ -24,9 +24,9 @@ Target URL: `https://sobag0404.github.io/door-runner-memory/`
 
 ## First-Run Requirement
 
-At the time this deploy lane was prepared, the GitHub Pages API returned `404` for this repository's Pages site, which means Pages was not configured yet or was not visible to the current token.
+At the time this deploy lane was prepared, the GitHub Pages API returned `404` for this repository's Pages site, which means Pages was not configured yet or was not visible to the current token. The workflow uses `actions/configure-pages` with enablement turned on so the first successful run can create the Pages site when repository permissions allow it.
 
-If the first Pages workflow fails before deployment, enable Pages in the repository settings:
+If the workflow still fails before deployment, enable Pages in the repository settings:
 
 1. Open GitHub repository settings.
 2. Go to Pages.
