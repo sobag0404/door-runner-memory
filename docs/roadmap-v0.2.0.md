@@ -4,7 +4,7 @@ Status: draft next-release plan
 Baseline: `v0.1.0` published release and current release docs
 Scope: web/PWA hardening, release governance, and verified readiness gates
 
-Current post-v0.1 hardening baseline: PR #2, PR #3, PR #4, PR #5, PR #6, and PR #7 are merged into `main` at `b4832b03adcd12f6ef8a3f31d0bbca21335e7a48`. The post-merge CI run passed on Ubuntu and Windows with dependency audit, build/type-check, lint, unit tests, e2e/smoke, and focused a11y smoke: https://github.com/sobag0404/door-runner-memory/actions/runs/27495057484.
+Current post-v0.1 hardening baseline: PR #2 through PR #9 are merged into `main` at `c0642fc9dd06f4a87154d20945395bc93afd794e`. The post-merge CI run passed on Ubuntu and Windows with dependency audit, build/type-check, lint, unit tests, e2e/smoke, and focused a11y smoke: https://github.com/sobag0404/door-runner-memory/actions/runs/27496035021.
 
 ## Release Intent
 
@@ -161,7 +161,7 @@ Acceptance criteria:
 
 ### P2.4 Visual Direction Spike
 
-Define an original art direction for a brighter mobile runner presentation, using Subway Surfers only as a broad energy reference.
+Define an original art direction for a brighter mobile runner presentation, using Subway Surfers only as a broad energy reference. The current brief lives in `docs/visual-direction.md`.
 
 Acceptance criteria:
 
