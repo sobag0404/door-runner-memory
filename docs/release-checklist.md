@@ -59,7 +59,7 @@ Distribution and readiness gates for `v0.2.0`:
 - [x] GitHub Pages production web deploy is verified post-v0.2.0; see `docs/github-pages-deploy.md`.
 - [x] Android debug APK build is covered by GitHub Actions through the Linux `android-debug-build` job.
 - [ ] If a Netlify production URL exists, verify `/`, `/manifest.json`, `/sw.js`, SPA fallback, generated static assets, HTTPS, HSTS, and configured headers. If no credible URL/evidence exists, record Netlify as unverified.
-- [ ] If Android release readiness is claimed, configure release signing/versioning, run real-device smoke, and record device/performance notes. Otherwise record Android as debug-only/emulator-verified.
+- [ ] If Android release readiness is claimed, configure release signing, apply the documented Android versioning policy, run real-device smoke, and record device/performance notes. Otherwise record Android as debug-only/emulator-verified.
 - [ ] If full accessibility readiness is claimed, complete and record a broader accessibility audit. Otherwise state that only focused a11y smoke is automated.
 - [ ] Review `docs/accessibility-audit.md` before writing v0.2 accessibility claims.
 - [ ] Confirm no gameplay rules, scoring, daily sequence, or persisted localStorage schema/key changes are included without explicit release approval and regression tests.
@@ -127,7 +127,7 @@ Added after the published `v0.1.0` baseline:
 - [ ] Themes keep sufficient contrast for doors, HUD, and feedback.
 - [ ] Reduced-motion preference disables nonessential effects.
 - [ ] 10-minute mobile session has no crash or visible memory growth.
-- [ ] Release-signed APK/AAB, real-device smoke, and performance profiling are completed before an Android release.
+- [ ] Release-signed APK/AAB, documented Android versionCode/versionName, real-device smoke, and performance profiling are completed before an Android release.
 
 ## GitHub Release Steps
 
