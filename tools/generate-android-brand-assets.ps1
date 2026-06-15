@@ -111,6 +111,57 @@ function Draw-BrandScene($graphics, [int]$width, [int]$height, [bool]$splash) {
     }
 }
 
+function Draw-IconForeground($graphics, [int]$width, [int]$height) {
+    $road = [System.Drawing.PointF[]]@(
+        [System.Drawing.PointF]::new($width * 0.32, $height * 0.80),
+        [System.Drawing.PointF]::new($width * 0.43, $height * 0.30),
+        [System.Drawing.PointF]::new($width * 0.57, $height * 0.30),
+        [System.Drawing.PointF]::new($width * 0.68, $height * 0.80)
+    )
+    $roadBrush = [System.Drawing.Drawing2D.LinearGradientBrush]::new(
+        [System.Drawing.Rectangle]::new(0, 0, $width, $height),
+        [System.Drawing.ColorTranslator]::FromHtml('#19345F'),
+        [System.Drawing.ColorTranslator]::FromHtml('#2A174D'),
+        [System.Drawing.Drawing2D.LinearGradientMode]::Vertical)
+    $graphics.FillPolygon($roadBrush, $road)
+    $roadBrush.Dispose()
+
+    $lanePen = [System.Drawing.Pen]::new([System.Drawing.Color]::FromArgb(210, 255, 245, 160), [Math]::Max(2, $width * 0.01))
+    $graphics.DrawLine($lanePen, $width * 0.45, $height * 0.34, $width * 0.41, $height * 0.75)
+    $graphics.DrawLine($lanePen, $width * 0.55, $height * 0.34, $width * 0.59, $height * 0.75)
+    $lanePen.Dispose()
+
+    $doorColors = @('#FFD166', '#7CFFB2', '#FF4D8D')
+    for ($i = 0; $i -lt 3; $i++) {
+        $cx = $width * (0.36 + ($i * 0.14))
+        $doorW = $width * 0.12
+        $doorH = $height * 0.28
+        $x = $cx - ($doorW / 2)
+        $y = $height * 0.29
+        $shadow = New-Brush '#000000'
+        $shadow.Color = [System.Drawing.Color]::FromArgb(70, 0, 0, 0)
+        Draw-RoundedRect $graphics $shadow ($x + $width * 0.01) ($y + $height * 0.015) $doorW $doorH ($width * 0.018)
+        $shadow.Dispose()
+        $door = New-Brush $doorColors[$i]
+        Draw-RoundedRect $graphics $door $x $y $doorW $doorH ($width * 0.018)
+        $door.Dispose()
+        $innerPen = [System.Drawing.Pen]::new([System.Drawing.Color]::FromArgb(170, 255, 255, 255), [Math]::Max(1, $width * 0.007))
+        $graphics.DrawRectangle($innerPen, $x + $doorW * 0.18, $y + $doorH * 0.16, $doorW * 0.64, $doorH * 0.68)
+        $innerPen.Dispose()
+        $knob = New-Brush '#24344D'
+        $graphics.FillEllipse($knob, $x + $doorW * 0.67, $y + $doorH * 0.52, $doorW * 0.12, $doorW * 0.12)
+        $knob.Dispose()
+    }
+
+    $runner = New-Brush '#FFFFFF'
+    $graphics.FillEllipse($runner, $width * 0.43, $height * 0.66, $width * 0.14, $width * 0.14)
+    $runner.Dispose()
+    $runnerAccent = New-Brush '#2A174D'
+    $graphics.FillEllipse($runnerAccent, $width * 0.47, $height * 0.695, $width * 0.024, $width * 0.024)
+    $graphics.FillEllipse($runnerAccent, $width * 0.515, $height * 0.695, $width * 0.024, $width * 0.024)
+    $runnerAccent.Dispose()
+}
+
 function Write-Icon($path, [int]$size, [bool]$round) {
     $canvas = New-Canvas $size $size
     $bmp = $canvas[0]
@@ -135,6 +186,35 @@ function Write-Icon($path, [int]$size, [bool]$round) {
     $bmp.Dispose()
 }
 
+function Write-ForegroundIcon($path, [int]$size) {
+    $canvas = New-Canvas $size $size
+    $bmp = $canvas[0]
+    $g = $canvas[1]
+    $g.Clear([System.Drawing.Color]::Transparent)
+    Draw-IconForeground $g $size $size
+    Save-Png $bmp $path
+    $g.Dispose()
+    $bmp.Dispose()
+}
+
+function Test-ForegroundIcon($path, [int]$expectedSize) {
+    $bmp = [System.Drawing.Bitmap]::FromFile($path)
+    try {
+        if ($bmp.Width -ne $expectedSize -or $bmp.Height -ne $expectedSize) {
+            throw "Unexpected foreground size for $path"
+        }
+        $last = $expectedSize - 1
+        $points = @(@(0, 0), @($last, 0), @(0, $last), @($last, $last))
+        foreach ($point in $points) {
+            if ($bmp.GetPixel($point[0], $point[1]).A -ne 0) {
+                throw "Foreground corner is not transparent for $path"
+            }
+        }
+    } finally {
+        $bmp.Dispose()
+    }
+}
+
 function Write-Splash($path, [int]$width, [int]$height) {
     $canvas = New-Canvas $width $height
     $bmp = $canvas[0]
@@ -157,7 +237,10 @@ foreach ($entry in $icons.GetEnumerator()) {
     $dir = Join-Path $res $entry.Key
     Write-Icon (Join-Path $dir 'ic_launcher.png') $entry.Value $false
     Write-Icon (Join-Path $dir 'ic_launcher_round.png') $entry.Value $true
-    Write-Icon (Join-Path $dir 'ic_launcher_foreground.png') ([int]($entry.Value * 2.25)) $false
+    $foregroundPath = Join-Path $dir 'ic_launcher_foreground.png'
+    $foregroundSize = [int]($entry.Value * 2.25)
+    Write-ForegroundIcon $foregroundPath $foregroundSize
+    Test-ForegroundIcon $foregroundPath $foregroundSize
 }
 
 $splashes = @{
