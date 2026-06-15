@@ -54,10 +54,11 @@ adb -s emulator-5554 forward tcp:9222 localabstract:webview_devtools_remote_<pid
 - App icon and splash assets are still generated defaults; they are not final branded Android release art.
 - `capacitor.config.json` disables Capacitor `SystemBars.insetsHandling` to avoid early WebView safe-area CSS injection errors on the API 30 emulator.
 - Debug signing only. Android versioning/signing policy is documented, but no release keystore, signed APK/AAB, or Play Store artifact is configured.
+- Real-device smoke procedure and evidence template: `docs/android-real-device-smoke.md`.
 
 ## Remaining Gaps
 
-- No real-device smoke yet.
+- No real-device smoke evidence yet.
 - No Android performance profiling yet.
 - No release keystore, signed release artifact, or Play Store track process yet.
 - No Play Store track or rollout process yet.
