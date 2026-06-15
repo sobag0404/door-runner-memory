@@ -25,6 +25,7 @@ Current baseline for v0.2 planning:
 - Current accessibility coverage and manual gaps are documented in `docs/accessibility-audit.md`.
 - Current local browser/PWA smoke evidence is documented in `docs/manual-smoke-v0.2.md`.
 - Current Android readiness evidence and blockers are documented in `docs/android-release.md`.
+- Real-device Android smoke procedure and evidence template: `docs/android-real-device-smoke.md`.
 - Leaderboard remains local-only; there is no online leaderboard, backend, account system, or server-side score verification.
 
 Required automated checks before tagging `v0.2.0`:
@@ -60,6 +61,7 @@ Distribution and readiness gates for `v0.2.0`:
 - [x] Android debug APK build is covered by GitHub Actions through the Linux `android-debug-build` job.
 - [ ] If a Netlify production URL exists, verify `/`, `/manifest.json`, `/sw.js`, SPA fallback, generated static assets, HTTPS, HSTS, and configured headers. If no credible URL/evidence exists, record Netlify as unverified.
 - [ ] If Android release readiness is claimed, configure release signing, apply the documented Android versioning/signing policy, produce a signed APK/AAB, run real-device smoke, and record artifact/device/performance notes. Otherwise record Android as debug-only/emulator-verified.
+- [ ] Review `docs/android-real-device-smoke.md` and record physical-device model, Android/WebView versions, artifact type, CI run, functional smoke, logcat scan, and performance notes before claiming Android release readiness.
 - [ ] Confirm Android signing keys, `keystore.properties`, Play service account JSON, signing passwords, and upload credentials are not committed.
 - [ ] If full accessibility readiness is claimed, complete and record a broader accessibility audit. Otherwise state that only focused a11y smoke is automated.
 - [ ] Review `docs/accessibility-audit.md` before writing v0.2 accessibility claims.
@@ -128,6 +130,7 @@ Added after the published `v0.1.0` baseline:
 - [ ] Themes keep sufficient contrast for doors, HUD, and feedback.
 - [ ] Reduced-motion preference disables nonessential effects.
 - [ ] 10-minute mobile session has no crash or visible memory growth.
+- [ ] Real-device Android smoke is recorded with startup, input latency, long-session, battery, and thermal observations.
 - [ ] Release-signed APK/AAB, documented Android versionCode/versionName, signing approach, artifact path, real-device smoke, and performance profiling are completed before an Android release.
 
 ## GitHub Release Steps
