@@ -40,6 +40,7 @@ Interpretation:
 - `adb screencap` produced a black image on this ATD emulator, so render evidence was taken from the attached WebView DevTools DOM instead.
 - Follow-up gameplay smoke evidence is recorded in `docs/android-smoke-v0.3.md`.
 - Real-device smoke procedure and evidence template: `docs/android-real-device-smoke.md`.
+- Android performance profile procedure and evidence template: `docs/android-performance-profile.md`.
 
 ## Prerequisites
 
@@ -177,6 +178,7 @@ High-level local signing flow:
 - [x] Regular game starts and accepts tap/click input on the emulator.
 - [x] Settings and local leaderboard persistence are smoke-tested on the emulator.
 - [ ] Real-device smoke evidence is recorded with device model, Android/WebView versions, artifact type, CI run, logcat scan, and performance notes.
+- [ ] Real-device performance profile is recorded with startup, input latency, 10-minute session, jank, memory, battery, thermal, and runtime error observations.
 - [ ] Swipe input, audio, haptics, and offline behavior are smoke-tested on device.
 - [ ] App icon, app label, splash color, and status bar color match final release expectations.
 - [ ] Version code/version name are set for the release being shipped according to the Android versioning policy above.
@@ -192,5 +194,6 @@ High-level local signing flow:
 - App icon and splash assets are generated defaults, not final branded Android release art.
 - Real-device smoke and performance profiling are not verified.
 - Real-device smoke has a procedure/template in `docs/android-real-device-smoke.md`, but no physical-device evidence has been recorded.
+- Android performance profiling has a procedure/template in `docs/android-performance-profile.md`, but no physical-device profile has been recorded.
 - No Play Console packaging, track, or rollout process is documented yet.
 - The first debug APK was verified on an emulator only; do not treat it as a production release artifact.

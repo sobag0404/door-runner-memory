@@ -73,7 +73,7 @@ adb -s <device-id> logcat -d | Select-String 'DoorRunner|Capacitor|chromium|Andr
 
 ## Performance Notes
 
-Record observations from a physical device, not an emulator.
+Record observations from a physical device, not an emulator. Use `docs/android-performance-profile.md` for a fuller profiling pass.
 
 - Cold launch time:
 - Warm launch time:
