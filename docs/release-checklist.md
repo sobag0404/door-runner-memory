@@ -28,6 +28,7 @@ Current baseline for v0.2 planning:
 - Real-device Android smoke procedure and evidence template: `docs/android-real-device-smoke.md`.
 - Android performance profiling procedure and evidence template: `docs/android-performance-profile.md`.
 - Play Store/internal testing process template: `docs/android-play-testing.md`.
+- Android icon/splash branding checklist: `docs/android-icon-splash.md`.
 - Leaderboard remains local-only; there is no online leaderboard, backend, account system, or server-side score verification.
 
 Required automated checks before tagging `v0.2.0`:
@@ -66,6 +67,8 @@ Distribution and readiness gates for `v0.2.0`:
 - [ ] Review `docs/android-real-device-smoke.md` and record physical-device model, Android/WebView versions, artifact type, CI run, functional smoke, logcat scan, and performance notes before claiming Android release readiness.
 - [ ] Review `docs/android-performance-profile.md` and record startup time, input latency, 10-minute session result, jank, memory, battery, thermal, and runtime error observations before claiming Android performance readiness.
 - [ ] Review `docs/android-play-testing.md` and record signed AAB upload, track, versionCode/versionName, commit/tag, CI run, artifact hash, and tester install result before claiming Play distribution readiness.
+- [ ] Review `docs/android-icon-splash.md` and record original launcher icon/splash asset provenance, screenshots, and contrast/readability notes before claiming Android branding readiness.
+- [ ] Confirm generated/default Android icon and splash placeholders are replaced or explicitly accepted as non-release placeholders before signed APK/AAB or Play/internal testing claims.
 - [ ] Confirm the Android `versionCode` is unused in Play Console before upload.
 - [ ] Confirm Play App Signing/upload-key status, store listing, app content, data safety, privacy, and app access checks are reviewed before any testing-track submission.
 - [ ] Confirm internal testing audience is documented without personal emails, and any testing release is described as internal-only until production rollout evidence exists.
@@ -135,6 +138,7 @@ Added after the published `v0.1.0` baseline:
 - [ ] BackgroundParticles does not dominate CPU on mobile viewport.
 - [ ] VFX effects remain readable and do not obscure doors/HUD.
 - [ ] Themes keep sufficient contrast for doors, HUD, and feedback.
+- [ ] Android launcher icon, adaptive icon, round icon, splash assets, app label, and status/system bar colors are reviewed against the visual direction.
 - [ ] Reduced-motion preference disables nonessential effects.
 - [ ] 10-minute mobile session has no crash or visible memory growth.
 - [ ] Real-device Android smoke is recorded with startup, input latency, long-session, battery, and thermal observations.

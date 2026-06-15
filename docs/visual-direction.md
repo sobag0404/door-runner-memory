@@ -64,6 +64,12 @@ Subway Surfers is only a broad energy reference: saturated color, readable forwa
 - Keep visual implementation PRs small enough for screenshot review.
 - Prefer CSS/component-level prototypes before larger scene restructuring.
 
+## Android Packaging Art
+
+- Launcher icon and splash art must be original Door Runner Memory branding, generated specifically for this project, created in-house, or licensed for this project with provenance recorded.
+- Android icon/splash work may use the same broad arcade energy reference as the app, but must not copy Subway Surfers characters, logos, coins, hoverboards, track layouts, graffiti treatments, HUD layout, or recognizable environment art.
+- Generated/default Android assets are acceptable for debug builds only and must not be described as final branding.
+
 ## Acceptance Criteria For Future Visual PRs
 
 - Desktop and mobile screenshots are attached or linked for the changed screens.

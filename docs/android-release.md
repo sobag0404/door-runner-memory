@@ -42,6 +42,7 @@ Interpretation:
 - Real-device smoke procedure and evidence template: `docs/android-real-device-smoke.md`.
 - Android performance profile procedure and evidence template: `docs/android-performance-profile.md`.
 - Play Store/internal testing track process template: `docs/android-play-testing.md`.
+- Android icon/splash branding checklist: `docs/android-icon-splash.md`.
 
 ## Prerequisites
 
@@ -182,6 +183,7 @@ High-level local signing flow:
 - [ ] Real-device performance profile is recorded with startup, input latency, 10-minute session, jank, memory, battery, thermal, and runtime error observations.
 - [ ] Swipe input, audio, haptics, and offline behavior are smoke-tested on device.
 - [ ] App icon, app label, splash color, and status bar color match final release expectations.
+- [ ] Android launcher icon and splash evidence is recorded according to `docs/android-icon-splash.md`.
 - [ ] Version code/version name are set for the release being shipped according to the Android versioning policy above.
 - [ ] Release artifact is signed with the intended keystore.
 - [ ] Release artifact type, path, commit/tag, CI run, signing approach, real-device smoke, and performance notes are recorded.
@@ -194,6 +196,7 @@ High-level local signing flow:
 - Android signing policy and ignore rules are documented, but no release keystore, signed APK, or signed AAB has been created or verified.
 - Android debug APK build is automated in CI; emulator gameplay smoke remains local/manual.
 - App icon and splash assets are generated defaults, not final branded Android release art.
+- Android icon/splash branding checklist is documented in `docs/android-icon-splash.md`, but final reviewed assets and screenshots are not recorded.
 - Real-device smoke and performance profiling are not verified.
 - Real-device smoke has a procedure/template in `docs/android-real-device-smoke.md`, but no physical-device evidence has been recorded.
 - Android performance profiling has a procedure/template in `docs/android-performance-profile.md`, but no physical-device profile has been recorded.
