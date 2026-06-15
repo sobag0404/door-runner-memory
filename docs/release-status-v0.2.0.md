@@ -2,7 +2,7 @@
 
 Status: historical release-readiness snapshot for the published `v0.2.0` release.
 
-Post-v0.2.0 note: the `v0.2.0` GitHub Release was published from an earlier commit. GitHub Pages production deploy and the first Android debug APK build/install/launch evidence were verified afterward on current `main` work, so they should be treated as post-v0.2.0 evidence unless a patch release is cut.
+Post-v0.2.0 note: the `v0.2.0` GitHub Release was published from an earlier commit. GitHub Pages production deploy, Android debug APK build/install/launch evidence, and Android debug CI build coverage were verified afterward on current `main` work, so they should be treated as post-v0.2.0 evidence unless a patch release is cut.
 
 Baseline checked:
 
@@ -13,7 +13,7 @@ Baseline checked:
 
 ## Completed Since v0.1.0
 
-- CI hardening: Ubuntu and Windows matrix, dependency audit, build/type-check, lint, unit, e2e/smoke, and focused a11y smoke gates.
+- CI hardening: Ubuntu and Windows matrix, dependency audit, build/type-check, lint, unit, e2e/smoke, focused a11y smoke gates, and post-v0.2 Android debug build coverage.
 - Focused accessibility smoke expanded across home/game, settings, save-score dialog, leaderboard, mobile viewport, aria-live, keyboard flow, and reduced-motion controls.
 - Accessibility coverage matrix added in `docs/accessibility-audit.md`.
 - Manual local browser/PWA smoke evidence recorded in `docs/manual-smoke-v0.2.md`.
@@ -30,7 +30,7 @@ Baseline checked:
 
 - Release-candidate CI is green, and the release tag should point at the final approved commit after any docs-only cleanup merges.
 - Local browser/PWA smoke evidence covers desktop home, regular game start, tap/click lane input, keyboard lane input, score save, local leaderboard, settings reload persistence, mobile viewport, `/manifest.json`, `/sw.js`, and SPA fallback endpoint availability.
-- Android config evidence covers Capacitor config parsing, `dist` build output, Capacitor CLI availability, absent `android/` project, and the expected `cap sync android` blocker before platform generation.
+- Android evidence covers the committed Capacitor Android project, debug APK build, emulator install/launch smoke, settings/local leaderboard persistence smoke, and post-v0.2 CI debug build coverage.
 - No release doc claims gameplay, scoring, daily sequence, or persisted localStorage schema/key changes.
 - Leaderboard remains local-only.
 
@@ -61,6 +61,7 @@ Baseline checked:
 
 - Capacitor Android project is committed in `android/`.
 - Debug APK builds at `android/app/build/outputs/apk/debug/app-debug.apk`.
+- GitHub Actions includes a Linux Android debug build lane for web build, Capacitor sync, and Gradle `assembleDebug`.
 - The APK installs and launches on the `DoorRunner_API30_ATD` emulator.
 - WebView DevTools DOM confirmed the home screen renders at `https://localhost/`.
 - Android release signing, real-device smoke, and performance profiling remain unverified.

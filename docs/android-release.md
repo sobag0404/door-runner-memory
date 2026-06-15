@@ -13,6 +13,7 @@ This checkout now contains the Capacitor Android project in `android/`. Android 
 - Current scripts: `cap:sync` runs `cap sync`; `cap:open:android` runs `cap open android`
 - Vite Android target: `es2020`, to avoid unsupported modern JS syntax in older Android System WebView versions
 - System bar insets handling: disabled in Capacitor config to avoid early Android WebView safe-area CSS injection errors; layout still uses app-level safe-area CSS where supported
+- CI coverage: GitHub Actions runs a Linux `android-debug-build` lane with web build, Capacitor sync, and Gradle `assembleDebug`
 
 ## Local Android Debug Evidence
 
@@ -108,6 +109,7 @@ Use `bundleRelease` for Play Console-style distribution after signing is configu
 - [x] `bun install --frozen-lockfile` completes without lockfile changes.
 - [x] `bun run build` produces fresh `dist/` assets.
 - [x] `bun x cap sync android` copies the current `dist/` output without Capacitor errors.
+- [x] GitHub Actions builds the debug APK with Gradle on Ubuntu.
 - [x] Debug APK installs on an Android emulator.
 - [x] Home screen renders after a cold start, verified through WebView DevTools DOM on the API 30 ATD emulator.
 - [x] Regular game starts and accepts tap/click input on the emulator.
@@ -121,7 +123,7 @@ Use `bundleRelease` for Play Console-style distribution after signing is configu
 
 - Release signing is not configured in the repository.
 - Android version code/version name policy is not documented in project metadata.
-- Android device/emulator smoke testing is not automated in CI.
+- Android debug APK build is automated in CI; emulator gameplay smoke remains local/manual.
 - App icon and splash assets are generated defaults, not final branded Android release art.
 - Real-device smoke and performance profiling are not verified.
 - No Play Console packaging, track, or rollout process is documented yet.

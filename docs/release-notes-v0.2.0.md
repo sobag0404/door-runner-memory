@@ -2,7 +2,7 @@
 
 Status: draft notes for a future `v0.2.0` tag. This document does not publish the release.
 
-Post-v0.2.0 note: the published `v0.2.0` tag did not include the later Android project commit. Current `main` now contains a committed Capacitor Android project and emulator-verified debug APK evidence; release signing, real-device smoke, and performance profiling remain open.
+Post-v0.2.0 note: the published `v0.2.0` tag did not include the later Android project commit. Current `main` now contains a committed Capacitor Android project, emulator-verified debug APK evidence, and Android debug CI build coverage; release signing, real-device smoke, and performance profiling remain open.
 
 Baseline for these notes:
 
@@ -13,10 +13,10 @@ Baseline for these notes:
 ## Highlights
 
 - Release governance is now explicit for v0.2 planning: checklist, roadmap, release status, manual smoke evidence, Android notes, Netlify notes, accessibility matrix, and visual direction docs are all tracked.
-- CI now runs on Ubuntu and Windows with dependency audit, build/type-check, lint, unit tests, e2e/smoke, and focused accessibility smoke.
+- CI now runs web quality gates on Ubuntu and Windows with dependency audit, build/type-check, lint, unit tests, e2e/smoke, and focused accessibility smoke; post-v0.2 work adds a Linux Android debug build lane.
 - Manual local browser/PWA smoke evidence is recorded for desktop, mobile viewport, settings persistence, local leaderboard, manifest, service worker script, and SPA fallback endpoint availability.
 - Focused accessibility smoke now covers the main home/game path, settings, score save dialog, leaderboard, mobile viewport, aria-live feedback, keyboard flow, and reduced-motion game controls.
-- Android readiness is documented honestly: Capacitor config and web build output are verified, but the native Android project and APK/device checks are still not complete.
+- Android readiness is documented honestly: the native Android project, debug APK build, emulator smoke, and CI debug build are verified after v0.2, but release signing, real-device smoke, and performance profiling are still not complete.
 - Netlify production status is documented honestly: no credible public production URL, GitHub deployment, or Netlify status evidence is currently verified.
 
 ## Quality And Architecture

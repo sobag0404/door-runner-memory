@@ -61,4 +61,4 @@ adb -s emulator-5554 forward tcp:9222 localabstract:webview_devtools_remote_<pid
 - No Android performance profiling yet.
 - No release signing/versioning policy yet.
 - No Play Store track or rollout process yet.
-- Android Gradle `assembleDebug` is not yet part of GitHub Actions; add it as a separate CI lane after confirming runner setup and cache impact.
+- Android Gradle `assembleDebug` is covered by the Linux CI lane after the Android debug build workflow update; emulator gameplay smoke remains local/manual.

@@ -12,7 +12,7 @@ v0.2.0 should move Door Runner Memory from a hardened web prototype toward a mor
 
 This plan intentionally does not claim Android APK, real-device performance, or Netlify production readiness until those checks are completed and recorded.
 
-Post-v0.2.0 update: GitHub Pages production web deploy is verified at https://sobag0404.github.io/door-runner-memory/. The Capacitor Android project is now committed and a debug APK has been built, installed, launched, and checked on the `DoorRunner_API30_ATD` emulator. This is post-release evidence, not part of the original `v0.2.0` tag contents.
+Post-v0.2.0 update: GitHub Pages production web deploy is verified at https://sobag0404.github.io/door-runner-memory/. The Capacitor Android project is now committed, a debug APK has been built, installed, launched, and checked on the `DoorRunner_API30_ATD` emulator, and GitHub Actions covers Gradle `assembleDebug`. This is post-release evidence, not part of the original `v0.2.0` tag contents.
 
 ## Baseline From v0.1.0
 
@@ -29,7 +29,7 @@ Verified in the v0.1.0 release docs:
 Known unverified or incomplete areas carried into v0.2.0:
 
 - Android/Capacitor project directory is committed in this checkout after `v0.2.0`.
-- Debug APK build/install/launch is verified on an emulator; release signing, real-device smoke, and real-device performance are not verified.
+- Debug APK build/install/launch is verified on an emulator, and debug APK build is covered by CI; release signing, real-device smoke, and real-device performance are not verified.
 - Local Android readiness evidence is recorded in `docs/android-release.md`.
 - Netlify production deploy status is not verified from the current environment.
 - Focused Playwright accessibility smoke is now a release gate, and current coverage is documented in `docs/accessibility-audit.md`, but a full accessibility audit is not complete.
@@ -47,7 +47,7 @@ Update the release process for v0.2.0 so it can be followed without relying on s
 Acceptance criteria:
 
 - A v0.2.0 release checklist exists or the current checklist is updated to target v0.2.0. The current draft section lives in `docs/release-checklist.md`.
-- Required commands are explicit: `bun install --frozen-lockfile`, `bun run build`, `bun run lint`, `bun run test`, `bun run test:e2e`, and `bun run security:audit`.
+- Required commands are explicit: `bun install --frozen-lockfile`, `bun run build`, `bun run lint`, `bun run test`, `bun run test:e2e`, `bun run security:audit`, `bun x cap sync android`, and Gradle `assembleDebug`.
 - The checklist separates automated checks, manual browser smoke, PWA smoke, Android checks, and deploy checks.
 - Any skipped check has an owner-visible reason and is reflected in release notes/status.
 
