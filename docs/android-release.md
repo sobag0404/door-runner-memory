@@ -195,7 +195,7 @@ High-level local signing flow:
 - Android versioning policy is documented, but the first signed release has not selected final `versionCode` / `versionName`.
 - Android signing policy and ignore rules are documented, but no release keystore, signed APK, or signed AAB has been created or verified.
 - Android debug APK build is automated in CI; emulator gameplay smoke remains local/manual.
-- App icon and splash assets are generated defaults, not final branded Android release art.
+- App icon and splash assets are project-specific placeholders generated from local drawing code, not final branded Android release art.
 - Android icon/splash branding checklist is documented in `docs/android-icon-splash.md`, but final reviewed assets and screenshots are not recorded.
 - Real-device smoke and performance profiling are not verified.
 - Real-device smoke has a procedure/template in `docs/android-real-device-smoke.md`, but no physical-device evidence has been recorded.

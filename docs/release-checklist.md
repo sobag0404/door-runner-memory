@@ -68,7 +68,7 @@ Distribution and readiness gates for `v0.2.0`:
 - [ ] Review `docs/android-performance-profile.md` and record startup time, input latency, 10-minute session result, jank, memory, battery, thermal, and runtime error observations before claiming Android performance readiness.
 - [ ] Review `docs/android-play-testing.md` and record signed AAB upload, track, versionCode/versionName, commit/tag, CI run, artifact hash, and tester install result before claiming Play distribution readiness.
 - [ ] Review `docs/android-icon-splash.md` and record original launcher icon/splash asset provenance, screenshots, and contrast/readability notes before claiming Android branding readiness.
-- [ ] Confirm generated/default Android icon and splash placeholders are replaced or explicitly accepted as non-release placeholders before signed APK/AAB or Play/internal testing claims.
+- [ ] Confirm project-specific Android icon and splash placeholders are replaced or explicitly accepted as non-release placeholders before signed APK/AAB or Play/internal testing claims.
 - [ ] Confirm the Android `versionCode` is unused in Play Console before upload.
 - [ ] Confirm Play App Signing/upload-key status, store listing, app content, data safety, privacy, and app access checks are reviewed before any testing-track submission.
 - [ ] Confirm internal testing audience is documented without personal emails, and any testing release is described as internal-only until production rollout evidence exists.
