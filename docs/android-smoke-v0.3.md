@@ -53,12 +53,12 @@ adb -s emulator-5554 forward tcp:9222 localabstract:webview_devtools_remote_<pid
 - `android/app/build.gradle` currently uses `versionCode 1` and `versionName "1.0"` from the generated Capacitor project.
 - App icon and splash assets are still generated defaults; they are not final branded Android release art.
 - `capacitor.config.json` disables Capacitor `SystemBars.insetsHandling` to avoid early WebView safe-area CSS injection errors on the API 30 emulator.
-- Debug signing only. No release keystore or Play Store artifact is configured.
+- Debug signing only. Android versioning/signing policy is documented, but no release keystore, signed APK/AAB, or Play Store artifact is configured.
 
 ## Remaining Gaps
 
 - No real-device smoke yet.
 - No Android performance profiling yet.
-- No release signing/versioning policy yet.
+- No release keystore, signed release artifact, or Play Store track process yet.
 - No Play Store track or rollout process yet.
 - Android Gradle `assembleDebug` is covered by the Linux CI lane after the Android debug build workflow update; emulator gameplay smoke remains local/manual.
