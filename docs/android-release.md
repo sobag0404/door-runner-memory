@@ -104,6 +104,30 @@ Expected release output after signing/versioning work:
 
 Use `bundleRelease` for Play Console-style distribution after signing is configured. Use `assembleDebug` only for local smoke testing.
 
+## Android Versioning Policy
+
+Current generated defaults in `android/app/build.gradle`:
+
+- `versionCode 1`
+- `versionName "1.0"`
+
+Treat these as debug/native-project bootstrap defaults, not a production release decision. A signed Android release PR must explicitly review and update them before producing a distributable APK/AAB.
+
+Release rules:
+
+- `versionCode` is the Android monotonic integer. Increase it for every signed APK/AAB intended for testers, Play Console, or external distribution. Never reuse a `versionCode` after an artifact has been uploaded or shared as a release candidate.
+- If Door Runner Memory has never had an Android artifact uploaded to Play Console or an external testing track, the first signed Android release may use `versionCode 1`. If any artifact was uploaded outside this repository, choose a value greater than the highest uploaded code.
+- `versionName` is the user-visible app version. Match the GitHub release tag without the leading `v`: tag `v0.3.0` maps to Android `versionName "0.3.0"`.
+- Android-only patches should still use a normal GitHub release/tag, for example `v0.3.1`, so release notes, APK/AAB metadata, and source history stay traceable.
+- The web/PWA `package.json` currently has `"version": "0.0.0"` and is not the Android release authority.
+
+Debug and release expectations:
+
+- Debug APKs from `assembleDebug` are local/CI smoke artifacts only. They may keep placeholder version metadata while Android release readiness is still being prepared.
+- Release APK/AAB builds must be signed with the intended release keystore, built from a reviewed commit/tag, and documented in release notes/status.
+- Do not commit signing keys, passwords, Play Console credentials, or local `keystore.properties` files.
+- Before publishing a signed Android release, record the final `versionCode`, `versionName`, commit, CI run, signing approach, and device/performance evidence in this document or the matching release status doc.
+
 ## Verification Checklist
 
 - [x] `bun install --frozen-lockfile` completes without lockfile changes.
@@ -116,13 +140,13 @@ Use `bundleRelease` for Play Console-style distribution after signing is configu
 - [x] Settings and local leaderboard persistence are smoke-tested on the emulator.
 - [ ] Swipe input, audio, haptics, and offline behavior are smoke-tested on device.
 - [ ] App icon, app label, splash color, and status bar color match final release expectations.
-- [ ] Version code/version name are set for the release being shipped; current generated defaults are `versionCode 1` and `versionName "1.0"`.
+- [ ] Version code/version name are set for the release being shipped according to the Android versioning policy above.
 - [ ] Release artifact is signed with the intended keystore.
 
 ## Current Gaps
 
 - Release signing is not configured in the repository.
-- Android version code/version name policy is not documented in project metadata.
+- Android versioning policy is documented, but the first signed release has not selected final `versionCode` / `versionName`.
 - Android debug APK build is automated in CI; emulator gameplay smoke remains local/manual.
 - App icon and splash assets are generated defaults, not final branded Android release art.
 - Real-device smoke and performance profiling are not verified.
