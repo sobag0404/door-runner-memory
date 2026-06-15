@@ -12,6 +12,8 @@ Use this document after a debug APK, signed release APK, or signed release AAB-d
 - GitHub Actions CI run:
 - Artifact type: debug APK / signed release APK / signed release AAB
 - Artifact path or source:
+- Install provenance: sideloaded APK / AAB-derived install / Play internal testing / other
+- Play track and release name, if applicable:
 - Package: `com.doorrunner.memory`
 - Device model:
 - Manufacturer:

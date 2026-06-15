@@ -41,6 +41,7 @@ Interpretation:
 - Follow-up gameplay smoke evidence is recorded in `docs/android-smoke-v0.3.md`.
 - Real-device smoke procedure and evidence template: `docs/android-real-device-smoke.md`.
 - Android performance profile procedure and evidence template: `docs/android-performance-profile.md`.
+- Play Store/internal testing track process template: `docs/android-play-testing.md`.
 
 ## Prerequisites
 
@@ -184,6 +185,7 @@ High-level local signing flow:
 - [ ] Version code/version name are set for the release being shipped according to the Android versioning policy above.
 - [ ] Release artifact is signed with the intended keystore.
 - [ ] Release artifact type, path, commit/tag, CI run, signing approach, real-device smoke, and performance notes are recorded.
+- [ ] Play internal testing or release-track evidence is recorded before claiming Play distribution readiness.
 
 ## Current Gaps
 
@@ -195,5 +197,5 @@ High-level local signing flow:
 - Real-device smoke and performance profiling are not verified.
 - Real-device smoke has a procedure/template in `docs/android-real-device-smoke.md`, but no physical-device evidence has been recorded.
 - Android performance profiling has a procedure/template in `docs/android-performance-profile.md`, but no physical-device profile has been recorded.
-- No Play Console packaging, track, or rollout process is documented yet.
+- Play Console/internal testing process is documented in `docs/android-play-testing.md`, but no track upload, tester install, or rollout evidence has been recorded.
 - The first debug APK was verified on an emulator only; do not treat it as a production release artifact.
