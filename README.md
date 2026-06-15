@@ -184,9 +184,11 @@ jobs:
       - run: bun run test:a11y
 ```
 
-`actions/checkout@v6` and `actions/setup-node@v6` are used for Node 24 readiness in GitHub Actions. CI runs on both Ubuntu and Windows with Bun 1.3.14.
+`actions/checkout@v6` and `actions/setup-node@v6` are used for Node 24 readiness in GitHub Actions. CI runs web quality gates on both Ubuntu and Windows with Bun 1.3.14. A separate Ubuntu Android lane builds web assets, syncs Capacitor, and runs Gradle `assembleDebug`.
 
 Current post-v0.1 hardening status: the `v0.2.0` release target is the commit that receives the tag after final release-owner approval. Latest verified release-candidate CI evidence passed on Ubuntu and Windows with dependency audit, build/type-check, lint, unit tests, e2e/smoke, and focused a11y smoke: https://github.com/sobag0404/door-runner-memory/actions/runs/27505679971.
+
+Post-v0.2 Android CI coverage adds a separate `android-debug-build` job for web build, Capacitor sync, and Gradle `assembleDebug`.
 
 ## Known Issues
 
@@ -195,7 +197,7 @@ See `docs/gap-analysis.md` for full security review findings.
 - Game logic has a pure reducer, and the Zustand store now delegates sound/haptics/aria effects, feedback timers, and persistence to focused helpers
 - The Zustand store still orchestrates game actions and owns stats calculations, achievement unlock checks, and leaderboard entry construction before calling persistence helpers
 - Accessibility smoke is automated, but a full accessibility audit is not complete
-- Android debug APK build/install/launch has been verified on an emulator; release signing, real-device smoke, and performance checks are not yet verified
+- Android debug APK build/install/launch has been verified on an emulator, and Gradle debug build is covered in CI; release signing, real-device smoke, and performance checks are not yet verified
 - Netlify production deploy remains unverified
 - Online leaderboard/backend/server verification is not implemented
 

@@ -20,7 +20,7 @@ Current baseline for v0.2 planning:
 - Latest verified release-candidate CI is green on Ubuntu and Windows: https://github.com/sobag0404/door-runner-memory/actions/runs/27505679971
 - Post-v0.1 hardening PRs through release-readiness docs cleanup are merged before tagging.
 - Netlify production deploy remains unverified: no GitHub Netlify commit status, no GitHub deployments, and the old Netlify URL returns 404.
-- Android debug APK build/install/launch is verified on an emulator; release signing, real-device smoke, and performance profiling remain unverified.
+- Android debug APK build/install/launch is verified on an emulator; Android debug Gradle build is covered by CI; release signing, real-device smoke, and performance profiling remain unverified.
 - Focused Playwright a11y smoke is automated, but a full accessibility audit remains incomplete.
 - Current accessibility coverage and manual gaps are documented in `docs/accessibility-audit.md`.
 - Current local browser/PWA smoke evidence is documented in `docs/manual-smoke-v0.2.md`.
@@ -36,7 +36,8 @@ Required automated checks before tagging `v0.2.0`:
 - [ ] `bun run test`
 - [ ] `bun run test:e2e`
 - [ ] `bun run test:a11y`
-- [ ] Confirm GitHub Actions is green on the exact release commit for Ubuntu and Windows.
+- [ ] Confirm GitHub Actions is green on the exact release commit for Ubuntu, Windows, and Android debug build.
+- [ ] Confirm the Android `android-debug-build` job runs `bun run build`, `bun x cap sync android`, and Gradle `assembleDebug`.
 
 Manual browser/PWA smoke before tagging `v0.2.0`:
 
@@ -56,6 +57,7 @@ Manual browser/PWA smoke before tagging `v0.2.0`:
 Distribution and readiness gates for `v0.2.0`:
 
 - [x] GitHub Pages production web deploy is verified post-v0.2.0; see `docs/github-pages-deploy.md`.
+- [x] Android debug APK build is covered by GitHub Actions through the Linux `android-debug-build` job.
 - [ ] If a Netlify production URL exists, verify `/`, `/manifest.json`, `/sw.js`, SPA fallback, generated static assets, HTTPS, HSTS, and configured headers. If no credible URL/evidence exists, record Netlify as unverified.
 - [ ] If Android release readiness is claimed, configure release signing/versioning, run real-device smoke, and record device/performance notes. Otherwise record Android as debug-only/emulator-verified.
 - [ ] If full accessibility readiness is claimed, complete and record a broader accessibility audit. Otherwise state that only focused a11y smoke is automated.
