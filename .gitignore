@@ -33,3 +33,9 @@ skills/
 *.db
 db/
 test-screenshots/
+
+# Android signing credentials and generated release secrets
+*.jks
+*.keystore
+keystore.properties
+play-service-account*.json

@@ -10,7 +10,7 @@ Draft v0.2 notes: `docs/release-notes-v0.2.0.md`
 
 Post-v0.2.0 production web deploy: GitHub Pages is verified at https://sobag0404.github.io/door-runner-memory/. This happened after the published `v0.2.0` tag and should be treated as post-release evidence unless a patch release is cut.
 
-Post-v0.2.0 Android update: the Capacitor Android project is now committed, a debug APK builds, installs, launches, and renders the home screen on the `DoorRunner_API30_ATD` emulator. Release signing, real-device smoke, and performance profiling remain open.
+Post-v0.2.0 Android update: the Capacitor Android project is now committed, a debug APK builds, installs, launches, and renders the home screen on the `DoorRunner_API30_ATD` emulator. Versioning/signing policy is documented, but release signing, signed artifacts, real-device smoke, and performance profiling remain open.
 
 ## v0.2.0 Draft Release Checklist
 
@@ -20,7 +20,7 @@ Current baseline for v0.2 planning:
 - Latest verified release-candidate CI is green on Ubuntu and Windows: https://github.com/sobag0404/door-runner-memory/actions/runs/27505679971
 - Post-v0.1 hardening PRs through release-readiness docs cleanup are merged before tagging.
 - Netlify production deploy remains unverified: no GitHub Netlify commit status, no GitHub deployments, and the old Netlify URL returns 404.
-- Android debug APK build/install/launch is verified on an emulator; Android debug Gradle build is covered by CI; release signing, real-device smoke, and performance profiling remain unverified.
+- Android debug APK build/install/launch is verified on an emulator; Android debug Gradle build is covered by CI; versioning/signing policy is documented; release signing, signed artifacts, real-device smoke, and performance profiling remain unverified.
 - Focused Playwright a11y smoke is automated, but a full accessibility audit remains incomplete.
 - Current accessibility coverage and manual gaps are documented in `docs/accessibility-audit.md`.
 - Current local browser/PWA smoke evidence is documented in `docs/manual-smoke-v0.2.md`.
@@ -59,7 +59,8 @@ Distribution and readiness gates for `v0.2.0`:
 - [x] GitHub Pages production web deploy is verified post-v0.2.0; see `docs/github-pages-deploy.md`.
 - [x] Android debug APK build is covered by GitHub Actions through the Linux `android-debug-build` job.
 - [ ] If a Netlify production URL exists, verify `/`, `/manifest.json`, `/sw.js`, SPA fallback, generated static assets, HTTPS, HSTS, and configured headers. If no credible URL/evidence exists, record Netlify as unverified.
-- [ ] If Android release readiness is claimed, configure release signing, apply the documented Android versioning policy, run real-device smoke, and record device/performance notes. Otherwise record Android as debug-only/emulator-verified.
+- [ ] If Android release readiness is claimed, configure release signing, apply the documented Android versioning/signing policy, produce a signed APK/AAB, run real-device smoke, and record artifact/device/performance notes. Otherwise record Android as debug-only/emulator-verified.
+- [ ] Confirm Android signing keys, `keystore.properties`, Play service account JSON, signing passwords, and upload credentials are not committed.
 - [ ] If full accessibility readiness is claimed, complete and record a broader accessibility audit. Otherwise state that only focused a11y smoke is automated.
 - [ ] Review `docs/accessibility-audit.md` before writing v0.2 accessibility claims.
 - [ ] Confirm no gameplay rules, scoring, daily sequence, or persisted localStorage schema/key changes are included without explicit release approval and regression tests.
@@ -127,7 +128,7 @@ Added after the published `v0.1.0` baseline:
 - [ ] Themes keep sufficient contrast for doors, HUD, and feedback.
 - [ ] Reduced-motion preference disables nonessential effects.
 - [ ] 10-minute mobile session has no crash or visible memory growth.
-- [ ] Release-signed APK/AAB, documented Android versionCode/versionName, real-device smoke, and performance profiling are completed before an Android release.
+- [ ] Release-signed APK/AAB, documented Android versionCode/versionName, signing approach, artifact path, real-device smoke, and performance profiling are completed before an Android release.
 
 ## GitHub Release Steps
 

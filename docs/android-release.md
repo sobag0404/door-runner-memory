@@ -128,6 +128,43 @@ Debug and release expectations:
 - Do not commit signing keys, passwords, Play Console credentials, or local `keystore.properties` files.
 - Before publishing a signed Android release, record the final `versionCode`, `versionName`, commit, CI run, signing approach, and device/performance evidence in this document or the matching release status doc.
 
+## Android Signing And Release Artifact Policy
+
+Current status:
+
+- The repository does not configure release signing yet.
+- Debug APKs are debug-signed by Gradle and are valid only for local, emulator, or CI smoke checks.
+- Store-ready Android artifacts must be signed release builds produced from a reviewed commit or tag.
+
+Credential rules:
+
+- Keep the release keystore outside the repository, or in an ignored local path under `android/` only when needed for local builds.
+- Keep local signing configuration in an ignored `keystore.properties` file. Do not commit `keystore.properties`, `.jks`, `.keystore`, Play service account JSON, signing passwords, or upload credentials.
+- If a future CI release job signs artifacts, it must read credentials from GitHub Actions secrets and must not print secret values.
+
+Suggested local `keystore.properties` shape, with placeholder names only:
+
+```properties
+storeFile=../path-outside-repo/door-runner-release.jks
+storePassword=...
+keyAlias=...
+keyPassword=...
+```
+
+Release artifact expectations:
+
+- Prefer `bundleRelease` and the AAB artifact for Play Console or testing-track distribution.
+- Use a signed release APK only when a direct install artifact is deliberately required.
+- Generated APK/AAB files under `android/app/build/outputs/` are build outputs and must not be committed.
+
+High-level local signing flow:
+
+1. Confirm `versionCode` and `versionName` for the Android release.
+2. Build and verify the web bundle, then run `bun x cap sync android`.
+3. In Android Studio, use `Build > Generate Signed App Bundle / APK`, choose Android App Bundle for Play-style distribution, and select the local release keystore.
+4. Alternatively, add a reviewed Gradle signing configuration that reads only ignored local properties or CI secrets, then run `bundleRelease`.
+5. Record artifact type, artifact path, commit/tag, CI run, signing approach, real-device smoke, and performance notes before claiming Android release readiness.
+
 ## Verification Checklist
 
 - [x] `bun install --frozen-lockfile` completes without lockfile changes.
@@ -142,11 +179,13 @@ Debug and release expectations:
 - [ ] App icon, app label, splash color, and status bar color match final release expectations.
 - [ ] Version code/version name are set for the release being shipped according to the Android versioning policy above.
 - [ ] Release artifact is signed with the intended keystore.
+- [ ] Release artifact type, path, commit/tag, CI run, signing approach, real-device smoke, and performance notes are recorded.
 
 ## Current Gaps
 
 - Release signing is not configured in the repository.
 - Android versioning policy is documented, but the first signed release has not selected final `versionCode` / `versionName`.
+- Android signing policy and ignore rules are documented, but no release keystore, signed APK, or signed AAB has been created or verified.
 - Android debug APK build is automated in CI; emulator gameplay smoke remains local/manual.
 - App icon and splash assets are generated defaults, not final branded Android release art.
 - Real-device smoke and performance profiling are not verified.
