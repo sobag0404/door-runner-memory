@@ -35,6 +35,13 @@ function Save-Png($bmp, $path) {
     $bmp.Save($path, [System.Drawing.Imaging.ImageFormat]::Png)
 }
 
+function Save-TextFile($path, $content) {
+    $dir = Split-Path $path -Parent
+    if (!(Test-Path $dir)) { New-Item -ItemType Directory -Path $dir | Out-Null }
+    $utf8NoBom = [System.Text.UTF8Encoding]::new($false)
+    [System.IO.File]::WriteAllText($path, $content, $utf8NoBom)
+}
+
 function Draw-BrandScene($graphics, [int]$width, [int]$height, [bool]$splash) {
     $rect = [System.Drawing.Rectangle]::new(0, 0, $width, $height)
     $bg = [System.Drawing.Drawing2D.LinearGradientBrush]::new($rect,
@@ -225,6 +232,28 @@ function Write-Splash($path, [int]$width, [int]$height) {
     $bmp.Dispose()
 }
 
+function Write-MonochromeIcon($path) {
+    $vector = @'
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M34,84L45,32H63L74,84Z" />
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M31,34H43V58H31Z M48,30H60V58H48Z M65,34H77V58H65Z" />
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M54,72m-8,0a8,8 0,1 0,16 0a8,8 0,1 0,-16 0" />
+</vector>
+'@
+    Save-TextFile $path $vector
+}
+
 $icons = @{
     'mipmap-mdpi' = 48
     'mipmap-hdpi' = 72
@@ -242,6 +271,8 @@ foreach ($entry in $icons.GetEnumerator()) {
     Write-ForegroundIcon $foregroundPath $foregroundSize
     Test-ForegroundIcon $foregroundPath $foregroundSize
 }
+
+Write-MonochromeIcon (Join-Path $res 'drawable/ic_launcher_monochrome.xml')
 
 $splashes = @{
     'drawable/splash.png' = @(480, 320)
