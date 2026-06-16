@@ -50,6 +50,7 @@ This document tracks Android-specific icon and splash requirements before a sign
 
 ## Evidence To Record Before Android Release
 
+- Partial API 30 emulator launch evidence and screenshot blocker notes are recorded in `docs/android-launcher-evidence-v0.3.md`.
 - Asset source paths or generation prompt/provenance.
 - Foreground dimensions, transparent-corner check, and adaptive mask screenshots for circle, squircle, and rounded-square launchers where available.
 - Android 13+ themed icon screenshot with the launcher's wallpaper-derived tint where available.
