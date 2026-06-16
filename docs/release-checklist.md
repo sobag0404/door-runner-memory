@@ -26,6 +26,7 @@ Current baseline for v0.2 planning:
 - Current local browser/PWA smoke evidence is documented in `docs/manual-smoke-v0.2.md`.
 - Current Android readiness evidence and blockers are documented in `docs/android-release.md`.
 - Real-device Android smoke procedure and evidence template: `docs/android-real-device-smoke.md`.
+- Android 13+ real-device themed icon, launcher, splash-to-home, logcat, and artifact-hash evidence packet: `docs/android-real-device-smoke.md`.
 - Android performance profiling procedure and evidence template: `docs/android-performance-profile.md`.
 - Play Store/internal testing process template: `docs/android-play-testing.md`.
 - Android icon/splash branding checklist: `docs/android-icon-splash.md`.
