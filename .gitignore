@@ -37,5 +37,7 @@ test-screenshots/
 # Android signing credentials and generated release secrets
 *.jks
 *.keystore
+*.p12
+*.pfx
 keystore.properties
 play-service-account*.json

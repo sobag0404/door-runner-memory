@@ -170,6 +170,48 @@ High-level local signing flow:
 4. Alternatively, add a reviewed Gradle signing configuration that reads only ignored local properties or CI secrets, then run `bundleRelease`.
 5. Record artifact type, artifact path, commit/tag, CI run, signing approach, real-device smoke, and performance notes before claiming Android release readiness.
 
+## First Signed Android RC Checklist
+
+Use this checklist for the first signed Android release candidate. It prepares a testable RC artifact only; it does not by itself prove Android release readiness.
+
+Version and source:
+
+- [ ] Choose the release commit or tag.
+- [ ] Confirm CI is green on that exact commit, including the Android debug build job.
+- [ ] Select `versionCode` according to the monotonic Android versioning policy.
+- [ ] Select `versionName` to match the GitHub release version without the leading `v`.
+- [ ] Update `android/app/build.gradle` in a reviewed PR if the chosen values differ from the current defaults.
+
+Signing setup:
+
+- [ ] Create or select a release/upload keystore outside the repository.
+- [ ] Keep `keystore.properties` local and ignored if using a local Gradle signing flow.
+- [ ] Confirm `.jks`, `.keystore`, `.p12`, `.pfx`, `keystore.properties`, Play service account JSON, passwords, tokens, and upload credentials are not committed.
+- [ ] Record only the signing approach, never secret values.
+
+Build options:
+
+- [ ] Android Studio path: `Build > Generate Signed App Bundle / APK`, choose Android App Bundle for Play-style distribution, select the local keystore, and export the signed artifact.
+- [ ] Gradle path: use only a reviewed signing config that reads ignored local properties or CI secrets, then run `bundleRelease` for AAB or `assembleRelease` for a direct APK.
+- [ ] Do not commit generated artifacts from `android/app/build/outputs/`.
+
+Artifact evidence:
+
+- [ ] Record artifact type: signed AAB / signed APK.
+- [ ] Record artifact path.
+- [ ] Record artifact SHA-256 hash.
+- [ ] Record commit or tag.
+- [ ] Record GitHub Actions CI run.
+- [ ] Record `versionCode` and `versionName`.
+
+Validation before readiness claims:
+
+- [ ] Complete `docs/android-real-device-smoke.md` on at least one physical Android device.
+- [ ] Complete `docs/android-performance-profile.md` on physical hardware.
+- [ ] Record launcher icon, Android 13+ themed icon, app drawer, app info, recents, and splash-to-home visual evidence.
+- [ ] If using Play Console internal testing, record `docs/android-play-testing.md` evidence after the signed AAB is accepted and a tester install is completed.
+- [ ] Keep release status explicit if any of the above remains blocked.
+
 ## Verification Checklist
 
 - [x] `bun install --frozen-lockfile` completes without lockfile changes.
@@ -188,6 +230,7 @@ High-level local signing flow:
 - [ ] Version code/version name are set for the release being shipped according to the Android versioning policy above.
 - [ ] Release artifact is signed with the intended keystore.
 - [ ] Release artifact type, path, commit/tag, CI run, signing approach, real-device smoke, and performance notes are recorded.
+- [ ] First signed Android RC checklist above is completed before any signed RC is called release-ready.
 - [ ] Play internal testing or release-track evidence is recorded before claiming Play distribution readiness.
 
 ## Current Gaps

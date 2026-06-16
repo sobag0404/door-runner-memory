@@ -65,6 +65,7 @@ Distribution and readiness gates for `v0.2.0`:
 - [x] Android debug APK build is covered by GitHub Actions through the Linux `android-debug-build` job.
 - [ ] If a Netlify production URL exists, verify `/`, `/manifest.json`, `/sw.js`, SPA fallback, generated static assets, HTTPS, HSTS, and configured headers. If no credible URL/evidence exists, record Netlify as unverified.
 - [ ] If Android release readiness is claimed, configure release signing, apply the documented Android versioning/signing policy, produce a signed APK/AAB, run real-device smoke, and record artifact/device/performance notes. Otherwise record Android as debug-only/emulator-verified.
+- [ ] Before a signed Android release candidate is called ready, complete the first signed Android RC checklist in `docs/android-release.md`.
 - [ ] Review `docs/android-real-device-smoke.md` and record physical-device model, Android/WebView versions, artifact type, CI run, functional smoke, logcat scan, and performance notes before claiming Android release readiness.
 - [ ] Review `docs/android-performance-profile.md` and record startup time, input latency, 10-minute session result, jank, memory, battery, thermal, and runtime error observations before claiming Android performance readiness.
 - [ ] Review `docs/android-play-testing.md` and record signed AAB upload, track, versionCode/versionName, commit/tag, CI run, artifact hash, and tester install result before claiming Play distribution readiness.
@@ -74,6 +75,7 @@ Distribution and readiness gates for `v0.2.0`:
 - [ ] Confirm Play App Signing/upload-key status, store listing, app content, data safety, privacy, and app access checks are reviewed before any testing-track submission.
 - [ ] Confirm internal testing audience is documented without personal emails, and any testing release is described as internal-only until production rollout evidence exists.
 - [ ] Confirm Android signing keys, `keystore.properties`, Play service account JSON, signing passwords, and upload credentials are not committed.
+- [ ] Confirm `.jks`, `.keystore`, `.p12`, `.pfx`, `keystore.properties`, Play service account JSON, tokens, and production credentials are ignored or kept outside the repository.
 - [ ] If full accessibility readiness is claimed, complete and record a broader accessibility audit. Otherwise state that only focused a11y smoke is automated.
 - [ ] Review `docs/accessibility-audit.md` before writing v0.2 accessibility claims.
 - [ ] Confirm no gameplay rules, scoring, daily sequence, or persisted localStorage schema/key changes are included without explicit release approval and regression tests.

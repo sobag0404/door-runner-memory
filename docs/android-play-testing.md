@@ -14,6 +14,7 @@ Use this document when Door Runner Memory is prepared for Google Play internal t
 - Android `versionCode` and `versionName` selected according to `docs/android-release.md`.
 - Release signing approach selected without committing signing credentials.
 - Signed release AAB available for upload.
+- First signed Android RC checklist in `docs/android-release.md` completed for the artifact being uploaded.
 - Real-device smoke and Android performance profile either completed or explicitly recorded as blockers.
 
 ## Internal Testing Track Steps
