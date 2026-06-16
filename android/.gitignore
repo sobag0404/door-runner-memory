@@ -55,6 +55,8 @@ captures/
 # Keystore files
 *.jks
 *.keystore
+*.p12
+*.pfx
 keystore.properties
 play-service-account*.json
 
