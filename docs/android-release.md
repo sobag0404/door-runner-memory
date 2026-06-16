@@ -40,6 +40,7 @@ Interpretation:
 - `adb screencap` produced a black image on this ATD emulator, so render evidence was taken from the attached WebView DevTools DOM instead.
 - Follow-up gameplay smoke evidence is recorded in `docs/android-smoke-v0.3.md`.
 - Real-device smoke procedure and evidence template: `docs/android-real-device-smoke.md`.
+- Android 13+ physical-device evidence packet, including themed icon screenshots and splash recording filenames, is documented in `docs/android-real-device-smoke.md`.
 - Android performance profile procedure and evidence template: `docs/android-performance-profile.md`.
 - Play Store/internal testing track process template: `docs/android-play-testing.md`.
 - Android icon/splash branding checklist: `docs/android-icon-splash.md`.
