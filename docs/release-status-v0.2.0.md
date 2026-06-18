@@ -65,3 +65,10 @@ Baseline checked:
 - The APK installs and launches on the `DoorRunner_API30_ATD` emulator.
 - WebView DevTools DOM confirmed the home screen renders at `https://localhost/`.
 - Android release signing, real-device smoke, and performance profiling remain unverified.
+
+## Post-v0.2.0 Mobile 3D Visual QA Status
+
+- PR #44 (`36a8217`) added `docs/mobile-3d-visual-qa.md` with acceptance criteria for original high-energy 3D runner visuals, runner readability, track depth, portals, HUD/tap target safety, reduced motion, screenshots, WebGL evidence, and Android WebView performance risks.
+- PR #45 (`ce67b5a`) polished the current 3D runner avatar after the first WebGL prototype.
+- Current blockers/risks: no physical Android visual evidence yet, no real-device 10-minute performance profile, and Three.js bundle growth should be monitored in future visual PRs.
+- Next supporting action: use `docs/mobile-3d-visual-qa.md` as the review checklist for visual PRs and record compact status updates here only when acceptance rules, evidence, or readiness claims change.
