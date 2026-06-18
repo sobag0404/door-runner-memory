@@ -197,7 +197,7 @@ export function DoorRow({
   onChoose: (lane: number) => void;
   theme: GameTheme;
 }) {
-  const bottomPercent = 22 + doorIndex * 16;
+  const bottomPercent = 26 + doorIndex * 15.5;
   const scale = 1 - doorIndex * 0.08;
   const opacity = Math.max(0.35, 1 - doorIndex * 0.18);
 
