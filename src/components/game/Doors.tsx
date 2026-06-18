@@ -82,12 +82,6 @@ function Door({
           background: isCurrent ? `${color}80` : 'rgba(0,0,0,0.22)',
           opacity: isCurrent ? 0.75 : 0.35,
         }} />
-      <div className="absolute -bottom-1 left-[7%] right-[7%] h-2 rounded-full"
-        style={{
-          background: `linear-gradient(90deg, transparent, ${color}cc, transparent)`,
-          boxShadow: isCurrent ? `0 0 14px ${color}80` : undefined,
-          opacity: isCurrent ? 0.85 : 0.42,
-        }} />
 
       {/* Door frame (outer) - themed frame */}
       <div className="absolute inset-0 rounded-t-[40%] rounded-b-lg"
@@ -97,12 +91,6 @@ function Door({
           boxShadow: shadowStr,
         }}
       >
-        <div className="absolute inset-x-2 top-1 h-2 rounded-full"
-          style={{
-            background: `linear-gradient(90deg, transparent, rgba(255,255,255,0.42), transparent)`,
-            opacity: isCurrent ? 0.9 : 0.45,
-          }} />
-
         {/* Door arch (top semicircle) */}
         <div className="absolute inset-x-[3px] top-[3px] h-[35%] rounded-t-[40%]"
           style={{
@@ -209,7 +197,7 @@ export function DoorRow({
   onChoose: (lane: number) => void;
   theme: GameTheme;
 }) {
-  const bottomPercent = 22 + doorIndex * 16;
+  const bottomPercent = 26 + doorIndex * 15.5;
   const scale = 1 - doorIndex * 0.08;
   const opacity = Math.max(0.35, 1 - doorIndex * 0.18);
 

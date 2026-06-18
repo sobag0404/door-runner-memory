@@ -6,14 +6,14 @@ import { t } from '../lib/i18n';
 import { prefersReducedMotion } from '../lib/a11y';
 import { getExpectedPath } from '../lib/season';
 import { getTheme, type GameTheme } from '../lib/themes';
-import { SpeedLines, ParticleBurst, CoinEffect, ScreenFlash, RunnerTrail } from './game/VFX';
+import { SpeedLines, ParticleBurst, CoinEffect, ScreenFlash } from './game/VFX';
 import { HUD } from './game/HUD';
 import { LaneButtons } from './game/LaneButtons';
 import { AchievementToast } from './game/AchievementToast';
 import { TimerBar, SpeedIndicator } from './game/Timer';
-import { Runner, RunnerDust } from './game/Runner';
 import { DoorRow } from './game/Doors';
 import { RoadVisual } from './game/SceneBackground';
+import { Runner3DScene } from './game/Runner3DScene';
 import { SwipeHint } from './game/SwipeHint';
 import { useDoorRunnerInput } from './game/useDoorRunnerInput';
 
@@ -94,6 +94,7 @@ export default function DoorRunnerScene() {
       transition={{ duration: 0.4, ease: 'easeOut' }}
     >
       <RoadVisual pathCount={pathCount} theme={theme} />
+      <Runner3DScene pathCount={pathCount} currentLane={correctLane} feedback={feedback} theme={theme} />
       {isRunning && <SpeedLines theme={theme} />}
 
       {/* Screen flash on feedback */}
@@ -113,16 +114,6 @@ export default function DoorRunnerScene() {
           doorIndex={row.doorIndex} pathCount={pathCount} correctLane={row.correctLane}
           isCurrent={row.isCurrent} feedback={row.isCurrent ? feedback : null} onChoose={handleChoose} theme={theme} />
       ))}
-
-      {/* Runner trail effect */}
-      {isRunning && feedback !== 'wrong' && (
-        <RunnerTrail pathCount={pathCount} currentLane={correctLane} theme={theme} />
-      )}
-
-      {isRunning && <Runner pathCount={pathCount} currentLane={correctLane} feedback={feedback} theme={theme} />}
-
-      {/* Dust particles at runner feet */}
-      {isRunning && <RunnerDust pathCount={pathCount} currentLane={correctLane} feedback={feedback} theme={theme} />}
 
       <AnimatePresence>
         {feedback === 'correct' && <ParticleBurst type="correct" key="vfx-correct" theme={theme} />}

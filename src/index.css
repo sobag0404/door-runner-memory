@@ -61,19 +61,6 @@ button {
   box-shadow: inset 0 22px 36px rgba(255,255,255,0.08), inset 0 -42px 70px rgba(0,0,0,0.2);
 }
 
-.runner-road::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(ellipse at 50% 16%, rgba(255,255,255,0.18), transparent 28%),
-    linear-gradient(115deg, rgba(255,255,255,0.12), transparent 22%, transparent 78%, rgba(255,255,255,0.1));
-  mix-blend-mode: screen;
-  opacity: 0.48;
-  z-index: 1;
-}
-
 .runner-road::after {
   content: "";
   position: absolute;
@@ -84,22 +71,6 @@ button {
     repeating-linear-gradient(to bottom, rgba(255,255,255,0.08) 0 1px, transparent 1px 18px);
   mix-blend-mode: screen;
   opacity: 0.45;
-  z-index: 2;
-}
-
-.memory-lane-beam {
-  mix-blend-mode: screen;
-  opacity: 0.9;
-  animation: laneBeamPulse 1.8s ease-in-out infinite;
-}
-
-.memory-depth-mark {
-  animation: depthMarkRush 0.9s linear infinite;
-}
-
-.memory-horizon-gate {
-  transform-origin: center;
-  animation: horizonBreathe 2.4s ease-in-out infinite;
 }
 
 .door-hit-target {
@@ -158,13 +129,6 @@ input[type="range"]::-moz-range-thumb {
   .runner-road::after {
     opacity: 0.25;
   }
-
-  .runner-road::before,
-  .memory-lane-beam,
-  .memory-depth-mark,
-  .memory-horizon-gate {
-    animation: none !important;
-  }
 }
 
 /* ─── Runner limb swing ─── */
@@ -187,22 +151,6 @@ input[type="range"]::-moz-range-thumb {
 @keyframes dashScroll {
   0% { transform: translateY(0); }
   100% { transform: translateY(24px); }
-}
-
-@keyframes laneBeamPulse {
-  0%, 100% { opacity: 0.58; filter: brightness(0.96); }
-  50% { opacity: 0.9; filter: brightness(1.14); }
-}
-
-@keyframes depthMarkRush {
-  0% { transform: translate(-50%, -5px) scaleX(0.92); opacity: 0.1; }
-  35% { opacity: 0.32; }
-  100% { transform: translate(-50%, 10px) scaleX(1.04); opacity: 0.18; }
-}
-
-@keyframes horizonBreathe {
-  0%, 100% { opacity: 0.5; transform: translateX(-50%) scale(0.96); }
-  50% { opacity: 0.82; transform: translateX(-50%) scale(1.04); }
 }
 
 /* ─── Coin sparkle ─── */
