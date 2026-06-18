@@ -22,6 +22,8 @@
   - PR #18 drafted v0.2 release status.
   - PR #19 drafted v0.2 release notes.
   - PR #20 serialized Windows Playwright e2e workers to reduce hosted-runner teardown flakes.
+  - PR #44 (`36a8217`) added `docs/mobile-3d-visual-qa.md`, the Android-mobile 3D visual acceptance checklist.
+  - PR #45 (`ce67b5a`) polished the 3D runner avatar on top of the WebGL prototype.
 - Latest verified release-candidate CI evidence before final tag approval: audit, build/type-check, lint, unit tests, e2e/smoke, and focused a11y smoke passed on Ubuntu and Windows in https://github.com/sobag0404/door-runner-memory/actions/runs/27505679971.
 - The automated a11y gate is a focused Playwright smoke check. A full accessibility audit is still not complete.
 - Gameplay rules, scoring, daily sequence behavior, and persisted localStorage schema/keys are not claimed to have changed in post-v0.1 hardening work.
@@ -47,6 +49,9 @@
 - Do not copy Subway Surfers characters, logos, exact UI, proprietary assets, or recognizable level art.
 - Visual upgrades must preserve gameplay rules, scoring, daily sequence behavior, localStorage schema/keys, accessibility smoke coverage, and reduced-motion support.
 - Keep visual refresh work scoped and screenshot-reviewed; do not combine it with architecture or deploy changes.
+- Current 3D QA checklist: `docs/mobile-3d-visual-qa.md`.
+- Current visual QA risks: Android real-device visual/performance evidence is still missing, Three.js bundle growth needs monitoring, and future runner/track polish must keep HUD, doors, and tap targets readable on 390x844.
+- Next supporting action: review upcoming visual PRs against `docs/mobile-3d-visual-qa.md` and record only compact status/evidence notes in tracked docs when acceptance criteria or readiness status changes.
 
 ## Общее
 - **Тип:** Мобильная игра-аркада на память (Subway Surfers × Simon Says)
