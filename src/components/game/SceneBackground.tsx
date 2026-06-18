@@ -177,6 +177,8 @@ function seededRng(seed: number) {
 export function RoadVisual({ pathCount, theme }: { pathCount: number; theme: GameTheme }) {
   const isNeon = theme.id === 'neon';
   const isRetro = theme.id === 'retro';
+  const lanes = Array.from({ length: pathCount });
+  const depthMarks = Array.from({ length: 8 });
 
   return (
     <div className="absolute inset-0 overflow-hidden">
@@ -203,6 +205,43 @@ export function RoadVisual({ pathCount, theme }: { pathCount: number; theme: Gam
             clipPath: 'polygon(38% 0, 62% 0, 100% 100%, 0 100%)',
           }} />
 
+        <div aria-hidden="true" className="memory-horizon-gate absolute left-1/2 top-[5%] h-14 w-32 -translate-x-1/2 rounded-full border"
+          style={{
+            borderColor: `${theme.hudScoreAccent}55`,
+            boxShadow: `0 0 24px ${theme.hudScoreAccent}28, inset 0 0 18px ${theme.hudScoreAccent}18`,
+          }}>
+          <div className="absolute left-1/2 top-1/2 h-2 w-16 -translate-x-1/2 -translate-y-1/2 rounded-full"
+            style={{ background: `linear-gradient(90deg, transparent, ${theme.hudScoreAccent}88, transparent)` }} />
+        </div>
+
+        <div aria-hidden="true" className="absolute inset-0 pointer-events-none">
+          {lanes.map((_, i) => {
+            const color = LANE_COLORS[i % LANE_COLORS.length];
+            return (
+              <div key={`lane-beam-${i}`} className="memory-lane-beam absolute top-[2%] bottom-[1%]"
+                style={{
+                  left: `${(i / pathCount) * 100}%`,
+                  width: `${100 / pathCount}%`,
+                  background: `linear-gradient(to bottom, ${color}05 0%, ${color}12 34%, ${color}24 76%, ${color}36 100%)`,
+                  clipPath: 'polygon(46% 0, 54% 0, 96% 100%, 4% 100%)',
+                  animationDelay: `${i * 0.12}s`,
+                }} />
+            );
+          })}
+
+          {depthMarks.map((_, i) => (
+            <div key={`depth-mark-${i}`} className="memory-depth-mark absolute left-1/2 h-[2px] -translate-x-1/2 rounded-full"
+              style={{
+                top: `${12 + i * 10.5}%`,
+                width: `${28 + i * 8}%`,
+                opacity: 0.14 + i * 0.035,
+                background: `linear-gradient(90deg, transparent, ${theme.hudScoreAccent}99, transparent)`,
+                boxShadow: `0 0 10px ${theme.hudScoreAccent}24`,
+                animationDelay: `${i * 0.08}s`,
+              }} />
+          ))}
+        </div>
+
         {/* Lane dividers */}
         {Array.from({ length: pathCount + 1 }).map((_, i) => (
           <div key={i} className="absolute top-0 bottom-0"
@@ -217,15 +256,21 @@ export function RoadVisual({ pathCount, theme }: { pathCount: number; theme: Gam
         ))}
 
         {/* Lane bottom glow */}
-        {Array.from({ length: pathCount }).map((_, i) => (
-          <div key={`ls-${i}`} className="absolute bottom-0"
-            style={{
-              left: `${(i / pathCount) * 100 + 0.5}%`,
-              width: `${100 / pathCount - 1}%`,
-              height: '8px',
-              background: `linear-gradient(to top, ${LANE_COLORS[i % LANE_COLORS.length]}90, transparent)`,
-            }} />
-        ))}
+        {lanes.map((_, i) => {
+          const color = LANE_COLORS[i % LANE_COLORS.length];
+          return (
+            <div key={`ls-${i}`} className="absolute bottom-0"
+              style={{
+                left: `${(i / pathCount) * 100 + 0.5}%`,
+                width: `${100 / pathCount - 1}%`,
+                height: '12px',
+                background: `linear-gradient(to top, ${color}a0, ${color}38 45%, transparent)`,
+              }}>
+              <div className="absolute inset-x-[18%] bottom-[5px] h-[3px] rounded-full"
+                style={{ backgroundColor: `${color}d0`, boxShadow: `0 0 14px ${color}70` }} />
+            </div>
+          );
+        })}
 
         {/* Center dashes */}
         <div className="absolute left-1/2 -translate-x-1/2 top-0 bottom-0 w-1 overflow-hidden">
